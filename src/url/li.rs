@@ -6,7 +6,7 @@ Q!(
     SELECT id::bigint::oid,name FROM img.sampler;
 );
 
-url_fn!(get() {
+url_fn!(post() {
     let li = sampler_id_name().await?;
     let mut vec = VecAny::new();
     for i in li {

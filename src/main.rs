@@ -15,10 +15,11 @@ fn main() -> anyhow::Result<()> {
   let mut router = Router::new();
   macro_rules! post {
     (=> $func:ident) => {
-      get!("", $func)
+      post!("", $func)
     };
-    ($url:stmt => $func:ident) => {
-      get!(
+    ($($url:stmt => $func:ident);+) => {
+        $(
+      post!(
         const_str::replace!(
           const_str::replace!(
             const_str::unwrap!(const_str::strip_suffix!(stringify!($url), ";")),
@@ -29,10 +30,14 @@ fn main() -> anyhow::Result<()> {
           ":"
         ),
         $func
-      )
+      );
+        )+
     };
     ($url:expr, $func:ident) => {
-      router = router.route(const_str::concat!('/', $url), post($crate::url::$func::get))
+      router = router.route(
+        const_str::concat!('/', $url),
+        post($crate::url::$func::post),
+      )
     };
   }
 
