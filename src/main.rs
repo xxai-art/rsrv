@@ -4,7 +4,6 @@
 #![feature(let_chains)]
 
 use axum::{routing::post, Router};
-use tower_http::cors::CorsLayer;
 use trt::TRT;
 
 mod url;
@@ -45,8 +44,6 @@ fn main() -> anyhow::Result<()> {
   post!(li => li);
 
   // router = router.route("/sampler", get(crate::url::sampler::get));
-
-  router = router.layer(CorsLayer::permissive());
 
   let default_port = 8879;
   let port = match std::env::var("RSRV_PORT") {
