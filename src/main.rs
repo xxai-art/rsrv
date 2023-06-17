@@ -3,7 +3,7 @@
 #![feature(type_alias_impl_trait)]
 #![feature(let_chains)]
 
-use axum::{routing::get, Router};
+use axum::{routing::post, Router};
 use tower_http::cors::CorsLayer;
 use trt::TRT;
 
@@ -13,7 +13,7 @@ fn main() -> anyhow::Result<()> {
   awp::init();
 
   let mut router = Router::new();
-  macro_rules! get {
+  macro_rules! post {
     (=> $func:ident) => {
       get!("", $func)
     };
@@ -32,21 +32,21 @@ fn main() -> anyhow::Result<()> {
       )
     };
     ($url:expr, $func:ident) => {
-      router = router.route(const_str::concat!('/', $url), get($crate::url::$func::get))
+      router = router.route(const_str::concat!('/', $url), post($crate::url::$func::get))
     };
   }
 
   // get!( => stat);
-  get!(sampler/&id => sampler_id);
-  get!(sampler => sampler);
+  post!(li => li);
 
   // router = router.route("/sampler", get(crate::url::sampler::get));
 
   router = router.layer(CorsLayer::permissive());
 
-  let port = match std::env::var("PORT") {
-    Ok(val) => val.parse::<u16>().unwrap_or(8080),
-    _ => 8080,
+  let default_port = 8879;
+  let port = match std::env::var("RSRV_PORT") {
+    Ok(val) => val.parse::<u16>().unwrap_or(default_port),
+    _ => default_port,
   };
 
   TRT.block_on(async move {
