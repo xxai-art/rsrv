@@ -10,7 +10,7 @@ use tower_cookies::Cookies;
 
 sync_url_fn!(post(cookies: Cookies) {
     if let Some(c) = cookies.get("I") {
-        let c = c.to_string();
+        let c = xxai::cookie_decode(c.value());
         dbg!(c);
     }
     1

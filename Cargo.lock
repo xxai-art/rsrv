@@ -153,6 +153,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "base-x"
+version = "0.2.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4cbbc9d0964165b47557570cce6c952866c2678457aca742aafc9fb771d30270"
+
+[[package]]
 name = "base64"
 version = "0.21.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -867,6 +873,7 @@ dependencies = [
  "tower-http",
  "tracing",
  "trt",
+ "xxai",
  "xxpg",
 ]
 
@@ -1483,6 +1490,14 @@ name = "windows_x86_64_msvc"
 version = "0.48.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a515f5799fe4961cb532f983ce2b23082366b898e52ffbce459c86f67c8378a"
+
+[[package]]
+name = "xxai"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "base-x",
+]
 
 [[package]]
 name = "xxai-msgpacker"
