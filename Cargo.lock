@@ -844,6 +844,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "anypack",
+ "async-lazy",
  "awp",
  "axum",
  "const-str",
@@ -1437,10 +1438,43 @@ dependencies = [
 ]
 
 [[package]]
+name = "xxai-postgres-types"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f4e46ec4b0fc28738e80f546231d658268fcaa783aff01942b8d7f8a99c6fdf2"
+dependencies = [
+ "bytes",
+ "fallible-iterator",
+ "postgres-protocol",
+]
+
+[[package]]
+name = "xxai-tokio-postgres"
+version = "0.7.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "38857016f8cacc0d62d876141924f21932c142bb1d5cd06f985c91b3f89b0ea6"
+dependencies = [
+ "async-trait",
+ "byteorder",
+ "bytes",
+ "fallible-iterator",
+ "futures-channel",
+ "futures-util",
+ "log",
+ "parking_lot",
+ "percent-encoding",
+ "phf",
+ "pin-project-lite",
+ "postgres-protocol",
+ "socket2 0.5.3",
+ "tokio",
+ "tokio-util",
+ "xxai-postgres-types",
+]
+
+[[package]]
 name = "xxpg"
 version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73ffc88873ca0a6f01920cdc1e4ecc56ee9849a155af3d22c2c9502b5491cd74"
 dependencies = [
  "async-lazy",
  "axum",
@@ -1448,19 +1482,21 @@ dependencies = [
  "msgpacker",
  "paste",
  "tokio",
- "tokio-postgres",
  "tracing",
  "trt",
+ "xxai-tokio-postgres",
  "xxpg_proc",
 ]
 
 [[package]]
 name = "xxpg_proc"
 version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02194ade5fcb63d0b610fe4cee86d021058d123307eb0d4654404c500155355d"
 dependencies = [
+ "async-lazy",
  "lazy_static",
  "proc-macro2",
  "regex",
+ "tokio",
+ "tokio-postgres",
+ "trt",
 ]
