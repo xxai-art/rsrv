@@ -18,6 +18,7 @@ anypack = { version = "0.1.10" }
 trt = "0.1.1"
 xxpg = { version = "0.1.8" }
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
+tower-cookies = "0.9.0"
 
 [dependencies.tokio]
 version = "1.28.2"

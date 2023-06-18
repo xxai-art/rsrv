@@ -4,6 +4,7 @@
 #![feature(let_chains)]
 
 use axum::{routing::post, Router};
+use tower_cookies::{Cookie, CookieManagerLayer, Cookies};
 use trt::TRT;
 
 mod url;
@@ -41,7 +42,7 @@ fn main() -> anyhow::Result<()> {
   }
 
   // get!( => stat);
-  post!(li => li);
+  post!(li => li;star=>star);
 
   // router = router.route("/sampler", get(crate::url::sampler::get));
 
@@ -52,7 +53,7 @@ fn main() -> anyhow::Result<()> {
   };
 
   TRT.block_on(async move {
-    awp::srv(router, port).await;
+    awp::srv(router.layer(CookieManagerLayer::new()), port).await;
   });
   Ok(())
 }
