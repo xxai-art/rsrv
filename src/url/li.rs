@@ -1,4 +1,4 @@
-use anypack::{url_fn, VecAny};
+use anypack::url_fn;
 use xxpg::Q;
 
 Q!(
@@ -7,5 +7,5 @@ Q!(
 );
 
 url_fn!(post() {
-    img_li().await?
+    img_li()
 });
