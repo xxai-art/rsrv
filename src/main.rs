@@ -4,7 +4,7 @@
 #![feature(let_chains)]
 
 use axum::{routing::post, Router};
-use tower_cookies::{Cookie, CookieManagerLayer, Cookies};
+use tower_cookies::CookieManagerLayer;
 use trt::TRT;
 
 mod url;
