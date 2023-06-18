@@ -9,6 +9,9 @@ use tower_cookies::Cookies;
 // );
 
 sync_url_fn!(post(cookies: Cookies) {
-    dbg!(&cookies);
+    if let Some(c) = cookies.get("I") {
+        let c = c.to_string();
+        dbg!(c);
+    }
     1
 });
