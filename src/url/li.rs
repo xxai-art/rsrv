@@ -12,7 +12,7 @@ url_fn!(post() {
     for i in li {
         let mut t = VecAny::new();
         let id:i64 = i.get(0);
-        t.push(id as u64);
+        t.push(id );
         let hash:Vec<u8> = i.get(1);
         t.push(hash);
         let w:u32 = i.get(2);
@@ -20,9 +20,9 @@ url_fn!(post() {
         let h:u32 = i.get(3);
         t.push(h);
         let star:i64 = i.get(4);
-        t.push(star as u64);
+        t.push(star );
         let reply:i64 = i.get(5);
-        t.push(reply as u64);
+        t.push(reply);
         vec.push(t);
     }
     vec

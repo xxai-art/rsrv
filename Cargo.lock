@@ -37,13 +37,13 @@ dependencies = [
 
 [[package]]
 name = "anypack"
-version = "0.1.7"
+version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73db7c770bbfc0e38084221fe9ad87b4b08706863842b54ad6611f577bea3721"
+checksum = "5bc7b0278c4c55e7b2393267c3b4be9eaf81a4f3020aa29e5bfd22e500151e8e"
 dependencies = [
  "axum",
- "msgpacker",
  "paste",
+ "xxai-msgpacker",
 ]
 
 [[package]]
@@ -1426,6 +1426,15 @@ name = "windows_x86_64_msvc"
 version = "0.48.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a515f5799fe4961cb532f983ce2b23082366b898e52ffbce459c86f67c8378a"
+
+[[package]]
+name = "xxai-msgpacker"
+version = "0.4.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1a2a6f04d81672dac6180bd2ff1f8d3327463fcdd4c4b820578f87d542665fa0"
+dependencies = [
+ "msgpacker-derive",
+]
 
 [[package]]
 name = "xxpg"

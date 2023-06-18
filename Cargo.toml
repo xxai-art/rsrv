@@ -14,7 +14,7 @@ const-str = "0.5.5"
 futures-util = "0.3.28"
 tower-http = { version = "0.4.0", features = ["cors", "tokio"] }
 ctor = "0.2.2"
-anypack = { version = "0.1.7" }
+anypack = { version = "0.1.8" }
 trt = "0.1.1"
 xxpg = "0.1.4"
 
