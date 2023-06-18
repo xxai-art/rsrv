@@ -1439,9 +1439,9 @@ dependencies = [
 
 [[package]]
 name = "xxai-postgres-types"
-version = "0.2.5"
+version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f4e46ec4b0fc28738e80f546231d658268fcaa783aff01942b8d7f8a99c6fdf2"
+checksum = "ce2f3f6823c5e0123a7720d17412b5c3afd59b8cb0e5c10241965a73f7791f62"
 dependencies = [
  "bytes",
  "fallible-iterator",
@@ -1450,9 +1450,9 @@ dependencies = [
 
 [[package]]
 name = "xxai-tokio-postgres"
-version = "0.7.9"
+version = "0.7.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38857016f8cacc0d62d876141924f21932c142bb1d5cd06f985c91b3f89b0ea6"
+checksum = "9e8c1ec2a81212f28905a7a8c2f69f89ce54fdd0530ec91073aefad674a6beda"
 dependencies = [
  "async-trait",
  "byteorder",
@@ -1474,9 +1474,9 @@ dependencies = [
 
 [[package]]
 name = "xxpg"
-version = "0.1.7"
+version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e690cb0e6f4fd6b3f6016a1c5e528757e5b668b19a8d6470aa5c7eb00b30643"
+checksum = "31ec1d5b0b3f80dae2d5078306f1b868566870cce4915945bdfc8eccb2f59372"
 dependencies = [
  "async-lazy",
  "axum",
