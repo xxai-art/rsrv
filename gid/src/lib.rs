@@ -33,7 +33,7 @@ pub static GID: LazyLock<Gid> = LazyLock::new(|| Gid {
   cache: DashMap::default(),
 });
 
-pub const U32_MAX: u64 = u32::MAX as u64;
+pub const U32_MAX: u64 = (u16::MAX as u64) * 32;
 
 #[macro_export]
 macro_rules! gid {
