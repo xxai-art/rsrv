@@ -1,0 +1,21 @@
+[package]
+name = "xkv"
+version = "0.1.9"
+edition = "2021"
+license = "SSPL-1.0"
+homepage = "https://github.com/xxai-art/rsrv"
+repository = "https://github.com/xxai-art/rsrv.git"
+description = "use fred connection redis via env"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+anyhow = "1.0.71"
+async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
+ctor = "0.2.2"
+fred = { version = "6.3.0", features = ["replicas", "rustls"] }
+lazy_static = "1.4.0"
+paste = "1.0.12"
+trt = "0.1.1"
+
+[dev-dependencies]
+tokio-test = "0.4.2"

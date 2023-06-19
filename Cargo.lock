@@ -68,6 +68,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-stream"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd56dd203fef61ac097dd65721a419ddccb106b2d2b70ba60a6b529f03961a51"
+dependencies = [
+ "async-stream-impl",
+ "futures-core",
+ "pin-project-lite",
+]
+
+[[package]]
+name = "async-stream-impl"
+version = "0.3.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "16e62a023e7c117e27523144c5d2459f4397fcc3cab0085af8e2224f643a0193"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "async-trait"
 version = "0.1.68"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -253,7 +275,7 @@ dependencies = [
  "tower-cookies",
  "trt",
  "x0",
- "xkv",
+ "xkv 0.1.9 (registry+https://github.com/rust-lang/crates.io-index)",
  "xxai",
  "xxhash-rust",
 ]
@@ -1464,6 +1486,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio-test"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "53474327ae5e166530d17f2d956afcb4f8a004de581b3cae10f12006bc8163e3"
+dependencies = [
+ "async-stream",
+ "bytes",
+ "futures-core",
+ "tokio",
+ "tokio-stream",
+]
+
+[[package]]
 name = "tokio-util"
 version = "0.7.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1862,7 +1897,21 @@ checksum = "1a515f5799fe4961cb532f983ce2b23082366b898e52ffbce459c86f67c8378a"
 name = "x0"
 version = "0.1.0"
 dependencies = [
- "xkv",
+ "xkv 0.1.9",
+]
+
+[[package]]
+name = "xkv"
+version = "0.1.9"
+dependencies = [
+ "anyhow",
+ "async-lazy",
+ "ctor",
+ "fred",
+ "lazy_static",
+ "paste",
+ "tokio-test",
+ "trt",
 ]
 
 [[package]]

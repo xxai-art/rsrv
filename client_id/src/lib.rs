@@ -27,7 +27,7 @@ fn day() -> u64 {
 #[ctor::ctor]
 fn init() {
   TRT.block_on(async move {
-    let redis = R.force().await;
+    let redis = R.0.force().await;
     let conf = &b"conf"[..];
     let key = &b"SK"[..];
     let sk: Option<Vec<u8>> = redis.hget(conf, key).await.unwrap();
