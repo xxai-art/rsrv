@@ -8,5 +8,4 @@ description = "shortcut for xxai.art"
 license = "SSPL-1.0"
 
 [dependencies]
-fred = { version = "6.3.0", features = ["replicas", "rustls"] }
 xkv = "0.1.8"
