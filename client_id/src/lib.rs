@@ -67,7 +67,6 @@ fn client_id_by_cookie(token: &str) -> ClientState {
           */
 
           let now = (xxai::now() / 864000) % BASE;
-          dbg!(day, client_id, now);
           if day != now {
             if ((now - day) < MAX_INTERVAL) || (day > now && (now + BASE - day) < MAX_INTERVAL) {
               // renew
@@ -83,7 +82,7 @@ fn client_id_by_cookie(token: &str) -> ClientState {
   ClientState::None
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Client {
   pub id: u64,
 }
@@ -128,7 +127,8 @@ pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response
   let mut r = next.run(req).await;
 
   let t = &xxai::zip_u64([day(), client_id])[..];
-  let cookie = xxai::cookie_encode(xxh3_64(&[unsafe { &SK }, t].concat()).to_le_bytes());
+  let cookie =
+    xxai::cookie_encode([&xxh3_64(&[unsafe { &SK }, t].concat()).to_le_bytes()[..], t].concat());
   r.headers_mut().insert(
     http::header::SET_COOKIE,
     format!("I={cookie};max-age=99999999;domain={host};path=/;HttpOnly;SameSite=None;Secure")
