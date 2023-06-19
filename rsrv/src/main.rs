@@ -9,10 +9,6 @@ use trt::TRT;
 
 mod url;
 
-use xkv::conn;
-
-conn!(R = REDIS);
-
 fn main() -> anyhow::Result<()> {
   awp::init();
 
