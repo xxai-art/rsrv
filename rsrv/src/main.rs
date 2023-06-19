@@ -3,7 +3,8 @@
 #![feature(type_alias_impl_trait)]
 #![feature(let_chains)]
 
-use axum::{routing::post, Router};
+use axum::{middleware, routing::post, Router};
+use client_id::client_id;
 use tower_cookies::CookieManagerLayer;
 use trt::TRT;
 
@@ -53,7 +54,13 @@ fn main() -> anyhow::Result<()> {
   };
 
   TRT.block_on(async move {
-    awp::srv(router.layer(CookieManagerLayer::new()), port).await;
+    awp::srv(
+      router
+        .layer(CookieManagerLayer::new())
+        .layer(middleware::from_fn(client_id)),
+      port,
+    )
+    .await;
   });
   Ok(())
 }

@@ -4,6 +4,10 @@ pub use tld::tld;
 const COOKIE_SAFE_CHAR: &str =
   "!#$%&'()*+-./0123456789:<>?@ABDEFGHIJKLMNQRSTUVXYZ[]^_`abdefghijklmnqrstuvxyz{|}~";
 
+pub fn now() -> u64 {
+  coarsetime::Clock::now_since_epoch().as_secs()
+}
+
 pub fn cookie_decode(s: &str) -> Result<Box<[u8]>> {
   Ok(base_x::decode(COOKIE_SAFE_CHAR, s)?.into())
 }

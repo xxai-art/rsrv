@@ -13,3 +13,4 @@ xkv = "0.1.9"
 xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
 x0 = { path = "../x0" }
 xxai = { path = "../xxai" }
+http = "0.2.9"
