@@ -1662,6 +1662,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "830b7e5d4d90034032940e4ace0d9a9a057e7a45cd94e6c007832e39edb82f6d"
 
 [[package]]
+name = "vbyte"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3a2d5a99b98f4bd3d8a440886e730b3096df43f798bd3a785db1019729c02d0"
+
+[[package]]
 name = "version_check"
 version = "0.9.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1870,6 +1876,7 @@ dependencies = [
  "anyhow",
  "base-x",
  "psl",
+ "vbyte",
 ]
 
 [[package]]
