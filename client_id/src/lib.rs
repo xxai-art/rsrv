@@ -1,10 +1,7 @@
 use axum::{
-  extract::{Extension, Host},
-  http::{header::COOKIE, Request, StatusCode},
-  middleware::{self, Next},
-  response::{IntoResponse, Response},
-  routing::get,
-  Router,
+  http::{Request, StatusCode},
+  middleware::Next,
+  response::Response,
 };
 use cookie::Cookie;
 use gid::gid;
@@ -88,10 +85,10 @@ fn client_id_by_cookie(token: &str) -> ClientState {
 
 #[derive(Clone)]
 pub struct Client {
-  id: u64,
+  pub id: u64,
 }
 
-fn header_get<'a, B>(req: &'a Request<B>, key: impl AsRef<str>) -> Option<&'a str> {
+fn header_get<B>(req: &Request<B>, key: impl AsRef<str>) -> Option<&str> {
   req
     .headers()
     .get(key.as_ref())

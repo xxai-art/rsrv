@@ -26,7 +26,7 @@ pub fn is_ascii_digit(bytes: impl AsRef<[u8]>) -> bool {
 pub fn zip_u64(li: impl IntoIterator<Item = u64>) -> Vec<u8> {
   let mut u64_li = vec![];
   for i in li {
-    u64_li.push(i as u64);
+    u64_li.push(i);
   }
   vbyte::compress_list(&u64_li)
 }
@@ -39,8 +39,5 @@ pub fn unzip_u64(bin: impl AsRef<[u8]>) -> Vec<u64> {
 }
 
 pub fn random_bytes(n: usize) -> Vec<u8> {
-  (0..n)
-    .map(|_| rand::random::<u8>())
-    .collect::<Vec<u8>>()
-    .into()
+  (0..n).map(|_| rand::random::<u8>()).collect::<Vec<u8>>()
 }

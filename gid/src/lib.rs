@@ -1,12 +1,7 @@
 #![feature(lazy_cell)]
 
-use std::{
-  cell::LazyCell,
-  collections::HashMap,
-  sync::{Arc, LazyLock},
-};
+use std::sync::LazyLock;
 
-use anyhow::Result;
 use dashmap::DashMap;
 
 pub fn nanos() -> u64 {
