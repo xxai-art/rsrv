@@ -38,3 +38,10 @@ pub fn unzip_u64(bin: impl AsRef<[u8]>) -> Vec<u64> {
     Err(_) => vec![],
   }
 }
+
+pub fn random_bytes(n: u32) -> Vec<u8> {
+  (0..n)
+    .map(|_| rand::random::<u8>())
+    .collect::<Vec<u8>>()
+    .into()
+}
