@@ -1,8 +1,13 @@
 #![feature(lazy_cell)]
 
-use std::{cell::LazyCell, collections::HashMap, sync::Arc};
+use std::{
+  cell::LazyCell,
+  collections::HashMap,
+  sync::{Arc, LazyLock},
+};
 
 use anyhow::Result;
+use dashmap::DashMap;
 use x0::{fred::interfaces::HashesInterface, R};
 
 #[derive(Debug, Default)]
@@ -15,21 +20,20 @@ pub struct IdMax {
 #[derive(Debug, Default)]
 pub struct Gid {
   pub hset: Box<[u8]>,
-  pub cache: Arc<HashMap<Box<[u8]>, IdMax>>,
+  pub cache: DashMap<Box<[u8]>, IdMax>,
 }
 
-pub static GID: LazyCell<Gid> = LazyCell::new(|| Gid {
+pub static GID: LazyLock<Gid> = LazyLock::new(|| Gid {
   hset: (*b"id").into(),
-  cache: Arc::default(),
+  cache: DashMap::default(),
 });
 
 #[macro_export]
 macro_rules! gid {
   ($key:ident) => {{
     let key = stringify!($key).as_bytes();
-    let mut cache = GID.cache.clone();
     use $crate::GID;
-    if let Some(mut i) = cache.get_mut(key) {
+    if let Some(mut i) = GID.cache.get_mut(key) {
       if i.id < i.max {
         i.id += 1;
         i.id
