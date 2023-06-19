@@ -527,6 +527,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "gid"
+version = "0.1.0"
+dependencies = [
+ "x0",
+]
+
+[[package]]
 name = "gimli"
 version = "0.27.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"

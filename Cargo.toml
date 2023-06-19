@@ -1,5 +1,5 @@
 [workspace]
-members = ["rsrv", "client_id", "x0", "xxai"]
+members = ["rsrv", "client_id", "x0", "xxai", "gid"]
 resolver = "2"
 
 [profile.release]
