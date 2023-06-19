@@ -1878,6 +1878,7 @@ dependencies = [
  "base-x",
  "coarsetime",
  "psl",
+ "rand",
  "vbyte",
 ]
 

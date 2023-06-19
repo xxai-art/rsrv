@@ -22,7 +22,22 @@ const TOKEN_LEN: usize = 8;
 #[ctor::ctor]
 fn init() {
   TRT.block_on(async move {
-    let sk: Vec<u8> = R.force().await.hget("conf", "SK").await.unwrap();
+    let redis = R.force().await;
+    let conf = &b"conf"[..];
+    let key = &b"SK"[..];
+    let sk: Option<Vec<u8>> = redis.hget(conf, key).await.unwrap();
+    let len = unsafe { SK.len() };
+    if let Some(sk) = sk {
+      if sk.len() == len {
+        dbg!(">", &sk);
+        unsafe { SK = sk.try_into().unwrap() };
+        return;
+      }
+    }
+    use xxai::random_bytes;
+    let sk = &random_bytes(len)[..];
+    redis.hset::<(), _, _>(conf, vec![(key, sk)]).await.unwrap();
+    dbg!(&sk);
     unsafe { SK = sk.try_into().unwrap() };
   })
 }

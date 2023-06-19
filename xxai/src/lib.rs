@@ -39,7 +39,7 @@ pub fn unzip_u64(bin: impl AsRef<[u8]>) -> Vec<u64> {
   }
 }
 
-pub fn random_bytes(n: u32) -> Vec<u8> {
+pub fn random_bytes(n: usize) -> Vec<u8> {
   (0..n)
     .map(|_| rand::random::<u8>())
     .collect::<Vec<u8>>()
