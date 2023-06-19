@@ -1,7 +1,8 @@
-use std::{collections::HashMap, sync::Arc};
+#![feature(lazy_cell)]
+
+use std::{cell::LazyCell, collections::HashMap, sync::Arc};
 
 use anyhow::Result;
-use lazy_static::lazy_static;
 use x0::{fred::interfaces::HashesInterface, R};
 
 #[derive(Debug, Default)]
@@ -17,29 +18,31 @@ pub struct Gid {
   pub cache: Arc<HashMap<Box<[u8]>, IdMax>>,
 }
 
-lazy_static! {
-  pub static ref GID: Gid = Gid {
-    hset: (*b"id").into(),
-    cache: Arc::default(),
-  };
-}
+pub static GID: LazyCell<Gid> = LazyCell::new(|| Gid {
+  hset: (*b"id").into(),
+  cache: Arc::default(),
+});
 
 #[macro_export]
 macro_rules! gid {
   ($key:ident) => {{
     let key = stringify!($key).as_bytes();
+    let mut cache = GID.cache.clone();
     use $crate::GID;
-    if let Some(i) = GID.cache.get(key) {
+    if let Some(mut i) = cache.get_mut(key) {
       if i.id < i.max {
-        //   i.id += 1;
-        //   return i.id;
+        i.id += 1;
+        i.id
+      } else {
+        0
       }
+    } else {
+      0
     }
     // if GID.id == 0 {
     //   GID.lock().id = 1;
     // }
     // GID.id
-    1
   }};
 }
 
