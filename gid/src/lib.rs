@@ -1,15 +1,57 @@
+use std::collections::HashMap;
+
 use anyhow::Result;
+use lazy_static::lazy_static;
 use x0::{fred::interfaces::HashesInterface, R};
 
-const HSET: &[u8] = b"id";
-
-pub async fn gid(key: impl AsRef<str>) -> Result<u64> {
-  let key = key.as_ref();
-  let step = 1;
-  let max: u64 = R.hincrby(HSET, key, step).await?;
-  id = max - step;
-  Ok(id)
+#[derive(Debug, Default)]
+pub struct IdMax {
+  pub id: u64,
+  pub max: u64,
+  pub time: u64,
 }
+
+#[derive(Debug, Default)]
+pub struct Gid {
+  pub hset: Box<[u8]>,
+  pub cache: HashMap<Box<[u8]>, IdMax>,
+}
+
+lazy_static! {
+  pub static ref GID: Gid = Gid {
+    hset: (*b"id").into(),
+    cache: HashMap::default(),
+  };
+}
+
+#[macro_export]
+macro_rules! gid {
+  ($key:ident) => {{
+    let key = stringify!($key).as_bytes();
+    use $crate::GID;
+    if let Some(i) = GID.cache.get(key) {
+      if i.id < i.max {
+        i.id += 1;
+        return i.id;
+      }
+    }
+    // if GID.id == 0 {
+    //   GID.lock().id = 1;
+    // }
+    // GID.id
+    1
+  }};
+}
+
+// const HSET: &[u8] = b"id";
+//
+// pub async fn gid(key: impl AsRef<str>) -> Result<u64> {
+//     let key = key.as_ref();
+//     let step = 1;
+//     let max: u64 = R.hincrby(HSET, key, step).await?;
+//     id = max - step;
+//     Ok(id)
+// }
 // < (redis, hset, duration=6e4)=>
 //   new Proxy(
 //     {}
