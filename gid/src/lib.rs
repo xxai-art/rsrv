@@ -1,9 +1,10 @@
 use anyhow::Result;
 use x0::R;
 
-pub async fn gid(key: AsRef<String>) -> Result<u64> {
+pub async fn gid(key: impl AsRef<str>) -> Result<u64> {
   let step = 1;
-  let max = R.hincrby(hset, name, step).await?;
+  let max: u64 = R.hincrby(hset, name, step).await?;
+  Ok(max)
 }
 // < (redis, hset, duration=6e4)=>
 //   new Proxy(
