@@ -8,6 +8,7 @@ name=$(dasel package.name -f Cargo.toml)
 name=${name//\'/}
 
 mkdir -p out
-cargo build --out-dir out -Z unstable-options
+# 不直接用cargo run，是因为watchexe和cargo run一起用总是会端口冲突，不知道为什么
+cargo build -Z unstable-options
 pkill -9 $name || true
-./out/$name
+./target/debug/$name
