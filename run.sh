@@ -19,5 +19,5 @@ NC='\033[0m'
 echo -e "\n${GREEN}❯ $exe$NC\n"
 pkill -9 $name || true
 if [ -f "$exe" ]; then
-  exec $exe
+  $exe && exit 0 || $exe
 fi
