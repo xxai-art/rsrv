@@ -109,14 +109,13 @@ fn header_get<'a, B>(req: &'a Request<B>, key: impl AsRef<str>) -> Option<&'a st
 }
 
 pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
-  let cookie = header_get(&req, http::header::COOKIE);
-  let host = header_get(&req, http::header::HOST);
-
+  if let Some(cookie) = header_get(&req, http::header::COOKIE) {}
+  let host = xxai::tld(header_get(&req, http::header::HOST).unwrap());
   // let cookie = header
   //   .get(http::header::COOKIE)
   //   .and_then(|header| header.to_str().ok());
 
-  dbg!(cookie, host);
+  dbg!(&host);
   //
   // let auth_header = if let Some(auth_header) = auth_header {
   //   auth_header
@@ -132,5 +131,16 @@ pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response
   // } else {
   //   Err(StatusCode::UNAUTHORIZED)
   // }
-  Ok(next.run(req).await)
+
+  let mut r = next.run(req).await;
+  let cookie = "test";
+
+  r.headers_mut().insert(
+    http::header::SET_COOKIE,
+    format!("I={cookie};max-age=99999999;domain={host};path=/;HttpOnly;SameSite=None;Secure")
+      .parse()
+      .unwrap(),
+  );
+  dbg!(&r.headers());
+  Ok(r)
 }
