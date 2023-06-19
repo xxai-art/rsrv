@@ -34,7 +34,6 @@ fn init() {
     let len = unsafe { SK.len() };
     if let Some(sk) = sk {
       if sk.len() == len {
-        dbg!(">", &sk);
         unsafe { SK = sk.try_into().unwrap() };
         return;
       }
@@ -42,7 +41,6 @@ fn init() {
     use xxai::random_bytes;
     let sk = &random_bytes(len)[..];
     redis.hset::<(), _, _>(conf, vec![(key, sk)]).await.unwrap();
-    dbg!(&sk);
     unsafe { SK = sk.try_into().unwrap() };
   })
 }
