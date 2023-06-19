@@ -9,37 +9,41 @@ use trt::TRT;
 
 mod url;
 
+use xkv::conn;
+
+conn!(R = REDIS);
+
 fn main() -> anyhow::Result<()> {
   awp::init();
 
   let mut router = Router::new();
   macro_rules! post {
-    (=> $func:ident) => {
-      post!("", $func)
-    };
-    ($($url:stmt => $func:ident);+) => {
-        $(
-      post!(
-        const_str::replace!(
-          const_str::replace!(
-            const_str::unwrap!(const_str::strip_suffix!(stringify!($url), ";")),
-            " ",
-            ""
-          ),
-          "&",
-          ":"
-        ),
-        $func
-      );
-        )+
-    };
-    ($url:expr, $func:ident) => {
-      router = router.route(
-        const_str::concat!('/', $url),
-        post($crate::url::$func::post),
-      )
-    };
-  }
+            (=> $func:ident) => {
+                post!("", $func)
+            };
+            ($($url:stmt => $func:ident);+) => {
+                $(
+                    post!(
+                        const_str::replace!(
+                            const_str::replace!(
+                                const_str::unwrap!(const_str::strip_suffix!(stringify!($url), ";")),
+                                " ",
+                                ""
+                            ),
+                            "&",
+                            ":"
+                        ),
+                        $func
+                    );
+                )+
+            };
+            ($url:expr, $func:ident) => {
+                router = router.route(
+                    const_str::concat!('/', $url),
+                    post($crate::url::$func::post),
+                )
+            };
+        }
 
   // get!( => stat);
   post!(li => li;star=>star);
