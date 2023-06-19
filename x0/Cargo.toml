@@ -8,4 +8,4 @@ description = "shortcut for xxai.art"
 license = "SSPL-1.0"
 
 [dependencies]
-xkv = { version = "0.1.9", path = "../xkv" }
+xkv = { version = "0.1.10", path = "../xkv" }
