@@ -7,7 +7,6 @@ set -ex
 name=$(dasel package.name -f Cargo.toml)
 name=${name//\'/}
 pkill -9 $name || true
-cargo build
 
 RUST_BACKTRACE=short \
   exec cargo run
