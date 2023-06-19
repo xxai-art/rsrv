@@ -15,6 +15,7 @@ pub struct IdMax {
   pub id: u64,
   pub max: u64,
   pub time: u64,
+  pub step: u32,
 }
 
 #[derive(Debug, Default)]
@@ -34,12 +35,13 @@ macro_rules! gid {
     let key = stringify!($key).as_bytes();
     use $crate::GID;
     if let Some(mut i) = GID.cache.get_mut(key) {
-      if i.id < i.max {
-        i.id += 1;
-        i.id
-      } else {
-        0
+      if i.id == i.max {
+        let step = i.step;
+        let max: u64 = R.hincrby(GID.hset.as_ref(), key, step as _).await.unwrap();
+        i.id = max - (step as u64);
       }
+      i.id += 1;
+      i.id
     } else {
       0
     }
@@ -55,7 +57,6 @@ macro_rules! gid {
 // pub async fn gid(key: impl AsRef<str>) -> Result<u64> {
 //     let key = key.as_ref();
 //     let step = 1;
-//     let max: u64 = R.hincrby(HSET, key, step).await?;
 //     id = max - step;
 //     Ok(id)
 // }
