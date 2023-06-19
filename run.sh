@@ -3,14 +3,15 @@
 DIR=$(realpath $0) && DIR=${DIR%/*}
 cd $DIR
 
-name=$(dasel package.name -f Cargo.toml)
-name=${name//\'/}
+name=$1
+# name=$(dasel package.name -f Cargo.toml)
+# name=${name//\'/}
 
 exe=./target/debug/$name
 rm $exe
 
 # 不用 cargo run，因为 watchexe 和 cargo run 一起用总是会端口冲突，不知道为什么
-cargo build
+cargo build -p $name
 
 GREEN='\033[0;92m'
 NC='\033[0m'

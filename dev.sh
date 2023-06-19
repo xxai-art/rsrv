@@ -17,4 +17,4 @@ exec watchexec \
   --project-origin . -w ./src \
   --exts rs,toml \
   -r \
-  -- ./run.sh
+  -- ./run.sh $@
