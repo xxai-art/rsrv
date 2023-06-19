@@ -6,7 +6,7 @@ use axum::{
   routing::get,
   Router,
 };
-// use tower_cookies::Cookies;
+use cookie::Cookie;
 use gid::gid;
 use trt::TRT;
 use x0::{fred::interfaces::HashesInterface, R};
@@ -45,62 +45,49 @@ fn init() {
   })
 }
 
-// fn client_id_by_cookie(Host(host): Host, cookies: &Cookies) -> u64 {
-//   use tower_cookies::{
-//     cookie::{time::Duration, SameSite},
-//     Cookie,
-//   };
-//
-//   dbg!(tld(&host));
-//
-//   cookies.add(
-//     Cookie::build("hello_world_key", "hello_world_val4")
-//       .max_age(Duration::seconds(99999999))
-//       .secure(true)
-//       .path("/")
-//       .domain(tld(&host))
-//       .same_site(SameSite::None)
-//       .http_only(true)
-//       .finish(),
-//   );
-//   if let Some(c) = cookies.get("I") {
-//     if let Ok(c) = xxai::cookie_decode(c.value()) {
-//       if c.len() >= TOKEN_LEN {
-//         let client = &c[TOKEN_LEN..];
-//         if xxh3_64(&[unsafe { &SK }, client].concat())
-//           == u64::from_le_bytes(c[..TOKEN_LEN].try_into().unwrap())
-//         {
-//           let li = unzip_u64(client);
-//           if li.len() == 2 {
-//             let [day, client_id]: [u64; 2] = li.try_into().unwrap();
-//
-//             /*
-//              每10天为一个周期，超过40个周期没访问就认为无效, BASE是为了防止数字过大
-//              https://chromestatus.com/feature/4887741241229312
-//              When cookies are set with an explicit Expires/Max-Age attribute the value will now be capped to no more than 400 days
-//             */
-//
-//             let now = (xxai::now() / 864000) % BASE;
-//             dbg!(day, client_id, now);
-//             if day != now {
-//               if ((now - day) < MAX_INTERVAL) || (day > now && (now + BASE - day) < MAX_INTERVAL) {
-//                 // renew
-//                 return client_id;
-//               }
-//             } else {
-//               return client_id;
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }
-//   // client_id
-//   0
-// }
+#[derive(Debug)]
+pub enum ClientState {
+  Ok(u64),
+  Renew(u64),
+  None,
+}
+
+fn client_id_by_cookie(token: &str) -> ClientState {
+  if let Ok(c) = xxai::cookie_decode(token) {
+    if c.len() >= TOKEN_LEN {
+      let client = &c[TOKEN_LEN..];
+      if xxh3_64(&[unsafe { &SK }, client].concat())
+        == u64::from_le_bytes(c[..TOKEN_LEN].try_into().unwrap())
+      {
+        let li = unzip_u64(client);
+        if li.len() == 2 {
+          let [day, client_id]: [u64; 2] = li.try_into().unwrap();
+
+          /*
+          每10天为一个周期，超过40个周期没访问就认为无效, BASE是为了防止数字过大
+          https://chromestatus.com/feature/4887741241229312
+          When cookies are set with an explicit Expires/Max-Age attribute the value will now be capped to no more than 400 days
+          */
+
+          let now = (xxai::now() / 864000) % BASE;
+          dbg!(day, client_id, now);
+          if day != now {
+            if ((now - day) < MAX_INTERVAL) || (day > now && (now + BASE - day) < MAX_INTERVAL) {
+              // renew
+              return ClientState::Renew(client_id);
+            }
+          } else {
+            return ClientState::Ok(client_id);
+          }
+        }
+      }
+    }
+  }
+  ClientState::None
+}
 
 #[derive(Clone)]
-struct ClientId {
+pub struct Client {
   id: u64,
 }
 
@@ -112,41 +99,46 @@ fn header_get<'a, B>(req: &'a Request<B>, key: impl AsRef<str>) -> Option<&'a st
 }
 
 pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
+  let mut client_id = 0;
+
   if let Some(cookie) = header_get(&req, http::header::COOKIE) {
-    dbg!(cookie);
+    for cookie in Cookie::split_parse(cookie) {
+      if let Ok(cookie) = cookie {
+        if cookie.name() == "I" {
+          match client_id_by_cookie(cookie.value()) {
+            ClientState::Renew(id) => {
+              dbg!("renew", id);
+              client_id = id;
+            }
+            ClientState::Ok(id) => {
+              dbg!("ok", id);
+              req.extensions_mut().insert(Client { id });
+              return Ok(next.run(req).await);
+            }
+            _ => {}
+          }
+          break;
+        }
+      }
+    }
   }
+
   let host = xxai::tld(header_get(&req, http::header::HOST).unwrap());
-  // let cookie = header
-  //   .get(http::header::COOKIE)
-  //   .and_then(|header| header.to_str().ok());
-
-  //
-  // let auth_header = if let Some(auth_header) = auth_header {
-  //   auth_header
-  // } else {
-  //   return Err(StatusCode::UNAUTHORIZED);
-  // };
-
-  // if let Some(current_user) = authorize_current_user(auth_header).await {
-  //   // insert the current user into a request extension so the handler can
-  //   // extract it
-  //   req.extensions_mut().insert(current_user);
-  //   Ok(next.run(req).await)
-  // } else {
-  //   Err(StatusCode::UNAUTHORIZED)
-  // }
+  if client_id == 0 {
+    client_id = gid!(client);
+  }
+  dbg!("set cookie", client_id);
+  req.extensions_mut().insert(Client { id: client_id });
 
   let mut r = next.run(req).await;
-  let client_id = gid!(client);
+
   let t = &xxai::zip_u64([day(), client_id])[..];
   let cookie = xxai::cookie_encode(xxh3_64(&[unsafe { &SK }, t].concat()).to_le_bytes());
-
   r.headers_mut().insert(
     http::header::SET_COOKIE,
     format!("I={cookie};max-age=99999999;domain={host};path=/;HttpOnly;SameSite=None;Secure")
       .parse()
       .unwrap(),
   );
-  dbg!(&r.headers());
   Ok(r)
 }
