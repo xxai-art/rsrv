@@ -6,8 +6,6 @@ cd $DIR
 name=$(dasel package.name -f Cargo.toml)
 name=${name//\'/}
 
-mkdir -p out
-
 exe=./target/debug/$name
 rm $exe
 
