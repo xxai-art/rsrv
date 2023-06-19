@@ -1,9 +1,7 @@
 use axum::extract::Host;
-use fred::commands::interfaces::hashes::HashesInterface;
 use tower_cookies::Cookies;
 use trt::TRT;
-use x0::R;
-use xkv::fred::interfaces::HashesInterface;
+use x0::{fred::interfaces::HashesInterface, R};
 use xxhash_rust::xxh3::xxh3_64;
 
 static mut SK: [u8; 32] = [0; 32];
