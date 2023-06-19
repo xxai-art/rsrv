@@ -18,12 +18,14 @@ fn init() {
 
 pub fn tld(host: impl AsRef<str>) -> String {
   let host = host.as_ref();
-  if let Some(p) = host.find(':') {
-    &host[..p]
-  } else {
-    &host
-  }
-  .to_string()
+  xxai::tld(
+    if let Some(p) = host.find(':') {
+      &host[..p]
+    } else {
+      &host
+    }
+    .to_string(),
+  )
 }
 
 pub fn client_id(Host(host): Host, cookies: &Cookies) -> Option<u64> {
