@@ -26,13 +26,3 @@ xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
 [dependencies.tokio]
 version = "1.28.2"
 features = ["macros", "rt-multi-thread"]
-
-[profile.release]
-lto = true
-opt-level = 3
-incremental = true
-codegen-units = 1
-overflow-checks = false
-panic = 'abort'
-debug-assertions = false
-strip = true
