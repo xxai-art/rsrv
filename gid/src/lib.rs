@@ -7,7 +7,8 @@ pub async fn gid(key: impl AsRef<str>) -> Result<u64> {
   let key = key.as_ref();
   let step = 1;
   let max: u64 = R.hincrby(HSET, key, step).await?;
-  Ok(max)
+  id = max - step;
+  Ok(id)
 }
 // < (redis, hset, duration=6e4)=>
 //   new Proxy(
