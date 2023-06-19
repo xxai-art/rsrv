@@ -248,6 +248,7 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "ctor",
+ "gid",
  "http",
  "tower-cookies",
  "trt",
@@ -530,6 +531,7 @@ dependencies = [
 name = "gid"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "x0",
 ]
 

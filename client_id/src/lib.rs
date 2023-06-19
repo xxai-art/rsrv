@@ -7,6 +7,7 @@ use axum::{
   Router,
 };
 // use tower_cookies::Cookies;
+use gid::gid;
 use trt::TRT;
 use x0::{fred::interfaces::HashesInterface, R};
 use xxai::unzip_u64;
@@ -137,7 +138,7 @@ pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response
   // }
 
   let mut r = next.run(req).await;
-  let client_id = 1;
+  let client_id = gid().await?;
   let t = &xxai::zip_u64([day(), client_id])[..];
   let cookie = xxai::cookie_encode(xxh3_64(&[unsafe { &SK }, t].concat()).to_le_bytes());
 
