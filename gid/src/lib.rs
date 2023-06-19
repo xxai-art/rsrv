@@ -8,10 +8,15 @@ use std::{
 
 use anyhow::Result;
 use dashmap::DashMap;
-use x0::{fred::interfaces::HashesInterface, R};
 
 pub fn nanos() -> u64 {
   coarsetime::Clock::now_since_epoch().as_nanos()
+}
+
+#[derive(Debug, Default)]
+pub struct Gid {
+  pub hset: Box<[u8]>,
+  pub cache: DashMap<Box<[u8]>, IdMax>,
 }
 
 #[derive(Debug, Default)]
@@ -22,54 +27,70 @@ pub struct IdMax {
   pub step: u64,
 }
 
-#[derive(Debug, Default)]
-pub struct Gid {
-  pub hset: Box<[u8]>,
-  pub cache: DashMap<Box<[u8]>, IdMax>,
-}
-
 pub static GID: LazyLock<Gid> = LazyLock::new(|| Gid {
   hset: (*b"id").into(),
   cache: DashMap::default(),
 });
 
-pub const U32_MAX: u64 = (u16::MAX as u64) * 32;
+pub const STEP_MAX: u64 = (u16::MAX as u64) * 32;
 
 #[macro_export]
 macro_rules! gid {
   ($key:ident) => {{
+    use std::cmp::{self, min};
+
+    use x0::{fred::interfaces::HashesInterface, R};
+    use $crate::{nanos, GID, STEP_MAX};
+
     let key = stringify!($key).as_bytes();
-    use $crate::{nanos, GID, U32_MAX};
+
     if let Some(mut i) = GID.cache.get_mut(key) {
       if i.id == i.max {
-        let step = i.step;
-        let max: u64 = R.hincrby(GID.hset.as_ref(), key, step as _).await.unwrap();
-        i.id = max - step;
         let now = nanos();
-        if i.step < U32_MAX {
-          if now > i.time {
-            // 600_000_000_000 十分钟
-            let diff = (now - i.time) as f32;
-            let need = ((6e11 / diff) * (i.step as f32)) as u64;
-            if (i.step + need) < U32_MAX {
-              i.step = need;
-            }
-          } else {
-            i.step *= 2;
-          }
+        let step = i.step;
+        if now > i.time {
+          // 600_000_000_000 十分钟
+          let diff = (now - i.time) as f32;
+          let need = ((6e11 / diff) * (i.step as f32)) as u64;
+          i.step = cmp::max(min(need, STEP_MAX), 1);
+          i.time = now;
+        } else if i.step < STEP_MAX {
+          i.step *= 2;
         }
-        i.time = now;
+        let max: u64 = R.hincrby(GID.hset.as_ref(), key, step as _).await.unwrap();
+        i.max = max;
+        i.id = max - step;
       }
       i.id += 1;
       i.id
     } else {
-      0
+      let step = 1;
+      let max: u64 = R.hincrby(GID.hset.as_ref(), key, step as _).await.unwrap();
+      let id = max + 1 - step;
+      let i = $crate::IdMax {
+        time: $crate::nanos(),
+        step,
+        max,
+        id,
+      };
+      GID.cache.insert(key.into(), i);
+      id
     }
-    // if GID.id == 0 {
-    //   GID.lock().id = 1;
-    // }
-    // GID.id
   }};
+}
+
+#[test]
+fn test() {
+  tokio_test::block_on(async move {
+    for _ in 1..=3 {
+      println!("gid {}", gid!(client));
+      std::thread::sleep(std::time::Duration::from_secs(1));
+    }
+    // dbg!(gid!(client));
+    // dbg!(gid!(client));
+    // dbg!(gid!(client));
+    // dbg!(gid!(client));
+  })
 }
 
 // const HSET: &[u8] = b"id";

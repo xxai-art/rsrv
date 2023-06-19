@@ -9,3 +9,6 @@ anyhow = "1.0.71"
 coarsetime = "0.1.23"
 dashmap = "5.4.0"
 x0 = { path = "../x0" }
+
+[dev-dependencies]
+tokio-test = "0.4.2"
