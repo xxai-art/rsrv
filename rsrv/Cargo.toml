@@ -18,7 +18,6 @@ anypack = { version = "0.1.10" }
 trt = "0.1.1"
 xxpg = { version = "0.1.11" }
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
-tower-cookies = "0.9.0"
 xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
 client_id = { path = "../client_id" }
 x0 = { path = "../x0" }

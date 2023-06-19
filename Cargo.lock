@@ -1109,7 +1109,6 @@ dependencies = [
  "futures-util",
  "tokio",
  "tower",
- "tower-cookies",
  "tower-http",
  "tracing",
  "trt",

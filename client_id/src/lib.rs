@@ -101,14 +101,20 @@ struct ClientId {
   id: u64,
 }
 
+fn header_get<'a, B>(req: &'a Request<B>, key: impl AsRef<str>) -> Option<&'a str> {
+  req
+    .headers()
+    .get(key.as_ref())
+    .and_then(|header| header.to_str().ok())
+}
+
 pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
-  let header = req.headers();
-  let cookie = header
-    .get(http::header::COOKIE)
-    .and_then(|header| header.to_str().ok());
-  let host = header
-    .get(http::header::HOST)
-    .and_then(|header| header.to_str().ok());
+  let cookie = header_get(&req, http::header::COOKIE);
+  let host = header_get(&req, http::header::HOST);
+
+  // let cookie = header
+  //   .get(http::header::COOKIE)
+  //   .and_then(|header| header.to_str().ok());
 
   dbg!(cookie, host);
   //
