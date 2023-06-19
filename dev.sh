@@ -14,7 +14,7 @@ fi
 
 exec watchexec \
   --shell=none \
-  --project-origin . -w ./src \
+  --project-origin . -w . \
   --exts rs,toml \
   -r \
   -- ./run.sh $@
