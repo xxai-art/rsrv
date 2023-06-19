@@ -11,3 +11,4 @@ description = "utils for xxai.art"
 [dependencies]
 anyhow = "1.0.71"
 base-x = "0.2.11"
+psl = "2.1.4"
