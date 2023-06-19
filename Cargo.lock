@@ -1877,7 +1877,9 @@ dependencies = [
 
 [[package]]
 name = "xxpg"
-version = "0.1.10"
+version = "0.1.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a71b94076c753e9553a44b5f2f768426e2b2914cab13769e8eb462e4a6d83e82"
 dependencies = [
  "async-lazy",
  "axum",
@@ -1893,7 +1895,9 @@ dependencies = [
 
 [[package]]
 name = "xxpg_proc"
-version = "0.1.3"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2bce603e276adb665cac10e9f8ad3a3f3fa9e51fbf364ed456bc64819b47baf5"
 dependencies = [
  "async-lazy",
  "lazy_static",
