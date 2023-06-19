@@ -1,6 +1,8 @@
 use anypack::sync_url_fn;
 use tower_cookies::Cookies;
+use trt::TRT;
 use xkv::fred::interfaces::HashesInterface;
+use xxhash_rust::xxh3::xxh3_64;
 
 use crate::R;
 
@@ -16,14 +18,23 @@ const TOKEN_LEN: usize = 8;
 
 static mut SK: [u8; 32] = [0; 32];
 
+#[ctor::ctor]
+fn init() {
+  TRT.block_on(async move {
+    let sk: Vec<u8> = R.force().await.hget("conf", "SK").await.unwrap();
+    unsafe { SK = sk.try_into().unwrap() };
+  })
+}
+
 sync_url_fn!(post(cookies: Cookies) {
-    let sk:Vec<u8> = R.get().unwrap().hget("conf","SK").await?;
-    dbg!(sk.len() );
     if let Some(c) = cookies.get("I") {
         let c = xxai::cookie_decode(&c.value())?;
-        let token = &c[..TOKEN_LEN];
+        if c.len() >= TOKEN_LEN {
         let client = &c[TOKEN_LEN..];
-        dbg!(token, client);
+        if xxh3_64(&[unsafe {&SK},client].concat()) == u64::from_le_bytes(c[..TOKEN_LEN].try_into()?) {
+          dbg!(client);
+        }
+        }
     }
     1
 });
