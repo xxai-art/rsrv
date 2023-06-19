@@ -1,4 +1,5 @@
 use anypack::sync_url_fn;
+use axum::extract::Host;
 use tower_cookies::Cookies;
 use trt::TRT;
 use xkv::fred::interfaces::HashesInterface;
@@ -26,15 +27,51 @@ fn init() {
   })
 }
 
-sync_url_fn!(post(cookies: Cookies) {
-    if let Some(c) = cookies.get("I") {
-        let c = xxai::cookie_decode(&c.value())?;
-        if c.len() >= TOKEN_LEN {
+pub fn tld(host: impl AsRef<str>) -> String {
+  let host = host.as_ref();
+  if let Some(p) = host.find(':') {
+    &host[..p]
+  } else {
+    &host
+  }
+  .to_string()
+}
+
+pub fn cookie_client_id(Host(host): Host, cookies: &Cookies) -> Option<u64> {
+  use tower_cookies::{
+    cookie::{time::Duration, SameSite},
+    Cookie,
+  };
+
+  dbg!(tld(&host));
+
+  cookies.add(
+    Cookie::build("hello_world_key", "hello_world_val4")
+      .max_age(Duration::seconds(99999999))
+      .secure(true)
+      .path("/")
+      .domain(tld(&host))
+      .same_site(SameSite::None)
+      .http_only(true)
+      .finish(),
+  );
+  if let Some(c) = cookies.get("I") {
+    if let Ok(c) = xxai::cookie_decode(c.value()) {
+      if c.len() >= TOKEN_LEN {
         let client = &c[TOKEN_LEN..];
-        if xxh3_64(&[unsafe {&SK},client].concat()) == u64::from_le_bytes(c[..TOKEN_LEN].try_into()?) {
+        if xxh3_64(&[unsafe { &SK }, client].concat())
+          == u64::from_le_bytes(c[..TOKEN_LEN].try_into().unwrap())
+        {
           dbg!(client);
         }
-        }
+      }
     }
+  }
+  None
+}
+
+sync_url_fn!(post(host: Host, cookies: Cookies) {
+    cookie_client_id(host, &cookies);
+
     1
 });

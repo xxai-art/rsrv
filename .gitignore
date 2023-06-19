@@ -6,4 +6,3 @@ __pycache__/
 bun.lockb
 node_modules
 .DS_Store
-lib/
