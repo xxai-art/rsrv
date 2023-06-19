@@ -24,6 +24,7 @@ xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
 client_id = { path = "../client_id" }
 x0 = { path = "../x0" }
 fred = { version = "6.3.0", features = ["replicas", "rustls"] }
+xxai = { path = "../xxai" }
 
 [dependencies.tokio]
 version = "1.28.2"

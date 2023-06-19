@@ -9,6 +9,7 @@ axum = "0.6.18"
 ctor = "0.2.2"
 tower-cookies = "0.9.0"
 trt = "0.1.1"
-xkv = "0.1.8"
+xkv = "0.1.9"
 xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
 x0 = { path = "../x0" }
+xxai = { path = "../xxai" }

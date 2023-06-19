@@ -252,6 +252,7 @@ dependencies = [
  "trt",
  "x0",
  "xkv",
+ "xxai 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "xxhash-rust",
 ]
 
@@ -1098,7 +1099,7 @@ dependencies = [
  "tracing",
  "trt",
  "x0",
- "xxai",
+ "xxai 0.1.0",
  "xxhash-rust",
  "xxpg",
 ]
@@ -1837,9 +1838,9 @@ dependencies = [
 
 [[package]]
 name = "xkv"
-version = "0.1.8"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c55cf758a1fe5424241f98011fccc7ee8f0a83a6f009fca4c339e4b1379afcb1"
+checksum = "ca434bbc75eeed93b7a0d438b2f2854a14fc5298a1f3eddda212e6f6a7c62dd6"
 dependencies = [
  "anyhow",
  "async-lazy",
@@ -1851,6 +1852,16 @@ dependencies = [
 [[package]]
 name = "xxai"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "base-x",
+]
+
+[[package]]
+name = "xxai"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2e0ffbafef2582c0c883403ab3110dfcc50ad45e20bdeb2bb7b6efc847f4f2dd"
 dependencies = [
  "anyhow",
  "base-x",

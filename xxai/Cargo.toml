@@ -1,0 +1,13 @@
+[package]
+name = "xxai"
+version = "0.1.0"
+edition = "2021"
+license = "SSPL-1.0"
+homepage = "https://github.com/xxai-art/xxai"
+repository = "https://github.com/xxai-art/xxai.git"
+description = "utils for xxai.art"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+anyhow = "1.0.71"
+base-x = "0.2.11"
