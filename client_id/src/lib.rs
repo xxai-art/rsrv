@@ -19,6 +19,10 @@ const BASE: u64 = 4096;
 
 const TOKEN_LEN: usize = 8;
 
+fn day() -> u64 {
+  (xxai::now() / 864000) % BASE
+}
+
 #[ctor::ctor]
 fn init() {
   TRT.block_on(async move {
@@ -134,6 +138,11 @@ pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response
 
   let mut r = next.run(req).await;
   let cookie = "test";
+  let client_id = 1;
+  let t = xxai::zip_u64([day(), client_id]);
+  // args = zipU64 DAY,client_id
+  // sk = xxh64(SK,args)
+  // cookie = cookieEncode(sk, args)
 
   r.headers_mut().insert(
     http::header::SET_COOKIE,
