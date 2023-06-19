@@ -13,7 +13,7 @@ fi
 
 name=$(dasel package.name -f Cargo.toml)
 name=${name//\'/}
-pkill -9 $name
+pkill -9 $name || true
 
 exec watchexec \
   --shell=none \
