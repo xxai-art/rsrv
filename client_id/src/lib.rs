@@ -137,10 +137,9 @@ pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response
   // }
 
   let mut r = next.run(req).await;
-  let cookie = "test";
   let client_id = 1;
   let t = &xxai::zip_u64([day(), client_id])[..];
-  let t = xxh3_64(&[unsafe { &SK }, t].concat());
+  let cookie = xxh3_64(&[unsafe { &SK }, t].concat());
   //         if unsafe { &SK }, client].concat())
   // sk = xxh64(SK,args)
   // cookie = cookieEncode(sk, args)
