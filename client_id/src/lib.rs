@@ -68,7 +68,12 @@ fn client_id_by_cookie(token: &str) -> ClientState {
 
           let now = (xxai::now() / 864000) % BASE;
           if day != now {
-            if ((now - day) < MAX_INTERVAL) || (day > now && (now + BASE - day) < MAX_INTERVAL) {
+            // 因为都是无符号类型，要避免减法出现负数
+            if day > now {
+              if day < BASE && (now + BASE - day) < MAX_INTERVAL {
+                return ClientState::Renew(client_id);
+              }
+            } else if (now - day) < MAX_INTERVAL {
               // renew
               return ClientState::Renew(client_id);
             }
