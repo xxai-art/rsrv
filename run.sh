@@ -9,5 +9,5 @@ name=${name//\'/}
 
 mkdir -p out
 cargo build --out-dir out -Z unstable-options
-pkill -9 $name
+pkill -9 $name || true
 ./out/$name
