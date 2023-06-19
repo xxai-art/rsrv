@@ -16,10 +16,11 @@ tower-http = { version = "0.4.0", features = ["cors", "tokio"] }
 ctor = "0.2.2"
 anypack = { version = "0.1.10" }
 trt = "0.1.1"
-xxpg = { version = "0.1.8" }
+xxpg = { version = "0.1.9" }
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
 tower-cookies = "0.9.0"
 xxai = { path = "/Users/z/wac.tax/rust/xxai" }
+xkv = "0.1.5"
 
 [dependencies.tokio]
 version = "1.28.2"
