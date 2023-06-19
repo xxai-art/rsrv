@@ -20,8 +20,9 @@ xxpg = { version = "0.1.11" }
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
 tower-cookies = "0.9.0"
 xxai = { path = "/Users/z/wac.tax/rust/xxai" }
-xkv = { version = "0.1.7", path = "/Users/z/wac.tax/rust/xkv" }
+xkv = { version = "0.1.8" }
 xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
+client_id = { path = "../client_id" }
 
 [dependencies.tokio]
 version = "1.28.2"

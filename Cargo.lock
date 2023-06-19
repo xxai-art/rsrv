@@ -245,6 +245,14 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 [[package]]
 name = "client_id"
 version = "0.1.0"
+dependencies = [
+ "axum",
+ "ctor",
+ "tower-cookies",
+ "trt",
+ "xkv",
+ "xxhash-rust",
+]
 
 [[package]]
 name = "coarsetime"
@@ -1077,6 +1085,7 @@ dependencies = [
  "async-lazy",
  "awp",
  "axum",
+ "client_id",
  "const-str",
  "ctor",
  "futures-util",
@@ -1820,6 +1829,8 @@ checksum = "1a515f5799fe4961cb532f983ce2b23082366b898e52ffbce459c86f67c8378a"
 [[package]]
 name = "xkv"
 version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c55cf758a1fe5424241f98011fccc7ee8f0a83a6f009fca4c339e4b1379afcb1"
 dependencies = [
  "anyhow",
  "async-lazy",
