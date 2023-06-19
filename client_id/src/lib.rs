@@ -112,13 +112,14 @@ fn header_get<'a, B>(req: &'a Request<B>, key: impl AsRef<str>) -> Option<&'a st
 }
 
 pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
-  if let Some(cookie) = header_get(&req, http::header::COOKIE) {}
+  if let Some(cookie) = header_get(&req, http::header::COOKIE) {
+    dbg!(cookie);
+  }
   let host = xxai::tld(header_get(&req, http::header::HOST).unwrap());
   // let cookie = header
   //   .get(http::header::COOKIE)
   //   .and_then(|header| header.to_str().ok());
 
-  dbg!(&host);
   //
   // let auth_header = if let Some(auth_header) = auth_header {
   //   auth_header
