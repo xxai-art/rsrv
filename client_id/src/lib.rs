@@ -99,7 +99,7 @@ pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response
   let mut client_id = 0;
 
   if let Some(cookie) = header_get(&req, http::header::COOKIE) {
-    for cookie in Cookie::split_parse(cookie).into_iter().flatten() {
+    for cookie in Cookie::split_parse(cookie).flatten() {
       if cookie.name() == "I" {
         match client_id_by_cookie(cookie.value()) {
           ClientState::Renew(id) => {
