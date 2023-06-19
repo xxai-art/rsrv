@@ -10,12 +10,16 @@ use anyhow::Result;
 use dashmap::DashMap;
 use x0::{fred::interfaces::HashesInterface, R};
 
+pub fn nanos() -> u64 {
+  coarsetime::Clock::now_since_epoch().as_nanos()
+}
+
 #[derive(Debug, Default)]
 pub struct IdMax {
   pub id: u64,
   pub max: u64,
   pub time: u64,
-  pub step: u32,
+  pub step: u64,
 }
 
 #[derive(Debug, Default)]
@@ -29,16 +33,32 @@ pub static GID: LazyLock<Gid> = LazyLock::new(|| Gid {
   cache: DashMap::default(),
 });
 
+pub const U32_MAX: u64 = u32::MAX as u64;
+
 #[macro_export]
 macro_rules! gid {
   ($key:ident) => {{
     let key = stringify!($key).as_bytes();
-    use $crate::GID;
+    use $crate::{nanos, GID, U32_MAX};
     if let Some(mut i) = GID.cache.get_mut(key) {
       if i.id == i.max {
         let step = i.step;
         let max: u64 = R.hincrby(GID.hset.as_ref(), key, step as _).await.unwrap();
-        i.id = max - (step as u64);
+        i.id = max - step;
+        let now = nanos();
+        if i.step < U32_MAX {
+          if now > i.time {
+            // 600_000_000_000 十分钟
+            let diff = (now - i.time) as f32;
+            let need = ((6e11 / diff) * (i.step as f32)) as u64;
+            if (i.step + need) < U32_MAX {
+              i.step = need;
+            }
+          } else {
+            i.step *= 2;
+          }
+        }
+        i.time = now;
       }
       i.id += 1;
       i.id

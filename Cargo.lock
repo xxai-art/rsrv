@@ -567,6 +567,7 @@ name = "gid"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "coarsetime",
  "dashmap",
  "x0",
 ]
