@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use lazy_static::lazy_static;
@@ -14,13 +14,13 @@ pub struct IdMax {
 #[derive(Debug, Default)]
 pub struct Gid {
   pub hset: Box<[u8]>,
-  pub cache: HashMap<Box<[u8]>, IdMax>,
+  pub cache: Arc<HashMap<Box<[u8]>, IdMax>>,
 }
 
 lazy_static! {
   pub static ref GID: Gid = Gid {
     hset: (*b"id").into(),
-    cache: HashMap::default(),
+    cache: Arc::default(),
   };
 }
 
@@ -31,8 +31,8 @@ macro_rules! gid {
     use $crate::GID;
     if let Some(i) = GID.cache.get(key) {
       if i.id < i.max {
-        i.id += 1;
-        return i.id;
+        //   i.id += 1;
+        //   return i.id;
       }
     }
     // if GID.id == 0 {
@@ -82,5 +82,3 @@ macro_rules! gid {
 //           cache = [id,max,step,+new Date]
 //         return ++cache[0]
 //   )
-//
-//
