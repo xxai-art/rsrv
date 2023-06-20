@@ -8,8 +8,15 @@ impl crate::Client {
     if let Some(id) = self._user_id {
       if id == 0 {
         let key = [R_CLIENT_USER, &xxai::u64_bin(self.id)].concat();
-        let id: Option<u64> = R.fcall_ro(ZMAX, key, 0).await.unwrap();
-        dbg!(id);
+        dbg!(&key);
+        let id: Option<u64> = R
+          .fcall_ro(ZMAX, vec![&key[..]], vec!["0"])
+          .await
+          .unwrap_or_else(|err| {
+            dbg!(err);
+            None
+          });
+
         self._user_id = id;
         id
       } else {
