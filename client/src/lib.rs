@@ -10,6 +10,12 @@ use x0::{fred::interfaces::HashesInterface, R};
 use xxai::unzip_u64;
 use xxhash_rust::xxh3::xxh3_64;
 
+#[derive(Debug, Clone, Copy)]
+pub struct Client {
+  pub id: u64,
+  pub user_id: Option<u64>,
+}
+
 static mut SK: [u8; 32] = [0; 32];
 
 const MAX_INTERVAL: u64 = 41;
@@ -87,11 +93,6 @@ fn client_by_cookie(token: &str) -> ClientState {
   ClientState::None
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct Client {
-  pub id: u64,
-}
-
 fn header_get<B>(req: &Request<B>, key: impl AsRef<str>) -> Option<&str> {
   req
     .headers()
@@ -107,12 +108,13 @@ pub async fn client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, S
       if cookie.name() == "I" {
         match client_by_cookie(cookie.value()) {
           ClientState::Renew(id) => {
-            dbg!("renew", id);
             client = id;
           }
           ClientState::Ok(id) => {
-            dbg!("ok", id);
-            req.extensions_mut().insert(Client { id });
+            req.extensions_mut().insert(Client {
+              id,
+              user_id: Some(0),
+            });
             return Ok(next.run(req).await);
           }
           _ => {}
@@ -123,11 +125,16 @@ pub async fn client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, S
   }
 
   let host = xxai::tld(header_get(&req, http::header::HOST).unwrap());
-  if client == 0 {
+  let user_id = if client == 0 {
     client = gid!(client);
-  }
-  dbg!("set cookie", client);
-  req.extensions_mut().insert(Client { id: client });
+    Some(0)
+  } else {
+    None
+  };
+  req.extensions_mut().insert(Client {
+    id: client,
+    user_id,
+  });
 
   let mut r = next.run(req).await;
 
