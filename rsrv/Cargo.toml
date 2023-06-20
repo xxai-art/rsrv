@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 anyhow = { version = "1.0.71", features = ["backtrace"] }
-awp = "0.1.2"
 tracing = "0.1.37"
 axum = "0.6.18"
 tower = { version = "0.4.13", features = ["timeout"] }
@@ -22,6 +21,7 @@ xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
 client = { path = "../client" }
 x0 = { path = "../x0" }
 xxai = { path = "../xxai" }
+awp = { path = "../awp" }
 
 [dependencies.tokio]
 version = "1.28.2"
