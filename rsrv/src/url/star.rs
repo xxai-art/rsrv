@@ -16,6 +16,7 @@ use axum::Extension;
 sync_url_fn!(post(Extension(mut client):Extension<client::Client>) {
     // client(host, &cookies);
     dbg!(client.logined().await?);
+    // dbg!(client.user_id().await?);
     dbg!(client);
     1
 });

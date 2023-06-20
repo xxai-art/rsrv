@@ -1,37 +1,47 @@
 use std::{error::Error, fmt::Display};
 
-use axum::http::StatusCode;
-use axum_derive_error::ErrorResponse;
+use axum::{
+  http::StatusCode,
+  response::{IntoResponse, Response},
+};
+use http_body::combinators::UnsyncBoxBody;
+use thiserror::Error;
 use x0::{fred::interfaces::FunctionInterface, R};
 use xxai::bin_u64;
 
 const R_CLIENT_USER: &[u8] = &[4, 0];
 const ZMAX: &str = "zmax";
 
-#[derive(ErrorResponse, PartialEq, Eq)]
+#[derive(Debug, Error)]
 pub enum AuthErr {
-  #[status(StatusCode::UNPROCESSABLE_ENTITY)]
+  #[error("NoLogin")]
   NoLogin,
+  #[error("{0:?}")]
+  Err(anyhow::Error),
 }
 
-impl Display for AuthErr {
-  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-    write!(f, "")
+impl From<anyhow::Error> for AuthErr {
+  fn from(err: anyhow::Error) -> Self {
+    Self::Err(err)
   }
 }
 
-impl Error for AuthErr {
-  fn source(&self) -> Option<&(dyn Error + 'static)> {
-    None
+impl IntoResponse for AuthErr {
+  fn into_response(self) -> Response<UnsyncBoxBody<axum::body::Bytes, axum::Error>> {
+    match self {
+      AuthErr::NoLogin => (StatusCode::PRECONDITION_FAILED, "NoLogin".to_string()), // 412
+      AuthErr::Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, format!("{e:?}")),     // 500
+    }
+    .into_response()
   }
 }
 
 impl crate::Client {
-  pub async fn logined(&mut self) -> anyhow::Result<u64> {
+  pub async fn logined(&mut self) -> std::result::Result<u64, AuthErr> {
     if let Some(id) = self.user_id().await? {
       return Ok(id);
     }
-    Err(AuthErr::NoLogin.into())
+    Err(AuthErr::NoLogin)
   }
 
   pub async fn user_id(&mut self) -> anyhow::Result<Option<u64>> {
