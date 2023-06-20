@@ -48,8 +48,6 @@ dependencies = [
 [[package]]
 name = "anypack"
 version = "0.1.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9aff48b8d6c99e7292eb3886472f0c60dd4f704379b48f609b30ca114af32fa6"
 dependencies = [
  "axum",
  "paste",

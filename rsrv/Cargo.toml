@@ -13,7 +13,6 @@ const-str = "0.5.5"
 futures-util = "0.3.28"
 tower-http = { version = "0.4.0", features = ["cors", "tokio"] }
 ctor = "0.2.2"
-anypack = { version = "0.1.10" }
 trt = "0.1.1"
 xxpg = { version = "0.1.11" }
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
@@ -22,6 +21,7 @@ client = { path = "../client" }
 x0 = { path = "../x0" }
 xxai = { path = "../xxai" }
 awp = { path = "../awp" }
+anypack = { path = "../anypack" }
 
 [dependencies.tokio]
 version = "1.28.2"
