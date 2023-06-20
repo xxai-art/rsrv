@@ -1,8 +1,5 @@
 use awp::Error;
-use axum::{
-  http::StatusCode,
-  response::{IntoResponse, Response},
-};
+use axum::{http::StatusCode, response::IntoResponse};
 use x0::{fred::interfaces::FunctionInterface, R};
 use xxai::bin_u64;
 

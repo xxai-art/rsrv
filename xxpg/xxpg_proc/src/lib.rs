@@ -42,17 +42,16 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
   let mut r = String::new();
   let mut f = String::new();
 
-  for s in input.to_string().split(";") {
-    if let Some(pos) = s.find(":") {
+  for s in input.to_string().split(';') {
+    if let Some(pos) = s.find(':') {
       let var = &s[..pos].trim();
       let sql = &s[pos + 1..]
         .trim()
         .replace(" :: ", "::")
         .replace(", ", ",")
         .replace("\r\n", " ")
-        .replace("\n", " ")
-        .replace("\r", " ");
-      if r.len() > 0 {
+        .replace(['\n', '\r'], " ");
+      if !r.is_empty() {
         r.push(',');
       }
 
@@ -72,7 +71,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
         if !result.is_empty() {
           result.push(',');
         }
-        let vec = col_type.starts_with("_");
+        let vec = col_type.starts_with('_');
         let mut t = String::new();
         if vec {
           col_type = &col_type[1..];
@@ -89,7 +88,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
           _ => col_type,
         });
         if vec {
-          t.push_str(">")
+          t.push('>')
         }
         if pos > 0 {
           row_get.push_str(",\n");
@@ -147,7 +146,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
       f += func;
     }
   }
-  let s = if f.len() > 0 {
+  let s = if !f.is_empty() {
     format!("xxpg::sql!({r});\n{f}")
   } else {
     "".to_string()
