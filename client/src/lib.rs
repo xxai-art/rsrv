@@ -25,9 +25,9 @@ const MAX_INTERVAL: u64 = 41;
 const TOKEN_LEN: usize = 8;
 
 /*
-  cookie 中的 day 每10天为一个周期，超过41个周期没访问就认为无效, BASE是为了防止数字过大
-  https://chromestatus.com/feature/4887741241229312
-  When cookies are set with an explicit Expires/Max-Age attribute the value will now be capped to no more than 400 day10s
+   cookie 中的 day 每10天为一个周期，超过41个周期没访问就认为无效, BASE是为了防止数字过大
+   https://chromestatus.com/feature/4887741241229312
+   When cookies are set with an explicit Expires/Max-Age attribute the value will now be capped to no more than 400 day10s
 
 */
 const BASE: u64 = 4096;
@@ -103,7 +103,13 @@ fn header_get<B>(req: &Request<B>, key: impl AsRef<str>) -> Option<&str> {
     .and_then(|header| header.to_str().ok())
 }
 
-pub async fn client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
+pub async fn client<B>(req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
+  let r = _client(req, next).await;
+  dbg!(&r);
+  r
+}
+
+pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
   let mut client = 0;
 
   if let Some(cookie) = header_get(&req, http::header::COOKIE) {
