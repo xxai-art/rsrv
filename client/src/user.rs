@@ -1,5 +1,3 @@
-use std::{error::Error, fmt::Display};
-
 use axum::{
   http::StatusCode,
   response::{IntoResponse, Response},
@@ -50,11 +48,7 @@ impl crate::Client {
         let key = [R_CLIENT_USER, &xxai::u64_bin(self.id)].concat();
         // let id: Option<u64> = R.fcall_ro(ZMAX, vec![&key[..]], vec![0]).await?;
         let id: Option<Vec<u8>> = R.fcall_ro(ZMAX, vec![&key[..]], vec![0]).await.unwrap();
-        let id = if let Some(id) = id {
-          Some(bin_u64(id))
-        } else {
-          None
-        };
+        let id = id.map(bin_u64);
         self._user_id = id;
         id
       } else {
