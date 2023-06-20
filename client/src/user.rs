@@ -29,7 +29,7 @@ impl IntoResponse for AuthErr {
     let msg = format!("{self:?}");
     match self {
       AuthErr::NeedLogin => (StatusCode::PRECONDITION_FAILED, msg), // 412
-      AuthErr::Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, msg),  // 500
+      AuthErr::Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, msg),  // 500
     }
     .into_response()
   }
