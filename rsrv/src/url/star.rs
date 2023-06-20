@@ -18,5 +18,7 @@ sync_url_fn!(post(Extension(mut client):Extension<client::Client>) {
     dbg!(client.logined().await?);
     // dbg!(client.user_id().await?);
     dbg!(client);
+    //输出0-1
+    
     1
 });

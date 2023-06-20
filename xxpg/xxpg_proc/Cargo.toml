@@ -1,0 +1,22 @@
+[package]
+name = "xxpg_proc"
+version = "0.1.4"
+edition = "2021"
+license = "SSPL-1.0"
+homepage = "https://github.com/xxai-art/xxpg"
+repository = "https://github.com/xxai-art/xxpg.git"
+description = "easy use prepared sql for postgresql"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+proc-macro = true
+path = "src/lib.rs"
+
+[dependencies]
+async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
+lazy_static = "1.4.0"
+proc-macro2 = "1.0.60"
+regex = "1.8.4"
+tokio = { version = "1.28.2", features = ["rt-multi-thread"] }
+tokio-postgres = "0.7.8"
+trt = "0.1.1"
