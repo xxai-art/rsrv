@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "rsrv",
+  "trt",
   "client",
   "x0",
   "xxai",
