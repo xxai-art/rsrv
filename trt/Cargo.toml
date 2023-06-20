@@ -1,0 +1,13 @@
+[package]
+name = "trt"
+version = "0.1.1"
+edition = "2021"
+license = "SSPL-1.0"
+homepage = "https://github.com/xxai-art/trt"
+repository = "https://github.com/xxai-art/trt.git"
+description = "tokio global runtime"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+lazy_static = "1.4.0"
+tokio = { version = "1.28.2", features = ["rt-multi-thread"] }
