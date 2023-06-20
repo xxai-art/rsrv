@@ -15,3 +15,4 @@ xxai = { path = "../xxai" }
 http = "0.2.9"
 gid = { path = "../gid" }
 cookie = "0.17.0"
+anyhow = "1.0.71"
