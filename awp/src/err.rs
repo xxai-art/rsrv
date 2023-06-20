@@ -7,11 +7,11 @@ use tracing::error;
 #[derive(Debug)]
 pub enum Error {
   anyhow(anyhow::Error),
-  response((StatusCode, String)),
+  response(Response),
 }
 
 #[derive(Debug)]
-pub struct Err(Error);
+pub struct Err(pub Error);
 
 pub type Result<T, E = Err> = anyhow::Result<T, E>;
 
@@ -24,7 +24,7 @@ impl IntoResponse for Err {
         error!("{}\n{}", err, err.backtrace());
         (StatusCode::INTERNAL_SERVER_ERROR, format!("ERR: {}", err)).into_response()
       }
-      Error::response(r) => r.into_response(),
+      Error::response(r) => r,
     }
   }
 }

@@ -276,13 +276,12 @@ name = "client"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "awp",
  "axum",
  "cookie",
  "ctor",
  "gid",
  "http",
- "http-body",
- "thiserror",
  "trt",
  "x0",
  "xkv 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",

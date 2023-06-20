@@ -16,5 +16,4 @@ http = "0.2.9"
 gid = { path = "../gid" }
 cookie = "0.17.0"
 anyhow = "1.0.71"
-thiserror = "1.0.40"
-http-body = "0.4.5"
+awp = { path = "../awp" }
