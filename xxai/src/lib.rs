@@ -41,3 +41,13 @@ pub fn unzip_u64(bin: impl AsRef<[u8]>) -> Vec<u64> {
 pub fn random_bytes(n: usize) -> Vec<u8> {
   (0..n).map(|_| rand::random::<u8>()).collect::<Vec<u8>>()
 }
+
+pub fn u64_bin(n: u64) -> std::result::Result<Vec<u8>, std::io::Error> {
+  use ordered_varint::Variable;
+  n.to_variable_vec()
+}
+
+pub fn bin_u64(bin: impl AsRef<[u8]>) -> Result<u64, std::io::Error> {
+  use ordered_varint::Variable;
+  u64::decode_variable(bin.as_ref())
+}
