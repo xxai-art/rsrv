@@ -16,3 +16,6 @@ http = "0.2.9"
 gid = { path = "../gid" }
 cookie = "0.17.0"
 anyhow = "1.0.71"
+axum-derive-error = "0.1.0"
+tracing = "0.1.37"
+serde_json = "1.0.97"
