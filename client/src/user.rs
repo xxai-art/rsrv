@@ -12,8 +12,8 @@ const ZMAX: &str = "zmax";
 
 #[derive(Debug, Error)]
 pub enum AuthErr {
-  #[error("NoLogin")]
-  NoLogin,
+  #[error("Need Login")]
+  NeedLogin,
   #[error("{0:?}")]
   Err(anyhow::Error),
 }
@@ -26,9 +26,10 @@ impl From<anyhow::Error> for AuthErr {
 
 impl IntoResponse for AuthErr {
   fn into_response(self) -> Response<UnsyncBoxBody<axum::body::Bytes, axum::Error>> {
+    let msg = format!("{self:?}");
     match self {
-      AuthErr::NoLogin => (StatusCode::PRECONDITION_FAILED, "NoLogin".to_string()), // 412
-      AuthErr::Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, format!("{e:?}")),     // 500
+      AuthErr::NeedLogin => (StatusCode::PRECONDITION_FAILED, msg), // 412
+      AuthErr::Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, msg),  // 500
     }
     .into_response()
   }
@@ -39,7 +40,7 @@ impl crate::Client {
     if let Some(id) = self.user_id().await? {
       return Ok(id);
     }
-    Err(AuthErr::NoLogin)
+    Err(AuthErr::NeedLogin)
   }
 
   pub async fn user_id(&mut self) -> anyhow::Result<Option<u64>> {
