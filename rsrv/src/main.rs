@@ -4,7 +4,7 @@
 #![feature(let_chains)]
 
 use axum::{middleware, routing::post, Router};
-use client_id::client_id;
+use client::client;
 use trt::TRT;
 
 mod url;
@@ -53,7 +53,7 @@ fn main() -> anyhow::Result<()> {
   };
 
   TRT.block_on(async move {
-    awp::srv(router.layer(middleware::from_fn(client_id)), port).await;
+    awp::srv(router.layer(middleware::from_fn(client)), port).await;
   });
   Ok(())
 }

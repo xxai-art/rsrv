@@ -49,7 +49,7 @@ pub enum ClientState {
   None,
 }
 
-fn client_id_by_cookie(token: &str) -> ClientState {
+fn client_by_cookie(token: &str) -> ClientState {
   if let Ok(c) = xxai::cookie_decode(token) {
     if c.len() >= TOKEN_LEN {
       let client = &c[TOKEN_LEN..];
@@ -58,7 +58,7 @@ fn client_id_by_cookie(token: &str) -> ClientState {
       {
         let li = unzip_u64(client);
         if li.len() == 2 {
-          let [day, client_id]: [u64; 2] = li.try_into().unwrap();
+          let [day, client]: [u64; 2] = li.try_into().unwrap();
 
           /*
           每10天为一个周期，超过40个周期没访问就认为无效, BASE是为了防止数字过大
@@ -71,14 +71,14 @@ fn client_id_by_cookie(token: &str) -> ClientState {
             // 因为都是无符号类型，要避免减法出现负数
             if day > now {
               if day < BASE && (now + BASE - day) < MAX_INTERVAL {
-                return ClientState::Renew(client_id);
+                return ClientState::Renew(client);
               }
             } else if (now - day) < MAX_INTERVAL {
               // renew
-              return ClientState::Renew(client_id);
+              return ClientState::Renew(client);
             }
           } else {
-            return ClientState::Ok(client_id);
+            return ClientState::Ok(client);
           }
         }
       }
@@ -99,16 +99,16 @@ fn header_get<B>(req: &Request<B>, key: impl AsRef<str>) -> Option<&str> {
     .and_then(|header| header.to_str().ok())
 }
 
-pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
-  let mut client_id = 0;
+pub async fn client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
+  let mut client = 0;
 
   if let Some(cookie) = header_get(&req, http::header::COOKIE) {
     for cookie in Cookie::split_parse(cookie).flatten() {
       if cookie.name() == "I" {
-        match client_id_by_cookie(cookie.value()) {
+        match client_by_cookie(cookie.value()) {
           ClientState::Renew(id) => {
             dbg!("renew", id);
-            client_id = id;
+            client = id;
           }
           ClientState::Ok(id) => {
             dbg!("ok", id);
@@ -123,15 +123,15 @@ pub async fn client_id<B>(mut req: Request<B>, next: Next<B>) -> Result<Response
   }
 
   let host = xxai::tld(header_get(&req, http::header::HOST).unwrap());
-  if client_id == 0 {
-    client_id = gid!(client);
+  if client == 0 {
+    client = gid!(client);
   }
-  dbg!("set cookie", client_id);
-  req.extensions_mut().insert(Client { id: client_id });
+  dbg!("set cookie", client);
+  req.extensions_mut().insert(Client { id: client });
 
   let mut r = next.run(req).await;
 
-  let t = &xxai::zip_u64([day(), client_id])[..];
+  let t = &xxai::zip_u64([day(), client])[..];
   let cookie =
     xxai::cookie_encode([&xxh3_64(&[unsafe { &SK }, t].concat()).to_le_bytes()[..], t].concat());
   r.headers_mut().insert(
