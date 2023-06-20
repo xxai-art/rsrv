@@ -22,7 +22,7 @@ impl<E> From<E> for Err
 where
   E: Into<anyhow::Error>,
 {
-  fn from(err: E) -> Self {
+  default fn from(err: E) -> Self {
     Self(err.into())
   }
 }
