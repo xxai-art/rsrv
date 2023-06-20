@@ -20,12 +20,18 @@ pub struct Client {
 static mut SK: [u8; 32] = [0; 32];
 
 const MAX_INTERVAL: u64 = 41;
-const BASE: u64 = 4096;
-
 const TOKEN_LEN: usize = 8;
 
-fn day() -> u64 {
-  (xxai::now() / 864000) % BASE
+/*
+  cookie 中的 day 每10天为一个周期，超过41个周期没访问就认为无效, BASE是为了防止数字过大
+  https://chromestatus.com/feature/4887741241229312
+  When cookies are set with an explicit Expires/Max-Age attribute the value will now be capped to no more than 400 day10s
+
+*/
+const BASE: u64 = 4096;
+
+fn day10() -> u64 {
+  (xxai::now() / (86400 * 10)) % BASE
 }
 
 #[ctor::ctor]
@@ -65,22 +71,16 @@ fn client_by_cookie(token: &str) -> ClientState {
       {
         let li = unzip_u64(client);
         if li.len() == 2 {
-          let [day, client]: [u64; 2] = li.try_into().unwrap();
+          let [pre_day10, client]: [u64; 2] = li.try_into().unwrap();
 
-          /*
-          每10天为一个周期，超过40个周期没访问就认为无效, BASE是为了防止数字过大
-          https://chromestatus.com/feature/4887741241229312
-          When cookies are set with an explicit Expires/Max-Age attribute the value will now be capped to no more than 400 days
-          */
-
-          let now = (xxai::now() / 864000) % BASE;
-          if day != now {
+          let now = day10();
+          if pre_day10 != now {
             // 因为都是无符号类型，要避免减法出现负数
-            if day > now {
-              if day < BASE && (now + BASE - day) < MAX_INTERVAL {
+            if pre_day10 > now {
+              if pre_day10 < BASE && (now + BASE - pre_day10) < MAX_INTERVAL {
                 return ClientState::Renew(client);
               }
-            } else if (now - day) < MAX_INTERVAL {
+            } else if (now - pre_day10) < MAX_INTERVAL {
               // renew
               return ClientState::Renew(client);
             }
@@ -139,7 +139,7 @@ pub async fn client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, S
 
   let mut r = next.run(req).await;
 
-  let t = &xxai::zip_u64([day(), client])[..];
+  let t = &xxai::zip_u64([day10(), client])[..];
   let cookie =
     xxai::cookie_encode([&xxh3_64(&[unsafe { &SK }, t].concat()).to_le_bytes()[..], t].concat());
   r.headers_mut().insert(
