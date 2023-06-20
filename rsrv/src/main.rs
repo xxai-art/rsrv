@@ -17,6 +17,9 @@ fn main() -> anyhow::Result<()> {
             (=> $func:ident) => {
                 post!("", $func)
             };
+            ($($url:ident);+) => {
+                post!($($url=>$url);+)
+            };
             ($($url:stmt => $func:ident);+) => {
                 $(
                     post!(
@@ -42,7 +45,8 @@ fn main() -> anyhow::Result<()> {
         }
 
   // get!( => stat);
-  post!(li => li;star=>star);
+  post!(li;fav);
+  // post!(li => li;fav=>fav);
 
   // router = router.route("/sampler", get(crate::url::sampler::get));
 
