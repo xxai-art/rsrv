@@ -1,3 +1,5 @@
+#![feature(const_trait_impl)]
+
 pub mod user;
 use axum::{
   http::{Request, StatusCode},
