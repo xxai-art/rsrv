@@ -6,8 +6,8 @@ use tracing::error;
 
 #[derive(Debug)]
 pub enum Error {
-  anyhow(anyhow::Error),
-  response(Response),
+  Any(anyhow::Error),
+  Response(Response),
 }
 
 #[derive(Debug)]
@@ -20,11 +20,11 @@ impl IntoResponse for Err {
   fn into_response(self) -> Response {
     let err = self.0;
     match err {
-      Error::anyhow(err) => {
+      Error::Any(err) => {
         error!("{}\n{}", err, err.backtrace());
         (StatusCode::INTERNAL_SERVER_ERROR, format!("ERR: {}", err)).into_response()
       }
-      Error::response(r) => r,
+      Error::Response(r) => r,
     }
   }
 }
@@ -35,6 +35,6 @@ where
   E: Into<anyhow::Error>,
 {
   default fn from(err: E) -> Self {
-    Self(Error::anyhow(err.into()))
+    Self(Error::Any(err.into()))
   }
 }

@@ -11,7 +11,7 @@ impl crate::Client {
     if let Some(id) = self.user_id().await? {
       return Ok(id);
     }
-    Err(awp::Err(Error::response(
+    Err(awp::Err(Error::Response(
       (StatusCode::UNAUTHORIZED, "need login".to_string()).into_response(),
     )))
   }
