@@ -5,15 +5,27 @@ use axum::{
 use tracing::error;
 
 #[derive(Debug)]
-pub struct Err(anyhow::Error);
+pub enum Error {
+  anyhow(anyhow::Error),
+  response((StatusCode, String)),
+}
+
+#[derive(Debug)]
+pub struct Err(Error);
+
 pub type Result<T, E = Err> = anyhow::Result<T, E>;
 
 // Tell axum how to convert `Err` into a response.
 impl IntoResponse for Err {
   fn into_response(self) -> Response {
     let err = self.0;
-    error!("{}\n{}", err, err.backtrace());
-    (StatusCode::INTERNAL_SERVER_ERROR, format!("ERR: {}", err)).into_response()
+    match err {
+      Error::anyhow(err) => {
+        error!("{}\n{}", err, err.backtrace());
+        (StatusCode::INTERNAL_SERVER_ERROR, format!("ERR: {}", err)).into_response()
+      }
+      Error::response(r) => r.into_response(),
+    }
   }
 }
 
@@ -23,6 +35,6 @@ where
   E: Into<anyhow::Error>,
 {
   default fn from(err: E) -> Self {
-    Self(err.into())
+    Self(Error::anyhow(err.into()))
   }
 }
