@@ -1,3 +1,4 @@
+pub mod user;
 use axum::{
   http::{Request, StatusCode},
   middleware::Next,
@@ -13,7 +14,7 @@ use xxhash_rust::xxh3::xxh3_64;
 #[derive(Debug, Clone, Copy)]
 pub struct Client {
   pub id: u64,
-  pub user_id: Option<u64>,
+  _user_id: Option<u64>,
 }
 
 static mut SK: [u8; 32] = [0; 32];
@@ -113,7 +114,7 @@ pub async fn client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, S
           ClientState::Ok(id) => {
             req.extensions_mut().insert(Client {
               id,
-              user_id: Some(0),
+              _user_id: Some(0),
             });
             return Ok(next.run(req).await);
           }
@@ -125,7 +126,7 @@ pub async fn client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, S
   }
 
   let host = xxai::tld(header_get(&req, http::header::HOST).unwrap());
-  let user_id = if client == 0 {
+  let _user_id = if client == 0 {
     client = gid!(client);
     Some(0)
   } else {
@@ -133,7 +134,7 @@ pub async fn client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, S
   };
   req.extensions_mut().insert(Client {
     id: client,
-    user_id,
+    _user_id,
   });
 
   let mut r = next.run(req).await;
