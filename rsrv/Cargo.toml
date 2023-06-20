@@ -11,9 +11,9 @@ axum = "0.6.18"
 tower = { version = "0.4.13", features = ["timeout"] }
 const-str = "0.5.5"
 futures-util = "0.3.28"
-tower-http = { version = "0.4.0", features = ["cors", "tokio"] }
+tower-http = { version = "0.4.1", features = ["cors", "tokio"] }
 ctor = "0.2.2"
-trt = "0.1.1"
+trt = "0.1.4"
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
 xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
 client = { path = "../client" }
