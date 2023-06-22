@@ -1,11 +1,11 @@
 #![feature(min_specialization)]
 
+pub use axum::http::HeaderValue;
 mod tuple;
-
 use std::ops::Deref;
 
 use axum::response::{IntoResponse, Response};
-use msgpacker::{pack_array, Packable};
+pub use msgpacker::{pack_array, Packable};
 use paste::paste;
 
 macro_rules! any_from {
@@ -139,12 +139,18 @@ impl Default for VecAny {
   }
 }
 
+pub static MSGPACK: HeaderValue = HeaderValue::from_static("msg/pack");
+
 #[macro_export]
 macro_rules! url_fn {
     ($name:ident ($($tt:tt)*) $body:expr) => {
         pub async fn $name($($tt)*) -> awp::Result<axum::response::Response> {
+            use axum::response::Response;
+
             let r:$crate::Any = $body.await?.into();
-            Ok(r.into())
+            let mut r:Response = r.into();
+            r.headers_mut().insert(axum::http::header::CONTENT_TYPE, $crate::MSGPACK.clone());
+            Ok(r)
         }
     };
 }
