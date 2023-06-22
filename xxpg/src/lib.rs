@@ -55,9 +55,13 @@ pub async fn conn() -> Client {
   let (client, connection) = tokio_postgres::connect(&format!("postgres://{}", pg_uri), NoTls)
     .await
     .unwrap();
+
   tokio::spawn(async move {
     if let Err(e) = connection.await {
-      tracing::error!("postgres connection error: {e}");
+      tracing::error!("❌ postgres : {e}");
+      if e.is_closed() {
+        std::process::exit(1)
+      }
     }
   });
 
