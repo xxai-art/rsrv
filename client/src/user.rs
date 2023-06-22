@@ -6,7 +6,7 @@ use xxai::bin_u64;
 const R_CLIENT_USER: &[u8] = &[4, 0];
 const ZMAX: &str = "zmax";
 
-impl crate::Client {
+impl crate::_Client {
   pub async fn logined(&mut self) -> std::result::Result<u64, awp::Err> {
     if let Some(id) = self.user_id().await? {
       return Ok(id);

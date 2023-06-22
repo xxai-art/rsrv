@@ -5,6 +5,7 @@ use axum::{
   http::{Request, StatusCode},
   middleware::Next,
   response::Response,
+  Extension,
 };
 use cookie::Cookie;
 use gid::gid;
@@ -14,10 +15,12 @@ use xxai::unzip_u64;
 use xxhash_rust::xxh3::xxh3_64;
 
 #[derive(Debug, Clone, Copy)]
-pub struct Client {
+pub struct _Client {
   pub id: u64,
   _user_id: Option<u64>,
 }
+
+pub type Client = Extension<_Client>;
 
 static mut SK: [u8; 32] = [0; 32];
 
@@ -120,7 +123,7 @@ pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, 
             client = id;
           }
           ClientState::Ok(id) => {
-            req.extensions_mut().insert(Client {
+            req.extensions_mut().insert(_Client {
               id,
               _user_id: Some(0),
             });
@@ -140,7 +143,7 @@ pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, 
   } else {
     None
   };
-  req.extensions_mut().insert(Client {
+  req.extensions_mut().insert(_Client {
     id: client,
     _user_id,
   });
