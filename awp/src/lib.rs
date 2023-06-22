@@ -15,11 +15,3 @@ pub type Response = Result<axum::response::Response>;
 
 use axum::Extension;
 pub type E<T> = Extension<T>;
-
-use std::convert::Infallible;
-
-use axum::{
-  body::HttpBody,
-  handler::Handler,
-  routing::{post, MethodRouter},
-};
