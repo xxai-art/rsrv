@@ -107,12 +107,6 @@ pub fn response(r: impl IntoResponse) -> Response {
 
 pub trait Pack {
   fn pack(self) -> Vec<u8>;
-  fn into_response(self) -> Response
-  where
-    Self: Sized,
-  {
-    response(self.pack())
-  }
 }
 
 impl<A: IntoIterator<IntoIter = I>, I: Iterator<Item = V> + ExactSizeIterator, V: Packable> Pack
@@ -138,7 +132,7 @@ pub static MSGPACK: HeaderValue = HeaderValue::from_static("m");
 
 impl From<VecAny> for Response {
   fn from(v: VecAny) -> Self {
-    v.0.into_response()
+    v.0.pack().into_response()
   }
 }
 
