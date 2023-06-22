@@ -66,6 +66,12 @@ impl From<&str> for Any {
   }
 }
 
+impl IntoResponse for Any {
+  fn into_response(self) -> axum::http::Response<axum::body::BoxBody> {
+    self.into()
+  }
+}
+
 impl From<Any> for Response {
   fn from(v: Any) -> Self {
     let mut r = Vec::new();

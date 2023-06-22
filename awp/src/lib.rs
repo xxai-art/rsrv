@@ -23,13 +23,3 @@ use axum::{
   handler::Handler,
   routing::{post, MethodRouter},
 };
-
-pub fn pack<H, T, S, B>(handler: H) -> MethodRouter<S, B, Infallible>
-where
-  H: Handler<T, S, B>,
-  B: HttpBody + Send + 'static,
-  T: 'static,
-  S: Clone + Send + Sync + 'static,
-{
-  post(handler)
-}
