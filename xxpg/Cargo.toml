@@ -1,6 +1,6 @@
 [package]
 name = "xxpg"
-version = "0.1.14"
+version = "0.1.15"
 edition = "2021"
 license = "SSPL-1.0"
 homepage = "https://github.com/xxai-art/rsrv"
