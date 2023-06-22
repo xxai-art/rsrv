@@ -1,5 +1,5 @@
-use anypack::sync_url_fn;
-use axum::Extension;
+use anypack::pack;
+use axum::{response::Response, Extension};
 // use axum::extract::Host;
 // use client::client;
 // use tower_cookies::Cookies;
@@ -13,12 +13,14 @@ use axum::Extension;
 //     SELECT task.id,hash::bytea,w,h,star,laugh FROM bot.task,bot.civitai_img WHERE hash IS NOT NULL AND bot.task.rid=bot.civitai_img.id AND task.adult=0 AND cid=1 ORDER BY star DESC LIMIT 600
 // );
 
-sync_url_fn!(post(Extension(mut client):Extension<client::Client>) {
-    // client(host, &cookies);
-    dbg!(client.logined().await?);
-    // dbg!(client.user_id().await?);
-    dbg!(client);
-    //输出0-1
+pub async fn post(Extension(mut client): Extension<client::Client>) -> awp::Result<Response> {
+  // sync_url_fn!(post(Extension(mut client):Extension<client::Client>) {
+  // client(host, &cookies);
+  let user_id = client.logined().await?;
+  dbg!(user_id);
+  // dbg!(client.user_id().await?);
+  // dbg!(client);
+  //输出0-1
 
-    1
-});
+  pack(1)
+}

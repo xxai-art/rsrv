@@ -148,22 +148,6 @@ impl Default for VecAny {
   }
 }
 
-#[macro_export]
-macro_rules! url_fn {
-    ($name:ident ($($tt:tt)*) $body:expr) => {
-        pub async fn $name($($tt)*) -> awp::Result<axum::response::Response> {
-            let r:$crate::Any = $body.await?.into();
-            Ok(r.into())
-        }
-    };
-}
-
-#[macro_export]
-macro_rules! sync_url_fn {
-    ($name:ident ($($tt:tt)*) $body:expr) => {
-        pub async fn $name($($tt)*) -> awp::Result<axum::response::Response> {
-            let r:$crate::Any = $body.into();
-            Ok(r.into())
-        }
-    };
+pub fn pack<T: From<Any>>(any: impl Into<Any>) -> awp::Result<T> {
+  Ok(any.into().into())
 }

@@ -49,6 +49,7 @@ dependencies = [
 name = "anypack"
 version = "0.1.10"
 dependencies = [
+ "awp",
  "axum",
  "paste",
  "xxai-msgpacker",
