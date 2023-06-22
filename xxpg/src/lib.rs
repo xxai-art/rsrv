@@ -7,12 +7,15 @@ pub use tokio_postgres::{self, types::ToSql, Client, Error, NoTls, Row, Statemen
 pub use trt::TRT;
 pub use xxpg_proc::{Q, Q1};
 
-pub struct LazyStatement(pub async_lazy::Lazy<tokio_postgres::Statement>);
+pub struct LazyStatement {
+    pub statement: async_lazy::Lazy<tokio_postgres::Statement>,
+    pub sql: &'static str,
+}
 
 impl ToStatement for LazyStatement {
-  fn __convert(&self) -> ToStatementType<'_> {
-    ToStatementType::Statement(self.0.get().unwrap())
-  }
+    fn __convert(&self) -> ToStatementType<'_> {
+        ToStatementType::Statement(self.statement.get().unwrap())
+    }
 }
 
 #[macro_export]
@@ -21,7 +24,10 @@ macro_rules! sql {
         $(
             $crate::paste!{
                 pub static [<__ $var:upper >]: $crate::LazyStatement  =
-                    $crate::LazyStatement($crate::async_lazy::Lazy::const_new(|| Box::pin(async move { $crate::PG.force().await.prepare($sql).await.unwrap() })));
+                    $crate::LazyStatement{
+                        statement:$crate::async_lazy::Lazy::const_new(|| Box::pin(async move { $crate::PG.force().await.prepare($sql).await.unwrap() })),
+                        sql:$sql
+                    };
                 pub static [<$var:upper>] : &$crate::LazyStatement  = &[<__ $var:upper>];
             }
         )+
@@ -31,7 +37,7 @@ macro_rules! sql {
                 fn pg_statement_init() {
                     $crate::TRT.block_on(async move {
                         $crate::paste!{
-                            $(super::[<$var:upper>].0.force().await;)+
+                            $(super::[<$var:upper>].statement.force().await;)+
                         }
                     });
                 }
@@ -43,42 +49,49 @@ macro_rules! sql {
 // else
 //   r = await LI"SELECT id,name FROM img.sampler"
 
-pub static PG: Lazy<Client> = Lazy::const_new(|| {
-  let pg_uri = std::env::var("PG_URI").unwrap();
-  Box::pin(async move {
+pub async fn conn() -> Client {
+    let pg_uri = std::env::var("PG_URI").unwrap();
     let (client, connection) = tokio_postgres::connect(&format!("postgres://{}", pg_uri), NoTls)
-      .await
-      .unwrap();
+        .await
+        .unwrap();
     tokio::spawn(async move {
-      if let Err(e) = connection.await {
-        tracing::error!("postgres connection error: {e}");
-      }
+        if let Err(e) = connection.await {
+            tracing::error!("postgres connection error: {e}");
+        }
     });
 
     client
-  })
-});
+}
+
+pub static PG: Lazy<Client> = Lazy::const_new(|| Box::pin(async move { conn().await }));
 
 #[ctor]
 fn init() {
-  TRT.block_on(async move {
-    use std::future::IntoFuture;
-    PG.into_future().await;
-  });
+    TRT.block_on(async move {
+        use std::future::IntoFuture;
+        PG.into_future().await;
+    });
 }
 
-#[allow(non_snake_case)]
-pub async fn Q<T>(statement: &T, params: &[&(dyn ToSql + Sync)]) -> Result<Vec<Row>, Error>
-where
-  T: ?Sized + ToStatement,
-{
-  PG.get().unwrap().query(statement, params).await
+macro_rules! q {
+    ($name:ident,$func:ident,$rt:ty) => {
+        #[allow(non_snake_case)]
+        pub async fn $name<T>(statement: &T, params: &[&(dyn ToSql + Sync)]) -> Result<$rt, Error>
+        where
+            T: ?Sized + ToStatement,
+        {
+            match PG.get().unwrap().$func(statement, params).await {
+                Ok(r) => Ok(r),
+                Err(err) => {
+                    if err.is_closed() {
+                        std::process::exit(1);
+                    }
+                    Err(err)
+                }
+            }
+        }
+    };
 }
 
-#[allow(non_snake_case)]
-pub async fn Q1<T>(statement: &T, params: &[&(dyn ToSql + Sync)]) -> Result<Row, Error>
-where
-  T: ?Sized + ToStatement,
-{
-  PG.get().unwrap().query_one(statement, params).await
-}
+q!(Q, query, Vec<Row>);
+q!(Q1, query_one, Row);
