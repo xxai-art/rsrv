@@ -4,6 +4,7 @@ pub use ctor::ctor;
 pub use paste::paste;
 use tokio_postgres::ToStatementType;
 pub use tokio_postgres::{self, types::ToSql, Client, Error, NoTls, Row, Statement, ToStatement};
+use tracing::error;
 pub use trt::TRT;
 pub use xxpg_proc::{Q, Q1};
 
@@ -84,6 +85,7 @@ macro_rules! q {
         Ok(r) => Ok(r),
         Err(err) => {
           if err.is_closed() {
+            error!("{}", err);
             std::process::exit(1);
           }
           Err(err)
