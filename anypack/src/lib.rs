@@ -51,27 +51,27 @@ macro_rules! any {
 }
 
 impl<T: Into<Any>> From<Vec<T>> for Any {
-  default fn from(li: Vec<T>) -> Self {
-    let mut r = VecAny::new();
-    for i in li {
-      r.push(i.into());
+    default fn from(li: Vec<T>) -> Self {
+        let mut r = VecAny::new();
+        for i in li {
+            r.push(i.into());
+        }
+        r.into()
     }
-    r.into()
-  }
 }
 
 impl From<&str> for Any {
-  fn from(v: &str) -> Self {
-    v.to_string().into()
-  }
+    fn from(v: &str) -> Self {
+        v.to_string().into()
+    }
 }
 
 impl From<Any> for Response {
-  fn from(v: Any) -> Self {
-    let mut r = Vec::new();
-    v.pack(&mut r);
-    IntoResponse::into_response(r)
-  }
+    fn from(v: Any) -> Self {
+        let mut r = Vec::new();
+        v.pack(&mut r);
+        response(r)
+    }
 }
 
 pub type VecU8 = Vec<u8>;
@@ -80,77 +80,80 @@ pub type VecU8 = Vec<u8>;
 pub struct VecAny(Vec<Any>);
 
 impl Packable for VecAny {
-  fn pack<T>(&self, buf: &mut T) -> usize
-  where
-    T: Extend<u8>,
-  {
-    pack_array(buf, self.0.clone())
-  }
+    fn pack<T>(&self, buf: &mut T) -> usize
+    where
+        T: Extend<u8>,
+    {
+        pack_array(buf, self.0.clone())
+    }
 }
 
 any!(u8, u16, u32, u64, i8, i16, i32, i64, f32, f64, String, VecU8, VecAny);
 
 impl Deref for VecAny {
-  type Target = Vec<Any>;
+    type Target = Vec<Any>;
 
-  fn deref(&self) -> &Self::Target {
-    &self.0
-  }
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+pub fn response(r: impl IntoResponse) -> Response {
+    let mut r = IntoResponse::into_response(r);
+    r.headers_mut()
+        .insert(axum::http::header::CONTENT_TYPE, MSGPACK.clone());
+    r
 }
 
 pub trait Pack {
-  fn pack(self) -> Vec<u8>;
-  fn into_response(self) -> Response
-  where
-    Self: Sized,
-  {
-    IntoResponse::into_response(self.pack())
-  }
+    fn pack(self) -> Vec<u8>;
+    fn into_response(self) -> Response
+    where
+        Self: Sized,
+    {
+        response(self.pack())
+    }
 }
 
 impl<A: IntoIterator<IntoIter = I>, I: Iterator<Item = V> + ExactSizeIterator, V: Packable> Pack
-  for A
+    for A
 {
-  fn pack(self) -> Vec<u8> {
-    let mut buf = Vec::new();
-    pack_array(&mut buf, self);
-    buf
-  }
+    fn pack(self) -> Vec<u8> {
+        let mut buf = Vec::new();
+        pack_array(&mut buf, self);
+        buf
+    }
 }
 
 impl VecAny {
-  pub fn push(&mut self, val: impl Into<Any>) {
-    self.0.push(val.into())
-  }
-  pub fn new() -> Self {
-    Self(Vec::new())
-  }
+    pub fn push(&mut self, val: impl Into<Any>) {
+        self.0.push(val.into())
+    }
+    pub fn new() -> Self {
+        Self(Vec::new())
+    }
 }
 
+pub static MSGPACK: HeaderValue = HeaderValue::from_static("m");
+
 impl From<VecAny> for Response {
-  fn from(v: VecAny) -> Self {
-    v.0.into_response()
-  }
+    fn from(v: VecAny) -> Self {
+        v.0.into_response()
+    }
 }
 
 impl Default for VecAny {
-  fn default() -> Self {
-    Self::new()
-  }
+    fn default() -> Self {
+        Self::new()
+    }
 }
-
-pub static MSGPACK: HeaderValue = HeaderValue::from_static("msg/pack");
 
 #[macro_export]
 macro_rules! url_fn {
     ($name:ident ($($tt:tt)*) $body:expr) => {
         pub async fn $name($($tt)*) -> awp::Result<axum::response::Response> {
-            use axum::response::Response;
-
             let r:$crate::Any = $body.await?.into();
-            let mut r:Response = r.into();
-            r.headers_mut().insert(axum::http::header::CONTENT_TYPE, $crate::MSGPACK.clone());
-            Ok(r)
+            Ok(r.into())
         }
     };
 }
