@@ -9,3 +9,4 @@ anyhow = "1.0.71"
 ceresdb-client = { version = "1.0.1", path = "../lib/ceresdb-client-rs" }
 tokio = { version = "1.28.2", features = ["rt-multi-thread"] }
 tracing = "0.1.37"
+loginit = { path = "../loginit" }
