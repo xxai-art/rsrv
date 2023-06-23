@@ -20,8 +20,17 @@ pub struct FnAny<F>(pub F);
 
 pub type Result<T> = crate::Result<T, crate::Err>;
 
-pub fn into_response(result: Result<impl Into<Any>>) -> Response {
-  match result {
+// pub fn into_response(result: Result<impl Into<Any>>) -> Response {
+//   match result {
+//     Ok(r) => r.into().into_response(),
+//     Err(err) => err.into_response(),
+//   }
+// }
+
+pub async fn await_into_response(
+  result: impl Future<Output = Result<impl Into<Any>>> + Send,
+) -> Response {
+  match result.await {
     Ok(r) => r.into().into_response(),
     Err(err) => err.into_response(),
   }
@@ -36,7 +45,7 @@ where
   type Future = Pin<Box<dyn Future<Output = Response> + Send>>;
 
   fn call(self, _req: Request<B>, _state: S) -> Self::Future {
-    Box::pin(async move { into_response(self.0().await) })
+    Box::pin(async move { await_into_response(self.0()).await })
   }
 }
 
@@ -75,7 +84,7 @@ macro_rules! impl_handler {
                                 Err(rejection) => return rejection.into_response(),
                             };
 
-                            into_response(self.0($($ty,)* $last,).await)
+                            await_into_response(self.0($($ty,)* $last,)).await
 
                         })
                     }
