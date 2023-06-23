@@ -63,6 +63,6 @@ impl<'a> Sql<'a> {
   pub async fn exe(&self) -> Result<SqlQueryResponse, Error> {
     let db = &self.db;
     tracing::info!("{}", self.req.sql);
-    Ok(db.client.sql_query(&db.ctx, &self.req).await?)
+    db.client.sql_query(&db.ctx, &self.req).await
   }
 }

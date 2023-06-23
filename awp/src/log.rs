@@ -4,7 +4,6 @@ use axum::http::Request;
 use futures::FutureExt;
 pub use loginit::{init, NoTime};
 use tower::Service;
-use tracing_subscriber::{fmt::format::Writer, layer::SubscriberExt, EnvFilter};
 
 #[derive(Clone)]
 pub struct Log;

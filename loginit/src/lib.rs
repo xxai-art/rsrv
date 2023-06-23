@@ -1,5 +1,3 @@
-use std::fmt::Debug;
-
 use tracing_subscriber::{fmt::format::Writer, layer::SubscriberExt, EnvFilter};
 
 pub struct NoTime;
