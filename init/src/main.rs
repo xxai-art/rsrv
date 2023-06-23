@@ -1,4 +1,4 @@
-use csdb::{conn_by_env, Db, NONE, SQL};
+use csdb::{conn_by_env, Db, SQL};
 use lazy_static::lazy_static;
 
 lazy_static! {
@@ -29,12 +29,12 @@ lazy_static! {
 async fn main() -> anyhow::Result<()> {
   loginit::init();
 
-  let _ = SQL_DROP_FAV.exe(NONE).await;
-  SQL_FAV.exe(NONE).await?;
+  let _ = SQL_DROP_FAV.exe(()).await;
+  SQL_FAV.exe(()).await?;
   SQL_INSERT.exe((1, 2, 3, 4, 5, 6)).await?;
   SQL_INSERT.exe((2, 2, 3, 4, 5, 6)).await?;
 
-  let li = SQL_SELECT.li(NONE).await?;
+  let li = SQL_SELECT.li(()).await?;
   for i in li {
     dbg!(&i);
   }
