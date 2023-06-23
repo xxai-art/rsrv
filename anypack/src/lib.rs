@@ -1,11 +1,13 @@
 #![feature(min_specialization)]
 
+mod fn_any;
 mod tuple;
 
 use std::ops::Deref;
 
 pub use axum::http::HeaderValue;
 use axum::response::{IntoResponse, Response};
+pub use fn_any::FnAny;
 pub use msgpacker::{pack_array, Packable};
 use paste::paste;
 
