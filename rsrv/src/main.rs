@@ -3,10 +3,10 @@
 #![feature(type_alias_impl_trait)]
 #![feature(let_chains)]
 
+use anypack::FnAny;
 use axum::{middleware, routing::post, Router};
 use client::client;
 use trt::TRT;
-
 mod url;
 
 fn main() -> anyhow::Result<()> {
@@ -39,7 +39,7 @@ fn main() -> anyhow::Result<()> {
             ($url:expr, $func:ident) => {
                 router = router.route(
                     const_str::concat!('/', $url),
-                    post($crate::url::$func::post),
+                    post(FnAny($crate::url::$func::post)),
                 )
             };
         }
