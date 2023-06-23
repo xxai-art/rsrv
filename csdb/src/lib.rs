@@ -3,11 +3,9 @@ mod val_li;
 
 use std::{
   env::{var, VarError},
-  fmt::{Display, Formatter},
   sync::Arc,
 };
 
-use aho_corasick::AhoCorasick;
 mod into_val_li;
 use ceresdb_client::{
   model::sql_query::row::Row, Builder, DbClient, Error, Mode, RpcConfig, RpcContext,
@@ -15,7 +13,6 @@ use ceresdb_client::{
 };
 use coarsetime::Instant;
 use dyn_fmt::AsStrFormatExt;
-use lazy_static::lazy_static;
 use tracing::{error, info};
 
 pub use crate::{val::Val, val_li::ValLi};
@@ -89,7 +86,7 @@ impl<'a> Sql<'a> {
 
     let args = args.into().0;
 
-    let sql = if args.len() > 0 {
+    let sql = if !args.is_empty() {
       self.sql.format(&args)
     } else {
       self.sql.to_string()

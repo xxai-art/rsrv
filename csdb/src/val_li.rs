@@ -1,5 +1,3 @@
-use paste::paste;
-
 use crate::Val;
 
 pub struct ValLi(pub Vec<Val>);

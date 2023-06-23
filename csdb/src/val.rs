@@ -1,18 +1,7 @@
-use std::{
-  env::{var, VarError},
-  fmt::{Display, Formatter},
-  sync::Arc,
-};
+use std::fmt::{Display, Formatter};
 
 use aho_corasick::AhoCorasick;
-use ceresdb_client::{
-  model::sql_query::row::Row, Builder, DbClient, Error, Mode, RpcConfig, RpcContext,
-  SqlQueryRequest, SqlQueryResponse,
-};
-use coarsetime::Instant;
-use dyn_fmt::AsStrFormatExt;
 use lazy_static::lazy_static;
-use tracing::{error, info};
 
 #[derive(Debug, Clone)]
 pub struct Val(String);
