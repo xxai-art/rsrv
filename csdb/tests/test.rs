@@ -3,11 +3,11 @@ use lazy_static::lazy_static;
 
 lazy_static! {
     pub static ref DB: Db = conn_by_env("CERESDB_GRPC").unwrap();
-    pub static ref SQL_DROP_FAV: SQL = DB.sql(["fav"], "DROP TABLE fav");
+    pub static ref SQL_DROP_FAV: SQL = DB.sql(["test"], "DROP TABLE test");
 
     // ctime 是用户记录创建时间
     // ts 是写入时间
-    pub static ref SQL_FAV: SQL = DB.sql(["fav"], r#"CREATE TABLE fav (
+    pub static ref SQL_FAV: SQL = DB.sql(["test"], r#"CREATE TABLE test (
   ts TIMESTAMP NOT NULL,
   ctime uint64 NOT NULL,
   uid uint64 NOT NULL,
@@ -20,13 +20,14 @@ lazy_static! {
   compression='ZSTD',
   enable_ttl='false'
 )"#);
-    pub static ref SQL_INSERT: SQL = DB.sql(["fav"], "INSERT INTO fav (ts,ctime,uid,action,kind,rid) VALUES ({},{},{},{},{},{})");
-    pub static ref SQL_SELECT: SQL = DB.sql(["fav"], "SELECT * FROM fav");
-    // pub static ref SQL_DELETE: SQL = DB.sql(["fav"], "DELETE FROM fav WHERE ts={} AND uid={}");
+    pub static ref SQL_INSERT: SQL = DB.sql(["test"], "INSERT INTO test (ts,ctime,uid,action,kind,rid) VALUES ({},{},{},{},{},{})");
+    pub static ref SQL_SELECT: SQL = DB.sql(["test"], "SELECT * FROM test");
+    // pub static ref SQL_DELETE: SQL = DB.sql(["test"], "DELETE FROM test WHERE ts={} AND uid={}");
 }
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+  dbg!(111);
   loginit::init();
 
   let _ = SQL_DROP_FAV.exe(NONE).await;

@@ -691,6 +691,7 @@ dependencies = [
  "dyn-fmt",
  "lazy_static",
  "num-traits",
+ "tokio",
  "tracing",
 ]
 
