@@ -1,9 +1,9 @@
-mod queryer;
+mod sql;
 use std::{env::var, time::Duration};
 
 use ceresdb_client::{Builder, Mode, RpcConfig, RpcContext};
 
-use crate::queryer::Queryer;
+use crate::sql::Sql;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -36,8 +36,8 @@ async fn main() -> anyhow::Result<()> {
 
   let ctx = RpcContext::default();
 
-  let q = Queryer { ctx, client };
-  let r = q.query(["fav"], fav).await;
-  dbg!(r);
+  let q = Sql::new(ctx, client, ["fav"], fav);
+  let q = q.exe().await?;
+  dbg!(q);
   Ok(())
 }
