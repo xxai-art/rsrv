@@ -9,6 +9,13 @@ use axum::{
 };
 
 #[macro_export]
+macro_rules! ok {
+  ($expr:expr) => {
+    Ok($expr.await?)
+  };
+}
+
+#[macro_export]
 macro_rules! any {
   ()=>{
     awp::Result<impl Into<awp::anypack::Any>>
