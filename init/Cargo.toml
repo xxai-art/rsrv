@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-ceresdb-client = "1.0.1"
+anyhow = "1.0.71"
+ceresdb-client = { version = "1.0.1", path = "../lib/ceresdb-client-rs" }
+tokio = { version = "1.28.2", features = ["rt-multi-thread"] }
