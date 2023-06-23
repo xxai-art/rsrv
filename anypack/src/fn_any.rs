@@ -1,7 +1,6 @@
 use std::{future::Future, pin::Pin};
 
 use axum::{
-  body::Body,
   extract::{FromRequest, FromRequestParts},
   handler::Handler,
   http::request::Request,
