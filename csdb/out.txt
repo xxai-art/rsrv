@@ -1,9 +1,10 @@
-    Finished test [unoptimized + debuginfo] target(s) in 0.08s
-     Running tests/test.rs (/Users/z/wac.tax/rsrv/target/debug/deps/test-9cdb017c901951f9)
+   Compiling csdb v0.1.4 (/Users/z/wac.tax/rsrv/csdb)
+    Finished test [unoptimized + debuginfo] target(s) in 0.60s
+     Running tests/test.rs (/Users/z/wac.tax/rsrv/target/debug/deps/test-de4776b8ba9c98fe)
 
 running 1 test
-  INFO csdb: 17ms DROP TABLE test
-  INFO csdb: 4ms CREATE TABLE test (
+  INFO csdb: 10ms DROP TABLE test
+  INFO csdb: 3ms CREATE TABLE test (
   ts TIMESTAMP NOT NULL,
   uid uint64 NOT NULL,
   tag string NOT NULL,
@@ -62,5 +63,5 @@ running 1 test
 }
 test main ... ok
 
-test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
 
