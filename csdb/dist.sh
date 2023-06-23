@@ -10,6 +10,7 @@ fi
 
 ./test.sh
 bunx mdt .
+touch Cargo.lock
 cargo v patch -y
 git add -u
 git commit -m. || true
