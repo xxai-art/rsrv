@@ -1,14 +1,32 @@
-pub fn add(left: usize, right: usize) -> usize {
-  left + right
+use std::fmt::Debug;
+
+use tracing_subscriber::{fmt::format::Writer, layer::SubscriberExt, EnvFilter};
+
+pub struct NoTime;
+
+impl tracing_subscriber::fmt::time::FormatTime for NoTime {
+  fn format_time(&self, _writer: &mut Writer<'_>) -> std::fmt::Result {
+    Ok(())
+  }
 }
 
-#[cfg(test)]
-mod tests {
-  use super::*;
+pub fn init() {
+  let env_filter = EnvFilter::from_default_env();
+  #[cfg(feature = "stackdriver")]
+  {
+    use tracing_subscriber::Registry;
+    let stackdriver = tracing_stackdriver::layer();
+    let subscriber = Registry::default().with(env_filter).with(stackdriver);
+    tracing::subscriber::set_global_default(subscriber).expect("Can't set logger");
+  }
 
-  #[test]
-  fn it_works() {
-    let result = add(2, 2);
-    assert_eq!(result, 4);
+  #[cfg(not(feature = "stackdriver"))]
+  {
+    use tracing_subscriber::util::SubscriberInitExt;
+    let fmt = tracing_subscriber::fmt::layer().with_timer(NoTime);
+    tracing_subscriber::registry()
+      .with(fmt)
+      .with(env_filter)
+      .init();
   }
 }

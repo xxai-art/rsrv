@@ -19,6 +19,7 @@ tracing = "0.1.37"
 tracing-stackdriver = { version = "0.7.2", optional = true }
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
 anypack = { path = "../anypack", version = "0.1.11" }
+loginit = { path = "../loginit" }
 
 [features]
 stackdriver = ["tracing-stackdriver"]
