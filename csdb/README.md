@@ -54,75 +54,12 @@ async fn main() -> anyhow::Result<()> {
 output:
 
 ```
-warning: unused imports: `VarError`, `sync::Arc`, `var`
- --> csdb/src/val.rs:2:9
-  |
-2 |   env::{var, VarError},
-  |         ^^^  ^^^^^^^^
-3 |   fmt::{Display, Formatter},
-4 |   sync::Arc,
-  |   ^^^^^^^^^
-  |
-  = note: `#[warn(unused_imports)]` on by default
-
-warning: unused imports: `Builder`, `DbClient`, `Error`, `Mode`, `RpcConfig`, `RpcContext`, `SqlQueryRequest`, `SqlQueryResponse`, `model::sql_query::row::Row`
-  --> csdb/src/val.rs:9:3
-   |
-9  |   model::sql_query::row::Row, Builder, DbClient, Error, Mode, RpcConfig, RpcConte...
-   |   ^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^  ^^^^^^^^  ^^^^^  ^^^^  ^^^^^^^^^  ^^^^^^^^^^
-10 |   SqlQueryRequest, SqlQueryResponse,
-   |   ^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^
-
-warning: unused import: `coarsetime::Instant`
-  --> csdb/src/val.rs:12:5
-   |
-12 | use coarsetime::Instant;
-   |     ^^^^^^^^^^^^^^^^^^^
-
-warning: unused import: `dyn_fmt::AsStrFormatExt`
-  --> csdb/src/val.rs:13:5
-   |
-13 | use dyn_fmt::AsStrFormatExt;
-   |     ^^^^^^^^^^^^^^^^^^^^^^^
-
-warning: unused imports: `error`, `info`
-  --> csdb/src/val.rs:15:15
-   |
-15 | use tracing::{error, info};
-   |               ^^^^^  ^^^^
-
-warning: unused import: `paste::paste`
- --> csdb/src/val_li.rs:1:5
-  |
-1 | use paste::paste;
-  |     ^^^^^^^^^^^^
-
-warning: unused imports: `Display`, `Formatter`
- --> csdb/src/lib.rs:6:9
-  |
-6 |   fmt::{Display, Formatter},
-  |         ^^^^^^^  ^^^^^^^^^
-
-warning: unused import: `aho_corasick::AhoCorasick`
-  --> csdb/src/lib.rs:10:5
-   |
-10 | use aho_corasick::AhoCorasick;
-   |     ^^^^^^^^^^^^^^^^^^^^^^^^^
-
-warning: unused import: `lazy_static::lazy_static`
-  --> csdb/src/lib.rs:18:5
-   |
-18 | use lazy_static::lazy_static;
-   |     ^^^^^^^^^^^^^^^^^^^^^^^^
-
-warning: `csdb` (lib) generated 9 warnings (run `cargo fix --lib -p csdb` to apply 9 suggestions)
-   Compiling csdb v0.1.2 (/Users/z/wac.tax/rsrv/csdb)
-    Finished test [unoptimized + debuginfo] target(s) in 0.69s
-     Running tests/test.rs (/Users/z/wac.tax/rsrv/target/debug/deps/test-4bcd22aab6c7ca80)
+    Finished test [unoptimized + debuginfo] target(s) in 0.08s
+     Running tests/test.rs (/Users/z/wac.tax/rsrv/target/debug/deps/test-9cdb017c901951f9)
 
 running 1 test
-  INFO csdb: 9ms DROP TABLE test
-  INFO csdb: 3ms CREATE TABLE test (
+  INFO csdb: 17ms DROP TABLE test
+  INFO csdb: 4ms CREATE TABLE test (
   ts TIMESTAMP NOT NULL,
   uid uint64 NOT NULL,
   tag string NOT NULL,
@@ -132,9 +69,9 @@ running 1 test
   compression='ZSTD',
   enable_ttl='false'
 )
-  INFO csdb: 4ms INSERT INTO test (ts,uid,tag) VALUES (1,2,'test')
-  INFO csdb: 4ms INSERT INTO test (ts,uid,tag) VALUES (2,2,'\'"\r\n')
-  INFO csdb: 5ms SELECT * FROM test
+  INFO csdb: 3ms INSERT INTO test (ts,uid,tag) VALUES (1,2,'test')
+  INFO csdb: 2ms INSERT INTO test (ts,uid,tag) VALUES (2,2,'\'"\r\n')
+  INFO csdb: 4ms SELECT * FROM test
 [csdb/tests/test.rs:38] i = Row {
     columns: [
         Column {
