@@ -1201,6 +1201,7 @@ dependencies = [
  "anyhow",
  "ceresdb-client",
  "tokio",
+ "tracing",
 ]
 
 [[package]]

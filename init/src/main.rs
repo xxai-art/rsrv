@@ -1,7 +1,7 @@
 mod sql;
 use std::{env::var, time::Duration};
 
-use ceresdb_client::{Builder, Error, Mode, RpcConfig, RpcContext};
+use ceresdb_client::{Builder, Mode, RpcConfig, RpcContext};
 
 use crate::sql::Db;
 
@@ -22,8 +22,7 @@ async fn main() -> anyhow::Result<()> {
   let ctx = RpcContext::default();
   let db = Db::new(ctx, client);
 
-  let sql = db.sql(["fav"], "DROP TABLE fav");
-  sql.noerr().await;
+  db.sql(["fav"], "DROP TABLE fav").noerr_nort().await;
 
   // id 是用户记录创建时间
   // ts 是写入时间
@@ -41,8 +40,7 @@ async fn main() -> anyhow::Result<()> {
   enable_ttl='false'
 );"#;
 
-  let sql = db.sql(["fav"], fav);
-  sql.noerr().await;
+  db.sql(["fav"], fav).noerr_nort().await;
 
   Ok(())
 }

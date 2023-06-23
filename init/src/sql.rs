@@ -41,9 +41,11 @@ impl<const N: usize> From<[&str; N]> for Tables {
 }
 
 impl<'a> Sql<'a> {
+  pub async fn noerr_nort(&self) {
+    self.noerr().await;
+  }
+
   pub async fn noerr(&self) -> Option<SqlQueryResponse> {
-    let db = &self.db;
-    db.client.sql_query(&db.ctx, &self.req).await;
     match self.exe().await {
       Ok(r) => return Some(r),
       Err(err) => match err {
@@ -60,6 +62,7 @@ impl<'a> Sql<'a> {
 
   pub async fn exe(&self) -> Result<SqlQueryResponse, Error> {
     let db = &self.db;
+    tracing::info!("{}", self.req.sql);
     Ok(db.client.sql_query(&db.ctx, &self.req).await?)
   }
 }
