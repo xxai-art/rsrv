@@ -20,6 +20,7 @@ async fn main() -> anyhow::Result<()> {
 
   let client = builder.build();
   let ctx = RpcContext::default();
+  let db = Db::new(ctx, client);
 
   let fav = r#"CREATE TABLE fav (
   ts TIMESTAMP NOT NULL,
@@ -35,7 +36,6 @@ async fn main() -> anyhow::Result<()> {
   enable_ttl=false
 );"#;
 
-  let db = Db::new(ctx, client);
   let sql = db.sql(["fav"], fav);
   let q = sql.exe().await?;
   dbg!(q);
