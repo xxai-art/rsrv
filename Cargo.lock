@@ -49,6 +49,7 @@ dependencies = [
 name = "anypack"
 version = "0.1.10"
 dependencies = [
+ "async-trait",
  "awp",
  "axum",
  "paste",

@@ -1,9 +1,10 @@
 #![feature(min_specialization)]
 
-pub use axum::http::HeaderValue;
 mod tuple;
+
 use std::ops::Deref;
 
+pub use axum::http::HeaderValue;
 use axum::response::{IntoResponse, Response};
 pub use msgpacker::{pack_array, Packable};
 use paste::paste;
