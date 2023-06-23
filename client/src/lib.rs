@@ -107,8 +107,7 @@ fn header_get<B>(req: &Request<B>, key: impl AsRef<str>) -> Option<&str> {
 }
 
 pub async fn client<B>(req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
-  let r = _client(req, next).await;
-  r
+  _client(req, next).await
 }
 
 pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
