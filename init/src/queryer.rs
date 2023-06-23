@@ -1,7 +1,7 @@
-use std::{env::var, future::Future, pin::Pin, sync::Arc, time::Duration};
+use std::{sync::Arc};
 
 use ceresdb_client::{
-  Builder, DbClient, Error, Mode, RpcConfig, RpcContext, SqlQueryRequest, SqlQueryResponse,
+  DbClient, Error, RpcContext, SqlQueryRequest, SqlQueryResponse,
 };
 
 pub struct Queryer {
@@ -33,6 +33,6 @@ impl Queryer {
       tables: tables.into().0,
       sql: sql.into(),
     };
-    Ok(self.client.sql_query(&self.ctx, &req).await?)
+    self.client.sql_query(&self.ctx, &req).await
   }
 }

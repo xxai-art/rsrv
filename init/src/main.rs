@@ -1,7 +1,7 @@
 mod queryer;
-use std::{env::var, pin::Pin, sync::Arc, time::Duration};
+use std::{env::var, time::Duration};
 
-use ceresdb_client::{Builder, DbClient, Mode, RpcConfig, RpcContext, SqlQueryRequest};
+use ceresdb_client::{Builder, Mode, RpcConfig, RpcContext};
 
 use crate::queryer::Queryer;
 
