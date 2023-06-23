@@ -50,7 +50,6 @@ name = "anypack"
 version = "0.1.10"
 dependencies = [
  "async-trait",
- "awp",
  "axum",
  "paste",
  "xxai-msgpacker",
@@ -132,6 +131,7 @@ name = "awp"
 version = "0.1.3"
 dependencies = [
  "anyhow",
+ "anypack",
  "axum",
  "coarsetime",
  "futures",
@@ -1174,7 +1174,6 @@ name = "rsrv"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "anypack",
  "async-lazy",
  "awp",
  "axum",

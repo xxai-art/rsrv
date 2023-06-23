@@ -1,13 +1,11 @@
 #![feature(min_specialization)]
 
-mod fn_any;
 mod tuple;
 
 use std::ops::Deref;
 
 pub use axum::http::HeaderValue;
 use axum::response::{IntoResponse, Response};
-pub use fn_any::FnAny;
 pub use msgpacker::{pack_array, Packable};
 use paste::paste;
 
@@ -149,8 +147,4 @@ impl Default for VecAny {
   fn default() -> Self {
     Self::new()
   }
-}
-
-pub fn pack<T: From<Any>>(any: impl Into<Any>) -> awp::Result<T> {
-  Ok(any.into().into())
 }

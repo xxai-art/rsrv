@@ -3,7 +3,7 @@
 #![feature(type_alias_impl_trait)]
 #![feature(let_chains)]
 
-use anypack::FnAny;
+use awp::anypack::FnAny;
 use axum::{middleware, routing::post, Router};
 use client::client;
 use trt::TRT;

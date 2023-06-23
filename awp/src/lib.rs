@@ -1,6 +1,8 @@
 #![feature(min_specialization)]
+#![feature(type_alias_impl_trait)]
 #![feature(impl_trait_in_assoc_type)]
 
+pub mod anypack;
 mod env;
 mod err;
 mod log;

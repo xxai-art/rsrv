@@ -1,5 +1,6 @@
 use std::{future::Future, pin::Pin};
 
+pub use anypack::Any;
 use axum::{
   extract::{FromRequest, FromRequestParts},
   handler::Handler,
@@ -7,25 +8,22 @@ use axum::{
   response::{IntoResponse, Response},
 };
 
-use crate::Any;
-
 #[derive(Clone)]
 pub struct FnAny<F>(pub F);
 
-pub type Result<T> = awp::Result<T, awp::Err>;
+pub type Result<T> = crate::Result<T, crate::Err>;
 
-pub fn into_response<T: Into<Any>>(result: Result<T>) -> Response {
+pub fn into_response(result: Result<impl Into<Any>>) -> Response {
   match result {
     Ok(r) => r.into().into_response(),
     Err(err) => err.into_response(),
   }
 }
 
-impl<F, Fut, Res, S, B> Handler<((),), S, B> for FnAny<F>
+impl<F, Fut, S, B, T: Into<Any>> Handler<((),), S, B> for FnAny<F>
 where
   F: FnOnce() -> Fut + Clone + Send + 'static,
-  Fut: Future<Output = Result<Res>> + Send,
-  Res: Into<Any>,
+  Fut: Future<Output = Result<T>> + Send,
   B: Send + 'static,
 {
   type Future = Pin<Box<dyn Future<Output = Response> + Send>>;
@@ -40,13 +38,12 @@ macro_rules! impl_handler {
         [$($ty:ident),*], $last:ident
     ) => {
         #[allow(non_snake_case, unused_mut)]
-        impl<F, Fut, S, B, Res, M, $($ty,)* $last> Handler<(M, $($ty,)* $last,), S, B> for FnAny<F>
+        impl<F, Fut, S, B,  M, T: Into<Any>, $($ty,)* $last> Handler<(M, $($ty,)* $last,), S, B> for FnAny<F>
             where
                 F: FnOnce($($ty,)* $last,) -> Fut + Clone + Send + 'static,
-                Fut: Future<Output = Result<Res>> + Send,
+                Fut: Future<Output = Result<T>> + Send,
                 B: Send + 'static,
                 S: Send + Sync + 'static,
-                Res: Into<Any>,
                 $( $ty: FromRequestParts<S> + Send, )*
                     $last: FromRequest<S, B, M> + Send,
                 {

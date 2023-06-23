@@ -21,7 +21,6 @@ x0 = { path = "../x0" }
 xxai = { path = "../xxai" }
 awp = { path = "../awp" }
 xxpg = { path = "../xxpg" }
-anypack = { path = "../anypack" }
 
 [dependencies.tokio]
 version = "1.28.2"
