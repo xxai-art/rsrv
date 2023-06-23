@@ -693,6 +693,7 @@ dependencies = [
  "lazy_static",
  "loginit",
  "num-traits",
+ "paste",
  "tokio",
  "tracing",
 ]
