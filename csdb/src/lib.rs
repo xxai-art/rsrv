@@ -26,7 +26,7 @@ pub fn conn(grpc: impl Into<String>) -> Db {
 
   let builder = Builder::new(grpc.into(), Mode::Direct)
     .rpc_config(rpc_config)
-    .default_database("public".into());
+    .default_database("public".to_string());
 
   let client = builder.build();
   let ctx = RpcContext::default();
