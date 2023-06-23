@@ -3,8 +3,6 @@ use std::{env::var, time::Duration};
 use ceresdb_client::{Builder, Mode, RpcConfig, RpcContext};
 use csdb::Db;
 
-use crate::sql::Db;
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
   loginit::init();
