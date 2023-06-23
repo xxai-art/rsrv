@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use ceresdb_client::{DbClient, Error, RpcContext, SqlQueryRequest, SqlQueryResponse};
+use coarsetime::Instant;
 
 pub struct Sql<'a> {
   pub req: SqlQueryRequest,
@@ -62,7 +63,10 @@ impl<'a> Sql<'a> {
 
   pub async fn exe(&self) -> Result<SqlQueryResponse, Error> {
     let db = &self.db;
-    tracing::info!("{}", self.req.sql);
-    db.client.sql_query(&db.ctx, &self.req).await
+    let timer = Instant::now();
+    let r = db.client.sql_query(&db.ctx, &self.req).await;
+    let cost = timer.elapsed().as_millis();
+    tracing::info!("{}ms\n{}", cost, self.req.sql);
+    r
   }
 }
