@@ -2,7 +2,6 @@ use std::{future::Future, pin::Pin};
 
 pub use anypack::Any;
 use axum::{
-  body::BoxBody,
   extract::{FromRequest, FromRequestParts},
   handler::Handler,
   http::request::Request,
@@ -12,7 +11,7 @@ use axum::{
 #[macro_export]
 macro_rules! any {
   ()=>{
-    awp::Result<impl Into<awp::anypack::AnyResult>>
+    awp::Result<impl Into<awp::anypack::Any>>
   }
 }
 
@@ -28,37 +27,8 @@ pub type Result<T> = crate::Result<T, crate::Err>;
 //   }
 // }
 
-#[derive(Debug)]
-pub enum AnyResult {
-  Any(Any),
-  Response(Response),
-}
-
-impl<T: Into<Any>> From<T> for AnyResult {
-  default fn from(t: T) -> Self {
-    AnyResult::Any(t.into())
-  }
-}
-
-// impl<A: Into<Any>, E: Into<crate::Err>, F: Future<Output = anyhow::Result<A, E>>> From<F>
-//   for AnyResult
-// {
-//   fn from(t: F) -> Self {
-//     todo!()
-//   }
-// }
-
-impl IntoResponse for AnyResult {
-  fn into_response(self) -> Response<BoxBody> {
-    match self {
-      AnyResult::Any(r) => r.into_response(),
-      AnyResult::Response(r) => r,
-    }
-  }
-}
-
 pub async fn await_into_response(
-  result: impl Future<Output = Result<impl Into<AnyResult>>> + Send,
+  result: impl Future<Output = Result<impl Into<Any>>> + Send,
 ) -> Response {
   match result.await {
     Ok(r) => r.into().into_response(),
@@ -66,7 +36,7 @@ pub async fn await_into_response(
   }
 }
 
-impl<F, Fut, S, B, T: Into<AnyResult>> Handler<((),), S, B> for FnAny<F>
+impl<F, Fut, S, B, T: Into<Any>> Handler<((),), S, B> for FnAny<F>
 where
   F: FnOnce() -> Fut + Clone + Send + 'static,
   Fut: Future<Output = Result<T>> + Send,
@@ -84,7 +54,7 @@ macro_rules! impl_handler {
         [$($ty:ident),*], $last:ident
     ) => {
         #[allow(non_snake_case, unused_mut)]
-        impl<F, Fut, S, B,  M, T: Into<AnyResult>, $($ty,)* $last> Handler<(M, $($ty,)* $last,), S, B> for FnAny<F>
+        impl<F, Fut, S, B,  M, T: Into<Any>, $($ty,)* $last> Handler<(M, $($ty,)* $last,), S, B> for FnAny<F>
             where
                 F: FnOnce($($ty,)* $last,) -> Fut + Clone + Send + 'static,
                 Fut: Future<Output = Result<T>> + Send,
