@@ -685,9 +685,12 @@ dependencies = [
 name = "csdb"
 version = "0.1.0"
 dependencies = [
+ "aho-corasick",
  "ceresdb-client",
  "coarsetime",
  "dyn-fmt",
+ "lazy_static",
+ "num-traits",
  "tracing",
 ]
 

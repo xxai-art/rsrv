@@ -13,3 +13,6 @@ tracing = "0.1.37"
 ceresdb-client = { version = "1.0.1", path = "../lib/ceresdb-client-rs" }
 coarsetime = "0.1.23"
 dyn-fmt = "0.3.0"
+num-traits = "0.2.15"
+aho-corasick = "1.0.2"
+lazy_static = "1.4.0"
