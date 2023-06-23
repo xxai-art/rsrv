@@ -8,7 +8,7 @@ name=${1:-rsrv}
 # name=${name//\'/}
 
 exe=./target/debug/$name
-rm $exe
+rm -rf $exe
 
 cargo build -p $name
 

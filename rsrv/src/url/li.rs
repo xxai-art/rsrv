@@ -6,6 +6,5 @@ Q!(
 );
 
 pub async fn post() -> awp::any!() {
-  Ok(img_li())
-  // Ok(img_li())
+  Ok(img_li().await?)
 }

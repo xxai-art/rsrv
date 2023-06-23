@@ -35,16 +35,18 @@ pub enum AnyResult {
 }
 
 impl<T: Into<Any>> From<T> for AnyResult {
-  fn from(t: T) -> Self {
+  default fn from(t: T) -> Self {
     AnyResult::Any(t.into())
   }
 }
 
-impl<T: Future<Output = crate::Result<A>>, A: Into<Any>> From<T> for AnyResult {
-  fn from(t: T) -> Self {
-    todo!()
-  }
-}
+// impl<A: Into<Any>, E: Into<crate::Err>, F: Future<Output = anyhow::Result<A, E>>> From<F>
+//   for AnyResult
+// {
+//   fn from(t: F) -> Self {
+//     todo!()
+//   }
+// }
 
 impl IntoResponse for AnyResult {
   fn into_response(self) -> Response<BoxBody> {
