@@ -12,11 +12,11 @@ use lazy_static::lazy_static;
 
 lazy_static! {
     pub static ref DB: Db = conn_by_env("CERESDB_GRPC").unwrap();
-    pub static ref SQL_DROP_TEST: SQL = DB.sql(["test"], "DROP TABLE test");
+    pub static ref SQL_DROP_TEST: SQL = DB.sql("DROP TABLE test");
 
     // ctime 是用户记录创建时间
     // ts 是写入时间
-    pub static ref SQL_TEST: SQL = DB.sql(["test"], r#"CREATE TABLE test (
+    pub static ref SQL_TEST: SQL = DB.sql(r#"CREATE TABLE test (
   ts TIMESTAMP NOT NULL,
   uid uint64 NOT NULL,
   tag string NOT NULL,
@@ -26,8 +26,8 @@ lazy_static! {
   compression='ZSTD',
   enable_ttl='false'
 )"#);
-    pub static ref SQL_INSERT: SQL = DB.sql(["test"], "INSERT INTO test (ts,uid,tag) VALUES ({},{},{})");
-    pub static ref SQL_SELECT: SQL = DB.sql(["test"], "SELECT * FROM test");
+    pub static ref SQL_INSERT: SQL = DB.sql("INSERT INTO test (ts,uid,tag) VALUES ({},{},{})");
+    pub static ref SQL_SELECT: SQL = DB.sql("SELECT * FROM test");
     // pub static ref SQL_DELETE: SQL = DB.sql(["test"], "DELETE FROM test WHERE ts={} AND uid={}");
 }
 
@@ -54,12 +54,13 @@ async fn main() -> anyhow::Result<()> {
 output:
 
 ```
-    Finished test [unoptimized + debuginfo] target(s) in 0.08s
-     Running tests/test.rs (/Users/z/wac.tax/rsrv/target/debug/deps/test-9cdb017c901951f9)
+   Compiling csdb v0.1.4 (/Users/z/wac.tax/rsrv/csdb)
+    Finished test [unoptimized + debuginfo] target(s) in 0.58s
+     Running tests/test.rs (/Users/z/wac.tax/rsrv/target/debug/deps/test-de4776b8ba9c98fe)
 
 running 1 test
-  INFO csdb: 17ms DROP TABLE test
-  INFO csdb: 4ms CREATE TABLE test (
+  INFO csdb: 12ms DROP TABLE test
+  INFO csdb: 3ms CREATE TABLE test (
   ts TIMESTAMP NOT NULL,
   uid uint64 NOT NULL,
   tag string NOT NULL,
@@ -69,9 +70,9 @@ running 1 test
   compression='ZSTD',
   enable_ttl='false'
 )
-  INFO csdb: 3ms INSERT INTO test (ts,uid,tag) VALUES (1,2,'test')
-  INFO csdb: 2ms INSERT INTO test (ts,uid,tag) VALUES (2,2,'\'"\r\n')
-  INFO csdb: 4ms SELECT * FROM test
+  INFO csdb: 2ms INSERT INTO test (ts,uid,tag) VALUES (1,2,'test')
+  INFO csdb: 1ms INSERT INTO test (ts,uid,tag) VALUES (2,2,'\'"\r\n')
+  INFO csdb: 3ms SELECT * FROM test
 [csdb/tests/test.rs:38] i = Row {
     columns: [
         Column {
@@ -118,7 +119,7 @@ running 1 test
 }
 test main ... ok
 
-test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
 ```
 
 in this output

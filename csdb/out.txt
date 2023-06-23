@@ -1,9 +1,9 @@
    Compiling csdb v0.1.4 (/Users/z/wac.tax/rsrv/csdb)
-    Finished test [unoptimized + debuginfo] target(s) in 0.60s
+    Finished test [unoptimized + debuginfo] target(s) in 0.58s
      Running tests/test.rs (/Users/z/wac.tax/rsrv/target/debug/deps/test-de4776b8ba9c98fe)
 
 running 1 test
-  INFO csdb: 10ms DROP TABLE test
+  INFO csdb: 12ms DROP TABLE test
   INFO csdb: 3ms CREATE TABLE test (
   ts TIMESTAMP NOT NULL,
   uid uint64 NOT NULL,
@@ -14,9 +14,9 @@ running 1 test
   compression='ZSTD',
   enable_ttl='false'
 )
-  INFO csdb: 3ms INSERT INTO test (ts,uid,tag) VALUES (1,2,'test')
-  INFO csdb: 2ms INSERT INTO test (ts,uid,tag) VALUES (2,2,'\'"\r\n')
-  INFO csdb: 4ms SELECT * FROM test
+  INFO csdb: 2ms INSERT INTO test (ts,uid,tag) VALUES (1,2,'test')
+  INFO csdb: 1ms INSERT INTO test (ts,uid,tag) VALUES (2,2,'\'"\r\n')
+  INFO csdb: 3ms SELECT * FROM test
 [csdb/tests/test.rs:38] i = Row {
     columns: [
         Column {

@@ -3,11 +3,11 @@ use lazy_static::lazy_static;
 
 lazy_static! {
     pub static ref DB: Db = conn_by_env("CERESDB_GRPC").unwrap();
-    pub static ref SQL_DROP_TEST: SQL = DB.sql(["test"], "DROP TABLE test");
+    pub static ref SQL_DROP_TEST: SQL = DB.sql("DROP TABLE test");
 
     // ctime 是用户记录创建时间
     // ts 是写入时间
-    pub static ref SQL_TEST: SQL = DB.sql(["test"], r#"CREATE TABLE test (
+    pub static ref SQL_TEST: SQL = DB.sql(r#"CREATE TABLE test (
   ts TIMESTAMP NOT NULL,
   uid uint64 NOT NULL,
   tag string NOT NULL,
@@ -17,8 +17,8 @@ lazy_static! {
   compression='ZSTD',
   enable_ttl='false'
 )"#);
-    pub static ref SQL_INSERT: SQL = DB.sql(["test"], "INSERT INTO test (ts,uid,tag) VALUES ({},{},{})");
-    pub static ref SQL_SELECT: SQL = DB.sql(["test"], "SELECT * FROM test");
+    pub static ref SQL_INSERT: SQL = DB.sql("INSERT INTO test (ts,uid,tag) VALUES ({},{},{})");
+    pub static ref SQL_SELECT: SQL = DB.sql("SELECT * FROM test");
     // pub static ref SQL_DELETE: SQL = DB.sql(["test"], "DELETE FROM test WHERE ts={} AND uid={}");
 }
 

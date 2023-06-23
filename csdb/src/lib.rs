@@ -27,7 +27,7 @@ pub fn conn_by_env(env: impl AsRef<str>) -> Result<Db, VarError> {
 pub fn conn(grpc: impl Into<String>) -> Db {
   let rpc_config = RpcConfig::default();
 
-  let builder = Builder::new(grpc.into(), Mode::Direct)
+  let builder = Builder::new(grpc.into(), Mode::Proxy)
     .rpc_config(rpc_config)
     .default_database("public".to_string());
 
@@ -39,7 +39,7 @@ pub fn conn(grpc: impl Into<String>) -> Db {
 pub struct Sql<'a> {
   pub sql: String,
   pub db: &'a Db,
-  pub tables: Vec<String>,
+  // pub tables: Vec<String>,
 }
 
 pub struct Db {
@@ -52,28 +52,29 @@ impl Db {
     Db { ctx, client }
   }
 
-  pub fn sql(&self, tables: impl Into<Tables>, sql: impl Into<String>) -> Sql {
+  //pub fn sql(&self, tables: impl Into<Tables>, sql: impl Into<String>) -> Sql {
+  pub fn sql(&self, sql: impl Into<String>) -> Sql {
     Sql {
       db: self,
       sql: sql.into(),
-      tables: tables.into().0,
+      // tables: tables.into().0,
     }
   }
 }
 
-pub struct Tables(pub Vec<String>);
-
-impl From<Vec<String>> for Tables {
-  fn from(v: Vec<std::string::String>) -> Self {
-    Tables(v)
-  }
-}
-
-impl<const N: usize> From<[&str; N]> for Tables {
-  fn from(v: [&str; N]) -> Self {
-    Tables(v.map(|i| i.to_string()).into_iter().collect())
-  }
-}
+// pub struct Tables(pub Vec<String>);
+//
+// impl From<Vec<String>> for Tables {
+//   fn from(v: Vec<std::string::String>) -> Self {
+//     Tables(v)
+//   }
+// }
+//
+// impl<const N: usize> From<[&str; N]> for Tables {
+//   fn from(v: [&str; N]) -> Self {
+//     Tables(v.map(|i| i.to_string()).into_iter().collect())
+//   }
+// }
 
 impl<'a> Sql<'a> {
   pub async fn li(&self, args: impl Into<ValLi>) -> Result<Vec<Row>, Error> {
@@ -93,7 +94,7 @@ impl<'a> Sql<'a> {
     };
 
     let req = SqlQueryRequest {
-      tables: self.tables.clone(),
+      tables: vec![],
       sql,
     };
     let r = db.client.sql_query(&db.ctx, &req).await;
