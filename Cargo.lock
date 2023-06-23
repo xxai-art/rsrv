@@ -682,6 +682,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "csdb"
+version = "0.1.0"
+dependencies = [
+ "tracing",
+]
+
+[[package]]
 name = "csv"
 version = "1.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1201,6 +1208,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "ceresdb-client",
+ "csdb",
  "loginit",
  "tokio",
  "tracing",

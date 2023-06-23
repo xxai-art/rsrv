@@ -1,7 +1,7 @@
-mod sql;
 use std::{env::var, time::Duration};
 
 use ceresdb_client::{Builder, Mode, RpcConfig, RpcContext};
+use csdb::Db;
 
 use crate::sql::Db;
 
