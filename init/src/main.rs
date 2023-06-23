@@ -1,7 +1,4 @@
-use std::env::var;
-
-use ceresdb_client::{Builder, Mode, RpcConfig, RpcContext};
-use csdb::{conn_by_env, Db};
+use csdb::conn_by_env;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
