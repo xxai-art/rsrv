@@ -14,8 +14,6 @@ use dyn_fmt::AsStrFormatExt;
 use lazy_static::lazy_static;
 use tracing::{error, info};
 
-pub static NONE: [u8; 0] = [];
-
 pub type SQL = Sql<'static>;
 
 pub fn conn_by_env(env: impl AsRef<str>) -> Result<Db, VarError> {
@@ -129,9 +127,15 @@ impl From<String> for Val {
 
 pub struct ValLi(pub Vec<Val>);
 
-impl<T: IntoIterator<Item = V>, V: Into<Val>> From<T> for ValLi {
-  fn from(iter: T) -> Self {
-    ValLi(iter.into_iter().map(|i| i.into()).collect())
+impl From<()> for ValLi {
+  fn from(_: ()) -> Self {
+    ValLi(vec![])
+  }
+}
+
+impl<T1: Into<Val>, T2: Into<Val>, T3: Into<Val>> From<(T1, T2, T3)> for ValLi {
+  fn from(t: (T1, T2, T3)) -> Self {
+    ValLi(vec![t.0.into(), t.1.into(), t.2.into()])
   }
 }
 
@@ -158,7 +162,7 @@ impl<'a> Sql<'a> {
     };
     let r = db.client.sql_query(&db.ctx, &req).await;
     let cost = timer.elapsed().as_millis();
-    info!("{}ms\n{}", cost, &self.sql);
+    info!("{}ms {}", cost, &self.sql);
     if let Err(err) = &r {
       match err {
         Error::Server(e) => {

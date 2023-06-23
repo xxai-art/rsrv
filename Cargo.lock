@@ -686,10 +686,12 @@ name = "csdb"
 version = "0.1.0"
 dependencies = [
  "aho-corasick",
+ "anyhow",
  "ceresdb-client",
  "coarsetime",
  "dyn-fmt",
  "lazy_static",
+ "loginit",
  "num-traits",
  "tokio",
  "tracing",
