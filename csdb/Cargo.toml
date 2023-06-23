@@ -12,3 +12,4 @@ description = "wrap for ceresdb-client-rs"
 tracing = "0.1.37"
 ceresdb-client = { version = "1.0.1", path = "../lib/ceresdb-client-rs" }
 coarsetime = "0.1.23"
+dyn-fmt = "0.3.0"

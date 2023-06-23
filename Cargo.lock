@@ -687,6 +687,7 @@ version = "0.1.0"
 dependencies = [
  "ceresdb-client",
  "coarsetime",
+ "dyn-fmt",
  "tracing",
 ]
 
@@ -744,6 +745,12 @@ dependencies = [
  "crypto-common",
  "subtle",
 ]
+
+[[package]]
+name = "dyn-fmt"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c2a0836c9bd73a9d3ca55b0effc5b1eedf96dd13ef994389bcac6d4d33c46188"
 
 [[package]]
 name = "either"

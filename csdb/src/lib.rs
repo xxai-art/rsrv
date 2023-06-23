@@ -7,6 +7,7 @@ use ceresdb_client::{
   Builder, DbClient, Error, Mode, RpcConfig, RpcContext, SqlQueryRequest, SqlQueryResponse,
 };
 use coarsetime::Instant;
+use dyn_fmt::AsStrFormatExt;
 use tracing::{error, info};
 
 pub fn conn_by_env(env: impl AsRef<str>) -> Result<Db, VarError> {
@@ -27,8 +28,9 @@ pub fn conn(grpc: impl Into<String>) -> Db {
 }
 
 pub struct Sql<'a> {
-  pub req: SqlQueryRequest,
+  pub sql: String,
   pub db: &'a Db,
+  pub tables: Vec<String>,
 }
 
 pub struct Db {
@@ -42,11 +44,11 @@ impl Db {
   }
 
   pub fn sql(&self, tables: impl Into<Tables>, sql: impl Into<String>) -> Sql {
-    let req = SqlQueryRequest {
-      tables: tables.into().0,
+    Sql {
+      db: self,
       sql: sql.into(),
-    };
-    Sql { db: self, req }
+      tables: tables.into().0,
+    }
   }
 }
 
@@ -70,7 +72,7 @@ impl<'a> Sql<'a> {
   }
 
   pub async fn ignore_err(&self) -> Option<SqlQueryResponse> {
-    match self.q().await {
+    match self.exe().await {
       Ok(r) => return Some(r),
       Err(err) => match err {
         Error::Server(e) => {
@@ -84,12 +86,17 @@ impl<'a> Sql<'a> {
     None
   }
 
-  pub async fn q(&self) -> Result<SqlQueryResponse, Error> {
-    let db = &self.db;
+  pub async fn exe(&self) -> Result<SqlQueryResponse, Error> {
     let timer = Instant::now();
-    let r = db.client.sql_query(&db.ctx, &self.req).await;
+    let db = &self.db;
+    let sql = self.sql.to_string();
+    let req = SqlQueryRequest {
+      tables: self.tables.clone(),
+      sql,
+    };
+    let r = db.client.sql_query(&db.ctx, &req).await;
     let cost = timer.elapsed().as_millis();
-    info!("{}ms\n{}", cost, self.req.sql);
+    info!("{}ms\n{}", cost, &self.sql);
     r
   }
 }
