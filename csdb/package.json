@@ -1,3 +1,6 @@
 {
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@w5/mdt": "^0.0.16"
+  }
 }
