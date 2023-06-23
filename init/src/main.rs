@@ -1,25 +1,13 @@
-use std::{env::var, time::Duration};
+use std::env::var;
 
 use ceresdb_client::{Builder, Mode, RpcConfig, RpcContext};
-use csdb::Db;
+use csdb::{conn_by_env, Db};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
   loginit::init();
-  let rpc = var("CERESDB_GRPC").unwrap();
-  let rpc_config = RpcConfig {
-    thread_num: Some(1),
-    default_write_timeout: Duration::from_millis(1000),
-    ..Default::default()
-  };
 
-  let builder = Builder::new(rpc, Mode::Direct)
-    .rpc_config(rpc_config)
-    .default_database("public");
-
-  let client = builder.build();
-  let ctx = RpcContext::default();
-  let db = Db::new(ctx, client);
+  let db = conn_by_env("CERESDB_GRPC")?;
 
   db.sql(["fav"], "DROP TABLE fav").noerr_nort().await;
 

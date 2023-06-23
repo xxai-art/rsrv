@@ -1,7 +1,29 @@
-use std::sync::Arc;
+use std::{
+  env::{var, VarError},
+  sync::Arc,
+};
 
-use ceresdb_client::{DbClient, Error, RpcContext, SqlQueryRequest, SqlQueryResponse};
+use ceresdb_client::{
+  Builder, DbClient, Error, Mode, RpcConfig, RpcContext, SqlQueryRequest, SqlQueryResponse,
+};
 use coarsetime::Instant;
+
+pub fn conn_by_env(env: impl AsRef<str>) -> Result<Db, VarError> {
+  let grpc = var(env.as_ref())?;
+  Ok(conn(grpc))
+}
+
+pub fn conn(grpc: impl Into<String>) -> Db {
+  let rpc_config = RpcConfig::default();
+
+  let builder = Builder::new(grpc.into(), Mode::Direct)
+    .rpc_config(rpc_config)
+    .default_database("public");
+
+  let client = builder.build();
+  let ctx = RpcContext::default();
+  Db::new(ctx, client)
+}
 
 pub struct Sql<'a> {
   pub req: SqlQueryRequest,
