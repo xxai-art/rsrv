@@ -2,6 +2,10 @@
 name = "loginit"
 version = "0.1.0"
 edition = "2021"
+license = "SSPL-1.0"
+homepage = "https://github.com/xxai-art/rsrv"
+repository = "https://github.com/xxai-art/rsrv.git"
+description = "init log for tracing use tracing_subscriber"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
