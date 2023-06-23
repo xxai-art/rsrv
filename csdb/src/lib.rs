@@ -162,7 +162,7 @@ impl<'a> Sql<'a> {
     };
     let r = db.client.sql_query(&db.ctx, &req).await;
     let cost = timer.elapsed().as_millis();
-    info!("{}ms {}", cost, &self.sql);
+    info!("{}ms {}", cost, &req.sql);
     if let Err(err) = &r {
       match err {
         Error::Server(e) => {

@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
+    "@w5/jsext": "^0.0.1",
     "@w5/mdt": "^0.0.16"
   }
 }
