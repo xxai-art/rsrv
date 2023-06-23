@@ -3,7 +3,7 @@ use std::{env::var, time::Duration};
 
 use ceresdb_client::{Builder, Mode, RpcConfig, RpcContext};
 
-use crate::sql::Sql;
+use crate::sql::{Db, Sql};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -19,6 +19,7 @@ async fn main() -> anyhow::Result<()> {
     .default_database("art");
 
   let client = builder.build();
+  let ctx = RpcContext::default();
 
   let fav = r#"CREATE TABLE fav (
   ts TIMESTAMP NOT NULL,
@@ -34,10 +35,9 @@ async fn main() -> anyhow::Result<()> {
   enable_ttl=false
 );"#;
 
-  let ctx = RpcContext::default();
-
-  let q = Sql::new(ctx, client, ["fav"], fav);
-  let q = q.exe().await?;
+  let db = Db::new(ctx, client);
+  let sql = db.sql(["fav"], fav);
+  let q = sql.exe().await?;
   dbg!(q);
   Ok(())
 }

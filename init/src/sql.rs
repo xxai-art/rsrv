@@ -2,10 +2,28 @@ use std::sync::Arc;
 
 use ceresdb_client::{DbClient, Error, RpcContext, SqlQueryRequest, SqlQueryResponse};
 
-pub struct Sql {
+pub struct Sql<'a> {
+  pub req: SqlQueryRequest,
+  pub db: &'a Db,
+}
+
+pub struct Db {
   pub ctx: RpcContext,
   pub client: Arc<dyn DbClient>,
-  pub req: SqlQueryRequest,
+}
+
+impl Db {
+  pub fn new(ctx: RpcContext, client: Arc<dyn DbClient>) -> Self {
+    Db { ctx, client }
+  }
+
+  pub fn sql(&self, tables: impl Into<Tables>, sql: impl Into<String>) -> Sql {
+    let req = SqlQueryRequest {
+      tables: tables.into().0,
+      sql: sql.into(),
+    };
+    Sql { db: self, req }
+  }
 }
 
 pub struct Tables(pub Vec<String>);
@@ -22,35 +40,9 @@ impl<const N: usize> From<[&str; N]> for Tables {
   }
 }
 
-impl Sql {
-  pub fn new(
-    ctx: RpcContext,
-    client: Arc<dyn DbClient>,
-    tables: impl Into<Tables>,
-    sql: impl Into<String>,
-  ) -> Self {
-    let req = SqlQueryRequest {
-      tables: tables.into().0,
-      sql: sql.into(),
-    };
-    Sql { ctx, client, req }
-  }
-
+impl<'a> Sql<'a> {
   pub async fn exe(&self) -> Result<SqlQueryResponse, Error> {
-    self.client.sql_query(&self.ctx, &self.req).await
+    let db = &self.db;
+    db.client.sql_query(&db.ctx, &self.req).await
   }
 }
-
-// impl Sql {
-//   pub async fn query(
-//     &self,
-//     tables: impl Into<Tables>,
-//     sql: impl Into<String>,
-//   ) -> Result<SqlQueryResponse, Error> {
-//     let req = SqlQueryRequest {
-//       tables: tables.into().0,
-//       sql: sql.into(),
-//     };
-//     self.client.sql_query(&self.ctx, &req).await
-//   }
-// }
