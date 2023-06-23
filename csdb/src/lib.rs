@@ -1,3 +1,5 @@
+mod val;
+mod val_li;
 use std::{
   env::{var, VarError},
   fmt::{Display, Formatter},
@@ -13,6 +15,8 @@ use coarsetime::Instant;
 use dyn_fmt::AsStrFormatExt;
 use lazy_static::lazy_static;
 use tracing::{error, info};
+
+pub use crate::{val::Val, val_li::ValLi};
 
 pub type SQL = Sql<'static>;
 
@@ -69,73 +73,6 @@ impl From<Vec<String>> for Tables {
 impl<const N: usize> From<[&str; N]> for Tables {
   fn from(v: [&str; N]) -> Self {
     Tables(v.map(|i| i.to_string()).into_iter().collect())
-  }
-}
-#[derive(Debug, Clone)]
-pub struct Val(String);
-
-impl Display for Val {
-  fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
-    write!(f, "{}", self.0)
-  }
-}
-
-macro_rules! into_val {
-    ($($ty:ty),+) => {
-        $(
-            impl From<$ty> for Val {
-                fn from(v: $ty) -> Self {
-                    Val(v.to_string())
-                }
-            }
-            impl From<&$ty> for Val {
-                fn from(v: &$ty) -> Self {
-                    Val(v.to_string())
-                }
-            }
-        )+
-    };
-}
-
-into_val!(u8, u16, u32, u64, u128, usize, i8, i16, i32, i64, i128, isize, f32, f64);
-
-pub static REPLACE: [&str; 4] = ["\\", "\'", "\r", "\n"];
-pub static REPLACE_WITH: [&str; 4] = ["\\\\", "\\\'", "\\r", "\\n"];
-
-lazy_static! {
-  static ref AC: AhoCorasick = AhoCorasick::new(REPLACE).unwrap();
-}
-
-impl From<&str> for Val {
-  fn from(v: &str) -> Self {
-    let mut wtr = vec![];
-    AC.try_stream_replace_all(v.as_bytes(), &mut wtr, &REPLACE_WITH)
-      .unwrap();
-
-    wtr.push(b'\'');
-    wtr.insert(0, b'\'');
-
-    Val(String::from_utf8_lossy(&wtr).into())
-  }
-}
-
-impl From<String> for Val {
-  fn from(v: String) -> Self {
-    v.as_str().into()
-  }
-}
-
-pub struct ValLi(pub Vec<Val>);
-
-impl From<()> for ValLi {
-  fn from(_: ()) -> Self {
-    ValLi(vec![])
-  }
-}
-
-impl<T1: Into<Val>, T2: Into<Val>, T3: Into<Val>> From<(T1, T2, T3)> for ValLi {
-  fn from(t: (T1, T2, T3)) -> Self {
-    ValLi(vec![t.0.into(), t.1.into(), t.2.into()])
   }
 }
 
