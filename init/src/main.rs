@@ -7,6 +7,7 @@ use crate::sql::Db;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+  loginit::init();
   let rpc = var("CERESDB_GRPC").unwrap();
   let rpc_config = RpcConfig {
     thread_num: Some(1),
