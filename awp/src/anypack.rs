@@ -8,6 +8,13 @@ use axum::{
   response::{IntoResponse, Response},
 };
 
+#[macro_export]
+macro_rules! any {
+  ()=>{
+    awp::Result<impl Into<awp::anypack::Any>>
+  }
+}
+
 #[derive(Clone)]
 pub struct FnAny<F>(pub F);
 
