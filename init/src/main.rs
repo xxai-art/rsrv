@@ -3,7 +3,7 @@ use std::{env::var, time::Duration};
 
 use ceresdb_client::{Builder, Mode, RpcConfig, RpcContext};
 
-use crate::sql::{Db, Sql};
+use crate::sql::Db;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
