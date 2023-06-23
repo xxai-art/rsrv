@@ -11,3 +11,4 @@ tokio = { version = "1.28.2", features = ["rt-multi-thread"] }
 tracing = "0.1.37"
 loginit = { path = "../loginit" }
 csdb = { path = "../csdb" }
+lazy_static = "1.4.0"

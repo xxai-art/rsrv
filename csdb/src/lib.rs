@@ -7,6 +7,7 @@ use ceresdb_client::{
   Builder, DbClient, Error, Mode, RpcConfig, RpcContext, SqlQueryRequest, SqlQueryResponse,
 };
 use coarsetime::Instant;
+use tracing::{error, info};
 
 pub fn conn_by_env(env: impl AsRef<str>) -> Result<Db, VarError> {
   let grpc = var(env.as_ref())?;
@@ -64,31 +65,31 @@ impl<const N: usize> From<[&str; N]> for Tables {
 }
 
 impl<'a> Sql<'a> {
-  pub async fn noerr_nort(&self) {
-    self.noerr().await;
+  pub async fn ignore_err_no_return(&self) {
+    self.ignore_err().await;
   }
 
-  pub async fn noerr(&self) -> Option<SqlQueryResponse> {
-    match self.exe().await {
+  pub async fn ignore_err(&self) -> Option<SqlQueryResponse> {
+    match self.q().await {
       Ok(r) => return Some(r),
       Err(err) => match err {
         Error::Server(e) => {
-          eprintln!("CERESDB ERROR CODE {}:\n{}\n", e.code, e.msg);
+          error!("CERESDB ERROR CODE {}:\n{}\n", e.code, e.msg);
         }
         _ => {
-          eprintln!("{err}");
+          error!("{err}");
         }
       },
     };
     None
   }
 
-  pub async fn exe(&self) -> Result<SqlQueryResponse, Error> {
+  pub async fn q(&self) -> Result<SqlQueryResponse, Error> {
     let db = &self.db;
     let timer = Instant::now();
     let r = db.client.sql_query(&db.ctx, &self.req).await;
     let cost = timer.elapsed().as_millis();
-    tracing::info!("{}ms\n{}", cost, self.req.sql);
+    info!("{}ms\n{}", cost, self.req.sql);
     r
   }
 }

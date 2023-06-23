@@ -1211,6 +1211,7 @@ dependencies = [
  "anyhow",
  "ceresdb-client",
  "csdb",
+ "lazy_static",
  "loginit",
  "tokio",
  "tracing",

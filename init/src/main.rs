@@ -1,16 +1,13 @@
-use csdb::conn_by_env;
+use csdb::{conn_by_env, Db, Sql};
+use lazy_static::lazy_static;
 
-#[tokio::main]
-async fn main() -> anyhow::Result<()> {
-  loginit::init();
+lazy_static! {
+    pub static ref DB: Db = conn_by_env("CERESDB_GRPC").unwrap();
+    pub static ref SQL_DROP_FAV: Sql<'static> = DB.sql(["fav"], "DROP TABLE fav");
 
-  let db = conn_by_env("CERESDB_GRPC")?;
-
-  db.sql(["fav"], "DROP TABLE fav").noerr_nort().await;
-
-  // id 是用户记录创建时间
-  // ts 是写入时间
-  let fav = r#"CREATE TABLE fav (
+    // ctime 是用户记录创建时间
+    // ts 是写入时间
+    pub static ref SQL_FAV: Sql<'static> = DB.sql(["fav"], r#"CREATE TABLE fav (
   ts TIMESTAMP NOT NULL,
   ctime uint64 NOT NULL,
   uid uint64 NOT NULL,
@@ -22,9 +19,16 @@ async fn main() -> anyhow::Result<()> {
 ) ENGINE=Analytic WITH (
   compression='ZSTD',
   enable_ttl='false'
-);"#;
+)"#);
 
-  db.sql(["fav"], fav).noerr_nort().await;
+}
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+  loginit::init();
+
+  SQL_DROP_FAV.ignore_err_no_return().await;
+  SQL_FAV.ignore_err_no_return().await;
 
   Ok(())
 }
