@@ -23,6 +23,7 @@ awp = { path = "../awp" }
 xxpg = { path = "../xxpg" }
 lazy_static = "1.4.0"
 csdb = { path = "../csdb" }
+coarsetime = "0.1.23"
 
 [dependencies.tokio]
 version = "1.28.2"

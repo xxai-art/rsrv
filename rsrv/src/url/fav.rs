@@ -1,4 +1,7 @@
 use client::Client;
+
+use crate::cs::FAV_INSERT;
+
 // use axum::extract::Host;
 // use client::client;
 // use tower_cookies::Cookies;
@@ -15,11 +18,21 @@ use client::Client;
 pub async fn post(mut client: Client) -> awp::any!() {
   // sync_url_fn!(post(Extension(mut client):Extension<client::Client>) {
   // client(host, &cookies);
-  let user_id = client.logined().await?;
-  dbg!(user_id);
+  let uid = client.logined().await?;
   // dbg!(client.user_id().await?);
   // dbg!(client);
   //输出0-1
+  // CS.sql("INSERT INTO fav (ts,ctime,uid,action,kind,rid) VALUES ({},{},{},{},{},{})");
+  //FAV_INSERT.exe().await;
+  let mut ts = coarsetime::Clock::now_since_epoch().as_millis();
+  let mut ctime = ts;
 
+  // FAV_INSERT.exe(
+  //   ts,
+  //   ctime,
+  //   uid,
+  //   FAV_ACTION_NEW,
+  //   FAV_ACTION_IMG,
+  // ).await;
   Ok(1)
 }
