@@ -1,3 +1,4 @@
+use axum::body::{Body, Bytes};
 use client::Client;
 
 use crate::cs::FAV_INSERT;
@@ -15,7 +16,7 @@ use crate::cs::FAV_INSERT;
 //     SELECT task.id,hash::bytea,w,h,star,laugh FROM bot.task,bot.civitai_img WHERE hash IS NOT NULL AND bot.task.rid=bot.civitai_img.id AND task.adult=0 AND cid=1 ORDER BY star DESC LIMIT 600
 // );
 
-pub async fn post(mut client: Client) -> awp::any!() {
+pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   // sync_url_fn!(post(Extension(mut client):Extension<client::Client>) {
   // client(host, &cookies);
   let uid = client.logined().await?;
@@ -27,12 +28,14 @@ pub async fn post(mut client: Client) -> awp::any!() {
   let mut ts = coarsetime::Clock::now_since_epoch().as_millis();
   let mut ctime = ts;
 
+  dbg!(body);
   // FAV_INSERT.exe(
   //   ts,
   //   ctime,
   //   uid,
   //   FAV_ACTION_NEW,
   //   FAV_ACTION_IMG,
+  //   rid
   // ).await;
   Ok(1)
 }
