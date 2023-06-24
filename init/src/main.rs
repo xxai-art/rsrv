@@ -31,8 +31,8 @@ async fn main() -> anyhow::Result<()> {
 
   let _ = SQL_DROP_FAV.exe(()).await;
   SQL_FAV.exe(()).await?;
-  SQL_INSERT.exe((1, 2, 3, 4, 5, 6)).await?;
-  SQL_INSERT.exe((2, 2, 3, 4, 5, 6)).await?;
+  // SQL_INSERT.exe((1, 2, 3, 4, 5, 6)).await?;
+  // SQL_INSERT.exe((2, 2, 3, 4, 5, 6)).await?;
 
   let li = SQL_SELECT.li(()).await?;
   for i in li {
