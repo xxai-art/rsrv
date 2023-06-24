@@ -21,6 +21,8 @@ x0 = { path = "../x0" }
 xxai = { path = "../xxai" }
 awp = { path = "../awp" }
 xxpg = { path = "../xxpg" }
+lazy_static = "1.4.0"
+csdb = { path = "../csdb" }
 
 [dependencies.tokio]
 version = "1.28.2"
