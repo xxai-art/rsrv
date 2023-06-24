@@ -5,8 +5,7 @@ lazy_static! {
     pub static ref DB: Db = conn_by_env("CERESDB_GRPC").unwrap();
     pub static ref SQL_DROP_FAV: SQL = DB.sql("DROP TABLE fav");
 
-    // ctime 是用户记录创建时间
-    // ts 是写入时间
+    // 插入时间/用户操作时间/用户id/操作/对象类型/对象id
     pub static ref SQL_FAV: SQL = DB.sql(r#"CREATE TABLE fav (
   ts TIMESTAMP NOT NULL,
   ctime uint64 NOT NULL,
