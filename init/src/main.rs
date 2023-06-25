@@ -11,7 +11,7 @@ lazy_static! {
   ctime uint64 NOT NULL,
   uid uint64 NOT NULL,
   action uint8 NOT NULL,
-  kind uint8 NOT NULL,
+  cid uint8 NOT NULL,
   rid uint64 NOT NULL,
   TIMESTAMP KEY(ts),
   PRIMARY KEY(uid, ts)
@@ -19,7 +19,7 @@ lazy_static! {
   compression='ZSTD',
   enable_ttl='false'
 )"#);
-    pub static ref SQL_INSERT: SQL = DB.sql( "INSERT INTO fav (ts,ctime,uid,action,kind,rid) VALUES ({},{},{},{},{},{})");
+    pub static ref SQL_INSERT: SQL = DB.sql( "INSERT INTO fav (ts,ctime,uid,action,cid,rid) VALUES ({},{},{},{},{},{})");
     pub static ref SQL_SELECT: SQL = DB.sql( "SELECT * FROM fav");
     // pub static ref SQL_DELETE: SQL = DB.sql(, "DELETE FROM fav WHERE ts={} AND uid={}");
 }
