@@ -135,7 +135,7 @@ impl VecAny {
   }
 }
 
-pub static MSGPACK: HeaderValue = HeaderValue::from_static("m");
+pub static MSGPACK: HeaderValue = HeaderValue::from_static("text/x-script");
 
 impl From<VecAny> for Response {
   fn from(v: VecAny) -> Self {
