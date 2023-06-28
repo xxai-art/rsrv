@@ -1,7 +1,7 @@
 use axum::body::{Body, Bytes};
 use client::Client;
 
-use crate::cs::FAV_INSERT;
+// use crate::cs::FAV_INSERT;
 
 // use axum::extract::Host;
 // use client::client;
@@ -25,10 +25,10 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   //输出0-1
   // CS.sql("INSERT INTO fav (ts,ctime,uid,action,kind,rid) VALUES ({},{},{},{},{},{})");
   //FAV_INSERT.exe().await;
-  let mut ts = coarsetime::Clock::now_since_epoch().as_millis();
-  let mut ctime = ts;
-
-  dbg!(body);
+  // let mut ts = coarsetime::Clock::now_since_epoch().as_millis();
+  // let mut ctime = ts;
+  //
+  // dbg!(body);
   // FAV_INSERT.exe(
   //   ts,
   //   ctime,
