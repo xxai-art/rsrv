@@ -1,7 +1,6 @@
 [workspace]
 members = [
   "rsrv",
-  "csdb",
   "trt",
   "client",
   "x0",
