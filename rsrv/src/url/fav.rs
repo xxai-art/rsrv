@@ -1,7 +1,6 @@
-use axum::body::{Body, Bytes};
+use axum::body::Bytes;
 use client::Client;
 use serde::{Deserialize, Serialize};
-use serde_json::{Result, Value};
 
 #[derive(Serialize, Debug, Deserialize)]
 struct FavSync(u64, Vec<(u16, u64, u64, u8)>);
