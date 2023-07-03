@@ -1,6 +1,10 @@
 use axum::body::{Body, Bytes};
 use client::Client;
+use serde::{Deserialize, Serialize};
+use serde_json::{Result, Value};
 
+#[derive(Serialize, Debug, Deserialize)]
+struct FavSync(u64, Vec<(u16, u64, u64, u8)>);
 // use crate::cs::FAV_INSERT;
 
 // use axum::extract::Host;
@@ -20,6 +24,14 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   // sync_url_fn!(post(Extension(mut client):Extension<client::Client>) {
   // client(host, &cookies);
   let uid = client.logined().await?;
+
+  //{cid: 2, rid: 215060, ctime: 1688364595987, action: 0}
+  let FavSync(user_id, fav_li) =
+    serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
+
+  dbg!(user_id, fav_li);
+  // let user_id: u64 = body[0].into();
+
   // dbg!(client.user_id().await?);
   // dbg!(client);
   //输出0-1
