@@ -1,6 +1,5 @@
 use axum::{
-  extract::State,
-  http::{HeaderMap, Method, StatusCode},
+  http::{HeaderMap, StatusCode},
   response::{IntoResponse, Response},
 };
 use client::Client;
