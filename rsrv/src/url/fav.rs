@@ -1,7 +1,7 @@
 use axum::body::Bytes;
 use client::Client;
 use serde::{Deserialize, Serialize};
-use x0::KV;
+use x0::{fred::interfaces::HashesInterface, KV};
 use xxpg::Q01;
 
 #[derive(Serialize, Debug, Deserialize)]
@@ -25,6 +25,12 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
         n += 1;
       }
     }
+  }
+  if n > 0 {
+    let p = KV.pipeline();
+    p.hincrby("favSum", user_id, n).await?;
+    p.hset("favId", (user_id, id)).await?;
+    p.all().await?;
   }
   Ok(id)
 }
