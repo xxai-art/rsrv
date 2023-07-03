@@ -6,7 +6,7 @@ pub use tokio_postgres::{self, types::ToSql, Client, Error, NoTls, Row, Statemen
 use tokio_postgres::{error::SqlState, ToStatementType};
 use tracing::error;
 pub use trt::TRT;
-pub use xxpg_proc::{Q, Q1};
+pub use xxpg_proc::{Q, Q01, Q1};
 
 pub struct LazyStatement {
   pub statement: async_lazy::Lazy<tokio_postgres::Statement>,

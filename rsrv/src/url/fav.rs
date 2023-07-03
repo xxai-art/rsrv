@@ -1,7 +1,7 @@
 use axum::body::Bytes;
 use client::Client;
 use serde::{Deserialize, Serialize};
-use xxpg::Q;
+use xxpg::Q01;
 
 #[derive(Serialize, Debug, Deserialize)]
 struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
@@ -14,9 +14,9 @@ struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
 
 // use anypack::url_fn;
 
-Q!(
+Q01!(
   fav_user:
-    INSERT INTO fav.user (user_id,cid,rid,ctime,action) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (user_id, cid, rid, ctime) DO NOTHING
+    INSERT INTO fav.user (user_id,cid,rid,ctime,action) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (user_id, cid, rid, ctime) DO NOTHING RETURNING id
 );
 
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
@@ -27,9 +27,11 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   if client.is_login(user_id).await? {
     //{cid: 2, rid: 215060, ctime: 1688364595987, action: 0}
     for (cid, rid, ctime, action) in fav_li {
-      fav_user(&user_id, &cid, &rid, &ctime, &action).await?;
+      let id = fav_user(&user_id, &cid, &rid, &ctime, &action).await?;
+      dbg!(id);
       //   // id_li.push(vbyte::compress_list(&[cid as u64, rid]));
     }
+
     // fav_user(
     //   fav_li
     //     .into_iter()

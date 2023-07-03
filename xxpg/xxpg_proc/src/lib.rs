@@ -165,3 +165,9 @@ pub fn Q(input: TokenStream) -> TokenStream {
 pub fn Q1(input: TokenStream) -> TokenStream {
   _q("Q1", input)
 }
+
+#[allow(non_snake_case)]
+#[proc_macro]
+pub fn Q01(input: TokenStream) -> TokenStream {
+  _q("Q01", input)
+}
