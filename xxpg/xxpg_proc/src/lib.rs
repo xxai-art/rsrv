@@ -93,7 +93,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
         if pos > 0 {
           row_get.push_str(",\n");
         }
-        row_get.push_str(&format!("  r.get::<_,{t}>({pos})"));
+        row_get.push_str(&format!("r.get::<_,{t}>({pos})"));
         result += &t;
       }
 
@@ -136,6 +136,10 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
           body = format!("Ok({body}?.iter().map(|r|{row_get}).collect())");
         } else if q == "Q1" {
           body = format!("let r = {body}?;\n  Ok({row_get})");
+        } else if q == "Q01" {
+          result = format!("Option<{result}>");
+          body =
+            format!("Ok(match {body}?{{\n    Some(r)=>Some({row_get}),\n    None=>None\n  }})");
         }
       }
 
