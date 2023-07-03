@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use xxpg::Q;
 
 #[derive(Serialize, Debug, Deserialize)]
-struct FavSync(u64, Vec<(u16, u64, u64, u8)>);
+struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
 // use crate::cs::FAV_INSERT;
 
 // use axum::extract::Host;
@@ -26,9 +26,10 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   // let mut id_li = Vec::<Vec<u8>>::with_capacity(fav_li.len());
   if client.is_login(user_id).await? {
     //{cid: 2, rid: 215060, ctime: 1688364595987, action: 0}
-    // for (cid, rid, ctime, action) in fav_li {
-    //   // id_li.push(vbyte::compress_list(&[cid as u64, rid]));
-    // }
+    for (cid, rid, ctime, action) in fav_li {
+      fav_user(&user_id, &cid, &rid, &ctime, &action).await?;
+      //   // id_li.push(vbyte::compress_list(&[cid as u64, rid]));
+    }
     // fav_user(
     //   fav_li
     //     .into_iter()
