@@ -71,7 +71,7 @@ macro_rules! conn {
           pub static ref $var:$crate::Wrap = $crate::Wrap(&[<__ $var>]);
       }
       #[$crate::ctor]
-      fn init() {
+      fn [<init_ $prefix:lower>]() {
         $crate::TRT.block_on(async move {
           use std::future::IntoFuture;
           [<__ $var>].into_future().await;
