@@ -4,7 +4,11 @@
 #![feature(let_chains)]
 
 use awp::anypack::FnAny;
-use axum::{middleware, routing::post, Router};
+use axum::{
+  middleware,
+  routing::{get, post},
+  Router,
+};
 use client::client;
 use trt::TRT;
 mod url;
@@ -48,7 +52,7 @@ fn main() -> anyhow::Result<()> {
   post!(li;fav);
   // post!(li => li;fav=>fav);
 
-  // router = router.route("/sampler", get(crate::url::sampler::get));
+  router = router.route("/nchan", get(crate::url::nchan::get));
 
   let default_port = 8879;
   let port = match std::env::var("RSRV_PORT") {
