@@ -1,6 +1,14 @@
+use axum::{
+  extract::{FromRequest, FromRequestParts},
+  handler::Handler,
+  http::request::Request,
+  response::{IntoResponse, Response},
+};
 use client::Client;
 
-pub async fn get(mut client: Client) {
+pub async fn get(mut client: Client) -> awp::Result<Response> {
+  let user_id = client.user_id().await?;
+  dbg!(user_id);
   // let FavSync(user_id, fav_li) =
   //   serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
   //
@@ -20,4 +28,6 @@ pub async fn get(mut client: Client) {
   //   p.hset("favId", (user_id, id)).await?;
   //   p.all().await?;
   // }
+
+  Ok("".into_response())
 }
