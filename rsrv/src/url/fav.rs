@@ -23,12 +23,14 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   let FavSync(user_id, fav_li) =
     serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
 
+  let mut id = 0;
   // let mut id_li = Vec::<Vec<u8>>::with_capacity(fav_li.len());
   if client.is_login(user_id).await? {
     //{cid: 2, rid: 215060, ctime: 1688364595987, action: 0}
     for (cid, rid, ctime, action) in fav_li {
-      let id = fav_user(&user_id, &cid, &rid, &ctime, &action).await?;
-      dbg!(id);
+      if let Some(_id) = fav_user(&user_id, &cid, &rid, &ctime, &action).await? {
+        id = _id
+      }
       //   // id_li.push(vbyte::compress_list(&[cid as u64, rid]));
     }
 
@@ -59,5 +61,5 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   //   FAV_ACTION_IMG,
   //   rid
   // ).await;
-  Ok(1)
+  Ok(id)
 }
