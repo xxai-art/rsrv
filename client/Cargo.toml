@@ -17,3 +17,4 @@ gid = { path = "../gid" }
 cookie = "0.17.0"
 anyhow = "1.0.71"
 awp = { path = "../awp" }
+vbyte = "0.1.0"

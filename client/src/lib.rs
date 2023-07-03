@@ -148,7 +148,7 @@ pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, 
 
   let mut r = next.run(req).await;
 
-  let t = &xxai::zip_u64([day10(), client])[..];
+  let t = &vbyte::compress_list(&[day10(), client])[..];
   let cookie =
     xxai::cookie_encode([&xxh3_64(&[unsafe { &SK }, t].concat()).to_le_bytes()[..], t].concat());
   r.headers_mut().insert(

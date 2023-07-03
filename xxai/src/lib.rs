@@ -23,13 +23,13 @@ pub fn is_ascii_digit(bytes: impl AsRef<[u8]>) -> bool {
   })
 }
 
-pub fn zip_u64(li: impl IntoIterator<Item = u64>) -> Vec<u8> {
-  let mut u64_li = vec![];
-  for i in li {
-    u64_li.push(i);
-  }
-  vbyte::compress_list(&u64_li)
-}
+// pub fn zip_u64(li: impl IntoIterator<Item = u64>) -> Vec<u8> {
+//   let mut u64_li = vec![];
+//   for i in li {
+//     u64_li.push(i);
+//   }
+//   vbyte::compress_list(&u64_li)
+// }
 
 pub fn unzip_u64(bin: impl AsRef<[u8]>) -> Vec<u64> {
   match vbyte::decompress_list(bin.as_ref()) {

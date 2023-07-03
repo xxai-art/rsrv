@@ -23,9 +23,12 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   let FavSync(user_id, fav_li) =
     serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
 
+  let mut id_li = Vec::<Vec<u8>>::with_capacity(fav_li.len());
   if client.is_login(user_id).await? {
     //{cid: 2, rid: 215060, ctime: 1688364595987, action: 0}
-    dbg!(user_id, fav_li);
+    for (cid, rid, ctime, action) in fav_li {
+      id_li.push(vbyte::compress_list(&[cid as u64, rid]));
+    }
   }
   // let user_id: u64 = body[0].into();
 
