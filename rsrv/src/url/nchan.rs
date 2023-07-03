@@ -1,9 +1,4 @@
-use axum::{
-  extract::{FromRequest, FromRequestParts},
-  handler::Handler,
-  http::request::Request,
-  response::{IntoResponse, Response},
-};
+use axum::response::{IntoResponse, Response};
 use client::Client;
 
 pub async fn get(mut client: Client) -> awp::Result<Response> {
