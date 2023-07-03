@@ -1,6 +1,7 @@
 use axum::body::Bytes;
 use client::Client;
 use serde::{Deserialize, Serialize};
+use xxpg::Q;
 
 #[derive(Serialize, Debug, Deserialize)]
 struct FavSync(u64, Vec<(u16, u64, u64, u8)>);
@@ -12,23 +13,29 @@ struct FavSync(u64, Vec<(u16, u64, u64, u8)>);
 //use x0::R;
 
 // use anypack::url_fn;
-// use xxpg::Q;
-//
-// Q!(
-//     img_li:
-//     SELECT task.id,hash::bytea,w,h,star,laugh FROM bot.task,bot.civitai_img WHERE hash IS NOT NULL AND bot.task.rid=bot.civitai_img.id AND task.adult=0 AND cid=1 ORDER BY star DESC LIMIT 600
-// );
+
+Q!(
+  fav_user:
+    INSERT INTO fav.user (user_id,cid,rid,ctime,action) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (user_id, cid, rid, ctime) DO NOTHING
+);
 
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   let FavSync(user_id, fav_li) =
     serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
 
-  let mut id_li = Vec::<Vec<u8>>::with_capacity(fav_li.len());
+  // let mut id_li = Vec::<Vec<u8>>::with_capacity(fav_li.len());
   if client.is_login(user_id).await? {
     //{cid: 2, rid: 215060, ctime: 1688364595987, action: 0}
-    for (cid, rid, ctime, action) in fav_li {
-      id_li.push(vbyte::compress_list(&[cid as u64, rid]));
-    }
+    // for (cid, rid, ctime, action) in fav_li {
+    //   // id_li.push(vbyte::compress_list(&[cid as u64, rid]));
+    // }
+    // fav_user(
+    //   fav_li
+    //     .into_iter()
+    //     .map(|(cid, rid, ctime, action)| format!("({user_id},{cid},{rid},{ctime},{action})",))
+    //     .collect(),
+    // )
+    // .await?;
   }
   // let user_id: u64 = body[0].into();
 

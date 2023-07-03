@@ -124,7 +124,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
       let up = var.to_uppercase();
       let mut body = format!("xxpg::{q}(SQL_{up}, &[{array}]).await");
       if result.is_empty() {
-        body.push(';');
+        body = format!("{body}?;\n  Ok(())");
         result = "()".into()
       } else {
         if columns_len > 1 {
@@ -142,7 +142,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
       let fn_var =
         format!("\npub async fn {var}{type_li}({arg_li}) -> Result<{result}, xxpg::Error>");
       let func = &format!("{fn_var} {{\n  {body}\n}}");
-      println!("{fn_var}\n");
+      println!("{func}\n");
       f += func;
     }
   }
