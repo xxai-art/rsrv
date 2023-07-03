@@ -1,9 +1,19 @@
-use axum::response::{IntoResponse, Response};
+use axum::{
+  extract::State,
+  http::{HeaderMap, Method, StatusCode},
+  response::{IntoResponse, Response},
+};
 use client::Client;
+use xxai::b64_u64;
 
-pub async fn get(mut client: Client) -> awp::Result<Response> {
-  let user_id = client.user_id().await?;
-  dbg!(user_id);
+pub async fn get(mut client: Client, headers: HeaderMap) -> awp::Result<Response> {
+  if let Some(channel_id) = headers.get("x-channel-id") {
+    let user_id = b64_u64(channel_id);
+    if client.is_login(user_id).await? {
+      return Ok(().into_response());
+    }
+  }
+
   // let FavSync(user_id, fav_li) =
   //   serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
   //
@@ -24,5 +34,5 @@ pub async fn get(mut client: Client) -> awp::Result<Response> {
   //   p.all().await?;
   // }
 
-  Ok("".into_response())
+  Ok((StatusCode::UNAUTHORIZED, "").into_response())
 }

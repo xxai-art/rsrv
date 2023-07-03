@@ -1,6 +1,9 @@
 mod tld;
+
 use anyhow::Result;
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 pub use tld::tld;
+
 const COOKIE_SAFE_CHAR: &str =
   "!#$%&'()*+-./0123456789:<>?@ABDEFGHIJKLMNQRSTUVXYZ[]^_`abdefghijklmnqrstuvxyz{|}~";
 
@@ -50,4 +53,13 @@ pub fn u64_bin(n: u64) -> Vec<u8> {
 pub fn bin_u64(bin: impl AsRef<[u8]>) -> u64 {
   use ordered_varint::Variable;
   u64::decode_variable(bin.as_ref()).unwrap()
+}
+
+pub fn b64_u64(bin: impl AsRef<[u8]>) -> u64 {
+  if let Ok(r) = URL_SAFE_NO_PAD.decode(bin.as_ref()) {
+    let mut bin = [0u8; 8];
+    bin[..r.len()].copy_from_slice(&r);
+    return u64::from_le_bytes(bin);
+  }
+  0
 }

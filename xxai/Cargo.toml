@@ -11,6 +11,7 @@ description = "utils for xxai.art"
 [dependencies]
 anyhow = "1.0.71"
 base-x = "0.2.11"
+base64 = "0.21.2"
 coarsetime = "0.1.23"
 ordered-varint = "2.0.0"
 psl = "2.1.4"

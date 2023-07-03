@@ -2046,6 +2046,7 @@ version = "0.1.2"
 dependencies = [
  "anyhow",
  "base-x",
+ "base64",
  "coarsetime",
  "ordered-varint",
  "psl",
