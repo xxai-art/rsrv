@@ -1,7 +1,10 @@
 use awp::Error;
 use axum::{http::StatusCode, response::IntoResponse};
-use x0::{fred::interfaces::FunctionInterface, R};
-use xxai::bin_u64;
+use x0::{
+  fred::interfaces::{FunctionInterface, SortedSetsInterface},
+  R,
+};
+use xxai::{bin_u64, u64_bin};
 
 const R_CLIENT_USER: &[u8] = &[4, 0];
 const ZMAX: &str = "zmax";
@@ -14,6 +17,12 @@ impl crate::_Client {
     Err(awp::Err(Error::Response(
       (StatusCode::UNAUTHORIZED, "need login".to_string()).into_response(),
     )))
+  }
+
+  pub async fn is_login(&mut self, user_id: u64) -> anyhow::Result<bool> {
+    let key = &[R_CLIENT_USER, &xxai::u64_bin(self.id)].concat()[..];
+    let r: Option<u64> = R.zscore(key, &u64_bin(user_id)[..]).await?;
+    Ok(if let Some(s) = r { s > 0 } else { false })
   }
 
   pub async fn user_id(&mut self) -> anyhow::Result<Option<u64>> {
