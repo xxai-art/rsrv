@@ -1,6 +1,6 @@
 use axum::{
-  extract::Path,
-  http::StatusCode,
+  extract::{Path, State},
+  http::{HeaderMap, Method, StatusCode},
   response::{IntoResponse, Response},
 };
 use client::Client;
@@ -9,10 +9,14 @@ use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::u64_bin;
 
 lazy_static! {
-  static ref URL: String = format!("nchan-{}/", std::env::var("NCHAN").unwrap());
+  static ref NCHAN_URL: String = format!("nchan-{}/", std::env::var("NCHAN").unwrap());
 }
 
-pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Response> {
+pub async fn get(
+  mut client: Client,
+  Path(li): Path<String>,
+  headers: HeaderMap,
+) -> awp::Result<Response> {
   let li = xxai::b64_u64_li(li);
   if li.len() >= 3 {
     let user_id = li[0];
