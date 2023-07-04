@@ -33,4 +33,4 @@ features = ["macros", "rt-multi-thread"]
 
 [dependencies.reqwest]
 version = "0.11.18"
-features = ["tokio-rustls", "http3"]
+features = ["tokio-rustls"]

@@ -35,6 +35,7 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
 
       let nchan_url = format!("{}{channel_id}", &*NCHAN_URL);
       tokio::spawn(async move {
+        dbg!(&nchan_url);
         reqwest::Client::new()
           .post(nchan_url)
           .body("test 1234")
