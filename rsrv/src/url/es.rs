@@ -33,7 +33,7 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
 
       let channel_id = xxai::b64(client_id);
 
-      println!("{}", &*NCHAN_URL);
+      println!("{}{channel_id}", &*NCHAN_URL);
 
       return Ok(
         (
