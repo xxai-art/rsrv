@@ -84,6 +84,10 @@ pub fn u64_bin(n: u64) -> Box<[u8]> {
   Box::from(&n[..i])
 }
 
+pub fn b64(bin: impl AsRef<[u8]>) -> String {
+  URL_SAFE_NO_PAD.encode(bin)
+}
+
 pub fn u64_b64(n: u64) -> String {
   URL_SAFE_NO_PAD.encode(&u64_bin(n))
 }

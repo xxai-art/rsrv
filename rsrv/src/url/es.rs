@@ -12,8 +12,9 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
   if li.len() >= 3 {
     let user_id = li[0];
     if client.is_login(user_id).await? {
-      let client_id = client.id;
       let li = &li[1..];
+
+      let client_id = u64_bin(client.id);
 
       KV.zadd(
         &[&b"nchan:"[..], &u64_bin(user_id)].concat()[..],
@@ -21,9 +22,11 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
         None,
         false,
         false,
-        (xxai::now() as f64, u64_bin(client_id)),
+        (xxai::now() as f64, &client_id[..]),
       )
       .await?;
+
+      let channel_id = xxai::b64(client_id);
 
       return Ok(
         (
@@ -31,7 +34,7 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
           [
             (
               "X-Accel-Redirect",
-              format!("/nchan/{}", xxai::u64_b64(client_id)).as_str(),
+              format!("/nchan/{}", channel_id).as_str(),
             ),
             ("X-Accel-Buffering", "no"),
           ],
