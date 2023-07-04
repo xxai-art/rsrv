@@ -6,10 +6,17 @@ use client::Client;
 use xxai::b64_u64;
 
 pub async fn get(mut client: Client, headers: HeaderMap) -> awp::Result<Response> {
-  if let Some(channel_id) = headers.get("x-channel-id") {
-    let user_id = b64_u64(channel_id);
-    if client.is_login(user_id).await? {
-      return Ok(().into_response());
+  if let Some(uri) = headers.get("x-original-uri") {
+    let uri = uri.to_str()?[1..]
+      .split("/")
+      .into_iter()
+      .collect::<Vec<_>>();
+    if uri.len() == 3 {
+      let channel_id = uri[1];
+      let user_id = b64_u64(channel_id);
+      if client.is_login(user_id).await? {
+        return Ok(().into_response());
+      }
     }
   }
 
