@@ -70,3 +70,17 @@ pub fn b64_u64(bin: impl AsRef<[u8]>) -> u64 {
   }
   0
 }
+
+pub fn u64_b64(n: u64) -> String {
+  let n = n.to_le_bytes();
+  dbg!(n);
+  let mut i = 8;
+  while i > 0 {
+    let p = i - 1;
+    if n[p] != 0 {
+      break;
+    }
+    i = p;
+  }
+  URL_SAFE_NO_PAD.encode(&n[..i])
+}

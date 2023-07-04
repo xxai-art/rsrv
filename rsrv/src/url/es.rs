@@ -11,7 +11,19 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
     let user_id = li[0];
     if client.is_login(user_id).await? {
       let li = &li[1..];
-      dbg!(client.id, li);
+      dbg!(xxai::u64_b64(client.id), li);
+
+      return Ok(
+        (
+          StatusCode::OK,
+          [
+            ("X-Accel-Redirect", "/nchan/my_channel_id"),
+            ("X-Accel-Buffering", "no"),
+          ],
+          "",
+        )
+          .into_response(),
+      );
     }
   }
 
