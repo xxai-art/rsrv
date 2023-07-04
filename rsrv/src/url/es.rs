@@ -30,16 +30,17 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
 
       let channel_id = xxai::b64(client_id);
 
-      es::publish_b64(&channel_id, "good s");
+      let url = format!("/nchan/{}", channel_id);
+
+      tokio::spawn(async move {
+        es::publish_b64(channel_id, "good s");
+      });
 
       return Ok(
         (
           StatusCode::OK,
           [
-            (
-              "X-Accel-Redirect",
-              format!("/nchan/{}", channel_id).as_str(),
-            ),
+            ("X-Accel-Redirect", url.as_str()),
             ("X-Accel-Buffering", "no"),
           ],
           "",
