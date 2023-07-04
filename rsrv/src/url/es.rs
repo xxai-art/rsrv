@@ -9,7 +9,7 @@ use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::u64_bin;
 
 lazy_static! {
-  static ref NCHAN_URL: String = format!("nchan-{}/", std::env::var("NCHAN").unwrap());
+  static ref NCHAN_URL: String = std::env::var("NCHAN").unwrap();
 }
 
 pub async fn get(
@@ -36,6 +36,8 @@ pub async fn get(
       .await?;
 
       let channel_id = xxai::b64(client_id);
+
+      println!("{}", &*NCHAN_URL);
 
       return Ok(
         (
