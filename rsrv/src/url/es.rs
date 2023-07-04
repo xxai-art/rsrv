@@ -1,51 +1,19 @@
 use axum::{
   extract::Path,
-  http::{HeaderMap, StatusCode},
+  http::StatusCode,
   response::{IntoResponse, Response},
 };
 use client::Client;
 
-pub async fn get(
-  mut client: Client,
-  Path(li): Path<String>,
-  headers: HeaderMap,
-) -> awp::Result<Response> {
+pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Response> {
   let li = xxai::b64_u64_li(li);
-  dbg!(client.id, li);
-
-  // if let Some(uri) = headers.get("x-original-uri") {
-  //     let uri = uri.to_str()?[1..]
-  //         .split("/")
-  //         .into_iter()
-  //         .collect::<Vec<_>>();
-  //     if uri.len() == 4 {
-  //         let channel_id = uri[1];
-  //         let user_id = b64_u64(channel_id);
-  //         if client.is_login(user_id).await? {
-  //             return Ok(().into_response());
-  //         }
-  //     }
-  // }
-
-  // let FavSync(user_id, fav_li) =
-  //   serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
-  //
-  // let mut id = 0;
-  // let mut n = 0;
-  // if client.is_login(user_id).await? {
-  //   for (cid, rid, ctime, action) in fav_li {
-  //     if let Some(_id) = fav_user(&user_id, &cid, &rid, &ctime, &action).await? {
-  //       id = _id;
-  //       n += 1;
-  //     }
-  //   }
-  // }
-  // if n > 0 {
-  //   let p = KV.pipeline();
-  //   p.hincrby("favSum", user_id, n).await?;
-  //   p.hset("favId", (user_id, id)).await?;
-  //   p.all().await?;
-  // }
+  if li.len() >= 3 {
+    let user_id = li[0];
+    if client.is_login(user_id).await? {
+      let li = &li[1..];
+      dbg!(client.id, li);
+    }
+  }
 
   Ok((StatusCode::UNAUTHORIZED, "").into_response())
 }
