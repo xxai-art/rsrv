@@ -12,6 +12,20 @@ lazy_static! {
   static ref NCHAN_URL: String = std::env::var("NCHAN").unwrap();
 }
 
+pub fn es_publish_b64(channel_id: impl AsRef<str>, msg: impl Into<String>) {
+  let channel_id = channel_id.as_ref();
+  let msg = msg.into();
+  let nchan_url = format!("{}{channel_id}", &*NCHAN_URL);
+  tokio::spawn(async move {
+    reqwest::Client::new()
+      .post(&nchan_url)
+      .body(msg)
+      .send()
+      .await?;
+    Ok::<(), anyhow::Error>(())
+  });
+}
+
 pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Response> {
   let li = xxai::b64_u64_li(li);
   if li.len() >= 3 {
@@ -33,16 +47,7 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
 
       let channel_id = xxai::b64(client_id);
 
-      let nchan_url = format!("{}{channel_id}", &*NCHAN_URL);
-      tokio::spawn(async move {
-        dbg!(&nchan_url);
-        reqwest::Client::new()
-          .post(nchan_url)
-          .body("test 1234")
-          .send()
-          .await?;
-        Ok::<(), anyhow::Error>(())
-      });
+      es_publish_b64(&channel_id, "good s");
 
       return Ok(
         (
