@@ -33,7 +33,11 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
 
       let channel_id = xxai::b64(client_id);
 
-      println!("{}{channel_id}", &*NCHAN_URL);
+      reqwest::Client::new()
+        .post(format!("{}{channel_id}", &*NCHAN_URL))
+        .body("test 1234")
+        .send()
+        .await?;
 
       return Ok(
         (
