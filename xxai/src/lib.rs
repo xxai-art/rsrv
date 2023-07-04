@@ -73,7 +73,6 @@ pub fn b64_u64(bin: impl AsRef<[u8]>) -> u64 {
 
 pub fn u64_b64(n: u64) -> String {
   let n = n.to_le_bytes();
-  dbg!(n);
   let mut i = 8;
   while i > 0 {
     let p = i - 1;
