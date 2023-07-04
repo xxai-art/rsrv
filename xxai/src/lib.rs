@@ -34,7 +34,14 @@ pub fn is_ascii_digit(bytes: impl AsRef<[u8]>) -> bool {
 //   vbyte::compress_list(&u64_li)
 // }
 
-pub fn unzip_u64(bin: impl AsRef<[u8]>) -> Vec<u64> {
+pub fn b64_u64_li(bin: impl AsRef<[u8]>) -> Vec<u64> {
+  if let Ok(r) = URL_SAFE_NO_PAD.decode(bin.as_ref()) {
+    return bin_u64_li(r);
+  }
+  vec![]
+}
+
+pub fn bin_u64_li(bin: impl AsRef<[u8]>) -> Vec<u64> {
   match vbyte::decompress_list(bin.as_ref()) {
     Ok(r) => r,
     Err(_) => vec![],

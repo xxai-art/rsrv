@@ -11,7 +11,7 @@ use cookie::Cookie;
 use gid::gid;
 use trt::TRT;
 use x0::{fred::interfaces::HashesInterface, R};
-use xxai::unzip_u64;
+use xxai::bin_u64_li;
 use xxhash_rust::xxh3::xxh3_64;
 
 #[derive(Debug, Clone, Copy)]
@@ -74,7 +74,7 @@ fn client_by_cookie(token: &str) -> ClientState {
       if xxh3_64(&[unsafe { &SK }, client].concat())
         == u64::from_le_bytes(c[..TOKEN_LEN].try_into().unwrap())
       {
-        let li = unzip_u64(client);
+        let li = bin_u64_li(client);
         if li.len() == 2 {
           let [pre_day10, client]: [u64; 2] = li.try_into().unwrap();
 

@@ -1,12 +1,18 @@
 use axum::{
+  extract::Path,
   http::{HeaderMap, StatusCode},
   response::{IntoResponse, Response},
 };
 use client::Client;
-use xxai::b64_u64;
 
-pub async fn get(mut client: Client, headers: HeaderMap) -> awp::Result<Response> {
-  dbg!(123);
+pub async fn get(
+  mut client: Client,
+  Path(li): Path<String>,
+  headers: HeaderMap,
+) -> awp::Result<Response> {
+  let li = xxai::b64_u64_li(li);
+  dbg!(client.id, li);
+
   // if let Some(uri) = headers.get("x-original-uri") {
   //     let uri = uri.to_str()?[1..]
   //         .split("/")
