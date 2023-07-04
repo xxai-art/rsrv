@@ -40,6 +40,7 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
       let fav_synced_id = li[3];
       tokio::spawn(async move {
         dbg!(fav_synced, fav_synced_id);
+        // TODO KV.hmget
         es::publish_b64(channel_id, "good s");
       });
 
