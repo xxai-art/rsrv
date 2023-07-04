@@ -52,12 +52,12 @@ pub fn random_bytes(n: usize) -> Vec<u8> {
   (0..n).map(|_| rand::random::<u8>()).collect::<Vec<u8>>()
 }
 
-pub fn u64_bin(n: u64) -> Vec<u8> {
+pub fn u64_bin_ordered(n: u64) -> Vec<u8> {
   use ordered_varint::Variable;
   n.to_variable_vec().unwrap()
 }
 
-pub fn bin_u64(bin: impl AsRef<[u8]>) -> u64 {
+pub fn ordered_bin_u64(bin: impl AsRef<[u8]>) -> u64 {
   use ordered_varint::Variable;
   u64::decode_variable(bin.as_ref()).unwrap()
 }
@@ -71,7 +71,7 @@ pub fn b64_u64(bin: impl AsRef<[u8]>) -> u64 {
   0
 }
 
-pub fn u64_b64(n: u64) -> String {
+pub fn u64_bin(n: u64) -> Box<[u8]> {
   let n = n.to_le_bytes();
   let mut i = 8;
   while i > 0 {
@@ -81,5 +81,9 @@ pub fn u64_b64(n: u64) -> String {
     }
     i = p;
   }
-  URL_SAFE_NO_PAD.encode(&n[..i])
+  Box::from(&n[..i])
+}
+
+pub fn u64_b64(n: u64) -> String {
+  URL_SAFE_NO_PAD.encode(&u64_bin(n))
 }
