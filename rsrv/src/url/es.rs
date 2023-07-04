@@ -16,8 +16,6 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
     let last_event_id = li[1];
 
     if client.is_login(user_id).await? {
-      let _li = &li[2..];
-
       let client_id = u64_bin(client.id);
 
       KV.zadd(
@@ -38,7 +36,10 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
         url = format!("{url}?last_event_id={last_event_id}:0");
       }
 
+      let fav_synced = li[2];
+      let fav_synced_id = li[3];
       tokio::spawn(async move {
+        dbg!(fav_synced, fav_synced_id);
         es::publish_b64(channel_id, "good s");
       });
 
