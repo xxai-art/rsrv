@@ -12,11 +12,7 @@ lazy_static! {
   static ref NCHAN_URL: String = std::env::var("NCHAN").unwrap();
 }
 
-pub async fn get(
-  mut client: Client,
-  Path(li): Path<String>,
-  headers: HeaderMap,
-) -> awp::Result<Response> {
+pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Response> {
   let li = xxai::b64_u64_li(li);
   if li.len() >= 3 {
     let user_id = li[0];
