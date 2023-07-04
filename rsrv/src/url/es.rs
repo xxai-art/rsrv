@@ -4,27 +4,10 @@ use axum::{
   response::{IntoResponse, Response},
 };
 use client::Client;
-use lazy_static::lazy_static;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::u64_bin;
 
-lazy_static! {
-  static ref NCHAN_URL: String = std::env::var("NCHAN").unwrap();
-}
-
-pub fn es_publish_b64(channel_id: impl AsRef<str>, msg: impl Into<String>) {
-  let channel_id = channel_id.as_ref();
-  let msg = msg.into();
-  let nchan_url = format!("{}{channel_id}", &*NCHAN_URL);
-  tokio::spawn(async move {
-    reqwest::Client::new()
-      .post(&nchan_url)
-      .body(msg)
-      .send()
-      .await?;
-    Ok::<(), anyhow::Error>(())
-  });
-}
+use crate::es;
 
 pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Response> {
   let li = xxai::b64_u64_li(li);
@@ -47,7 +30,7 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
 
       let channel_id = xxai::b64(client_id);
 
-      es_publish_b64(&channel_id, "good s");
+      es::publish_b64(&channel_id, "good s");
 
       return Ok(
         (
