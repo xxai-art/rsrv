@@ -1,6 +1,6 @@
 use axum::{
-  extract::{Path, State},
-  http::{HeaderMap, Method, StatusCode},
+  extract::Path,
+  http::StatusCode,
   response::{IntoResponse, Response},
 };
 use client::Client;
@@ -17,7 +17,7 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
   if li.len() >= 3 {
     let user_id = li[0];
     if client.is_login(user_id).await? {
-      let li = &li[1..];
+      let _li = &li[1..];
 
       let client_id = u64_bin(client.id);
 
