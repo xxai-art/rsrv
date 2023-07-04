@@ -4,8 +4,13 @@ use axum::{
   response::{IntoResponse, Response},
 };
 use client::Client;
+use lazy_static::lazy_static;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::u64_bin;
+
+lazy_static! {
+  static ref URL: String = format!("nchan-{}/", std::env::var("NCHAN").unwrap());
+}
 
 pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Response> {
   let li = xxai::b64_u64_li(li);
