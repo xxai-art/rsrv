@@ -52,7 +52,7 @@ fn main() -> anyhow::Result<()> {
   post!(li;fav);
   // post!(li => li;fav=>fav);
 
-  router = router.route("/nchan", get(crate::url::nchan::get));
+  router = router.route("/es", get(crate::url::es::get));
 
   let default_port = 8879;
   let port = match std::env::var("RSRV_PORT") {
