@@ -11,14 +11,14 @@ use x0::{
 use xxai::u64_bin;
 use xxpg::Q;
 
-use crate::{es, es::EVENT_SYNC_FAV, K};
+use crate::{es, es::KIND_SYNC_FAV, K};
 
-const LIMIT: usize = 2000;
+const LIMIT: usize = 1024;
 
 Q!(
 
     fav_li:
-    SELECT id,cid,rid,ctime,action FROM fav.user WHERE user_id=$1 AND id>$2 ORDER BY id LIMIT 2000
+    SELECT id,cid,rid,ctime,action FROM fav.user WHERE user_id=$1 AND id>$2 ORDER BY id LIMIT 1024
 
 );
 
@@ -49,10 +49,7 @@ macro_rules! es_sync {
               json += &format!("{},{},{},{},", i.1, i.2, i.3, i.4);
             }
             let json = &json[..json.len() - 1];
-            es::publish_b64(
-              &channel_id,
-              format!("[{EVENT_SYNC_FAV},{user_id},{json},{id}]"),
-            );
+            es::publish_b64(&channel_id, KIND_SYNC_FAV, format!("{user_id},{json},{id}"));
           }
           if len != LIMIT {
             break;
