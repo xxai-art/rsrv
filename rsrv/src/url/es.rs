@@ -11,7 +11,7 @@ use x0::{
 use xxai::u64_bin;
 use xxpg::Q;
 
-use crate::{es, es::EVENT_SYNC, K};
+use crate::{es, es::EVENT_SYNC_FAV, K};
 
 const LIMIT: usize = 2;
 
@@ -49,7 +49,10 @@ macro_rules! es_sync {
               json += &format!("{},{},{},{},", i.1, i.2, i.3, i.4);
             }
             let json = &json[..json.len() - 1];
-            es::publish_b64(&channel_id, format!("[{user_id},{EVENT_SYNC},{id},{json}]"));
+            es::publish_b64(
+              &channel_id,
+              format!("[{user_id},{EVENT_SYNC_FAV},{id},{json}]"),
+            );
           }
           if len != LIMIT {
             break;

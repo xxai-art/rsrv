@@ -4,7 +4,7 @@ lazy_static! {
   static ref NCHAN_URL: String = std::env::var("NCHAN").unwrap();
 }
 
-pub const EVENT_SYNC: u64 = 1;
+pub const EVENT_SYNC_FAV: u64 = 1;
 
 pub fn publish_b64(channel_id: impl AsRef<str>, msg: impl Into<String>) {
   let channel_id = channel_id.as_ref();
