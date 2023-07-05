@@ -24,7 +24,7 @@ Q!(
 
 macro_rules! es_sync {
   ($user_id:expr, $channel_id: expr, $li: expr) => {
-    tokio::spawn(async move {
+    trt::spawn!({
       let channel_id = $channel_id;
       let user_id = $user_id;
       let p = KV.pipeline();
@@ -58,7 +58,6 @@ macro_rules! es_sync {
       }
 
       dbg!(n, r[1]);
-      Ok::<_, anyhow::Error>(())
     });
   };
 }

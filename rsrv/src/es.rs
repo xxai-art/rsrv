@@ -14,13 +14,12 @@ pub fn publish_b64(client_id: impl AsRef<str>, kind: u16, msg: impl Into<String>
   let client_id = client_id.as_ref();
   let msg = msg.into();
   let nchan_url = format!("{}{client_id}", &*NCHAN_URL);
-  tokio::spawn(async move {
+  trt::spawn!({
     reqwest::Client::new()
       .post(&nchan_url)
       .body(format!("[{kind},{msg}]"))
       .send()
       .await?;
-    Ok::<(), anyhow::Error>(())
   });
 }
 
@@ -36,7 +35,7 @@ pub fn publish_to_user_client(
   msg: impl Into<String>,
 ) {
   let msg = msg.into();
-  tokio::spawn(async move {
+  trt::spawn!({
     let msg = format!("{user_id},{}", msg);
     let sender_client_id = &u64_bin(sender_client_id)[..];
 
@@ -46,7 +45,6 @@ pub fn publish_to_user_client(
         publish_b64(client_id, kind, &msg);
       }
     }
-    Ok::<(), anyhow::Error>(())
   });
 }
 
