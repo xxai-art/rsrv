@@ -9,23 +9,37 @@ use x0::{
   KV,
 };
 use xxai::u64_bin;
+use xxpg::Q;
 
 use crate::{es, K};
+
+const LIMIT: u64 = 2;
+
+Q!(
+
+fav_li:
+  SELECT id,cid,rid,ctime,action FROM fav.user WHERE user_id=$1 AND id>$2 ORDER BY id LIMIT 2
+
+);
 
 macro_rules! es_sync {
   ($user_id:expr, $channel_id: expr, $li: expr) => {
     tokio::spawn(async move {
-      let fav_synced = $li[0];
-      let fav_synced_id = $li[1];
-      dbg!(fav_synced, fav_synced_id);
+      let user_id = $user_id;
       let p = KV.pipeline();
-      p.hincrby(K::FAV_ID, $user_id, 0).await?;
-      p.hincrby(K::FAV_SUM, $user_id, 0).await?;
+      p.hincrby(K::FAV_ID, user_id, 0).await?;
+      p.hincrby(K::FAV_SUM, user_id, 0).await?;
       let r: Vec<u64> = p.all().await?;
-      dbg!(r);
 
-      dbg!(String::from_utf8_lossy(K::FAV_SUM));
-      // TODO KV.hmget
+      let fav_synced_id = $li[0];
+      let fav_synced = $li[1];
+
+      if fav_synced_id < r[0] {
+        let mut n = 0;
+        let mut id = fav_synced_id;
+        fav_li(&user_id, &fav_synced_id).await?;
+      }
+
       es::publish_b64($channel_id, "good s");
       Ok::<_, anyhow::Error>(())
     });
