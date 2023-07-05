@@ -82,7 +82,6 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
           (xxai::now() as f64, &client_id[..]),
         )
         .await?;
-        Ok::<_, anyhow::Error>(())
       });
 
       let url = format!("/nchan/{}", channel_id);

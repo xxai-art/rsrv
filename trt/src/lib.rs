@@ -8,10 +8,10 @@ lazy_static! {
 
 #[macro_export]
 macro_rules! spawn {
-  ($body:stmt) => {
+  ($body:stmt) => {{
     tokio::spawn(async move {
-      $body.await?;
+      $body;
       Ok::<_, trt::anyhow::Error>(())
     })
-  };
+  }};
 }

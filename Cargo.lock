@@ -1458,7 +1458,7 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
- "trt 0.1.4",
+ "trt 0.1.5",
  "vbyte",
  "x0",
  "xxai",
