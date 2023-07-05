@@ -44,17 +44,17 @@ macro_rules! es_sync {
           let len = fav_li.len();
           n += len;
           if len > 0 {
+            id = fav_li.last().unwrap().0;
             let mut json = String::new();
             for i in &fav_li {
               json += &format!("{},{},{},{},", i.1, i.2, i.3, i.4);
             }
             let json = &json[..json.len() - 1];
-            es::publish_b64(&channel_id, format!("[{user_id},{EVENT_SYNC},{json}]"));
+            es::publish_b64(&channel_id, format!("[{user_id},{EVENT_SYNC},{id},{json}]"));
           }
           if len != LIMIT {
             break;
           }
-          id = fav_li.last().unwrap().0;
         }
       }
 
