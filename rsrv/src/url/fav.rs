@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 use x0::{fred::interfaces::HashesInterface, KV};
 use xxpg::Q01;
 
+use crate::K;
+
 #[derive(Serialize, Debug, Deserialize)]
 struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
 
@@ -28,8 +30,8 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   }
   if n > 0 {
     let p = KV.pipeline();
-    p.hincrby("favSum", user_id, n).await?;
-    p.hset("favId", (user_id, id)).await?;
+    p.hincrby(K::FAV_SUM, user_id, n).await?;
+    p.hset(K::FAV_ID, (user_id, id)).await?;
     p.all().await?;
   }
   Ok(id)

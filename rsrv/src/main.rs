@@ -10,9 +10,13 @@ use axum::{
   Router,
 };
 use client::client;
-mod es;
 use trt::TRT;
+
+mod es;
 mod url;
+
+#[allow(non_snake_case)]
+mod K;
 
 fn main() -> anyhow::Result<()> {
   awp::init();

@@ -7,7 +7,7 @@ use client::Client;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::u64_bin;
 
-use crate::es;
+use crate::{es, K};
 
 macro_rules! es_sync {
   ($channel_id: expr, $li: expr) => {
@@ -15,6 +15,9 @@ macro_rules! es_sync {
       let fav_synced = $li[0];
       let fav_synced_id = $li[1];
       dbg!(fav_synced, fav_synced_id);
+      let p = KV.pipeline();
+
+      dbg!(String::from_utf8_lossy(K::FAV_SUM));
       // TODO KV.hmget
       es::publish_b64($channel_id, "good s");
     });
