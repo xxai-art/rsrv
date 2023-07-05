@@ -291,7 +291,7 @@ dependencies = [
  "ctor",
  "gid",
  "http",
- "trt 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "trt 0.1.4",
  "vbyte",
  "x0",
  "xkv 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1458,7 +1458,7 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
- "trt 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "trt 0.1.4",
  "vbyte",
  "x0",
  "xxai",
@@ -2084,6 +2084,8 @@ dependencies = [
 [[package]]
 name = "trt"
 version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3bc585f5b45c94af498ab985e5638cf8c8360b2175df2a24491e9d4a0200d39d"
 dependencies = [
  "lazy_static",
  "tokio",
@@ -2091,10 +2093,9 @@ dependencies = [
 
 [[package]]
 name = "trt"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3bc585f5b45c94af498ab985e5638cf8c8360b2175df2a24491e9d4a0200d39d"
+version = "0.1.5"
 dependencies = [
+ "anyhow",
  "lazy_static",
  "tokio",
 ]
@@ -2388,7 +2389,7 @@ dependencies = [
  "lazy_static",
  "paste",
  "tokio-test",
- "trt 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "trt 0.1.4",
 ]
 
 [[package]]
@@ -2403,7 +2404,7 @@ dependencies = [
  "fred",
  "lazy_static",
  "paste",
- "trt 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "trt 0.1.4",
 ]
 
 [[package]]
@@ -2481,7 +2482,7 @@ dependencies = [
  "paste",
  "tokio",
  "tracing",
- "trt 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "trt 0.1.4",
  "xxai-tokio-postgres",
  "xxpg_proc",
 ]
@@ -2496,5 +2497,5 @@ dependencies = [
  "regex",
  "tokio",
  "tokio-postgres",
- "trt 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
+ "trt 0.1.4",
 ]

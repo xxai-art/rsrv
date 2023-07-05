@@ -1,3 +1,4 @@
+pub use anyhow;
 use lazy_static::lazy_static;
 use tokio::runtime::Runtime;
 
@@ -10,7 +11,7 @@ macro_rules! spawn {
   ($body:stmt) => {
     tokio::spawn(async move {
       $body.await?;
-      Ok::<_, anyhow::Error>(())
+      Ok::<_, trt::anyhow::Error>(())
     })
   };
 }
