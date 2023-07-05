@@ -13,12 +13,12 @@ use xxpg::Q;
 
 use crate::{es, es::EVENT_SYNC_FAV, K};
 
-const LIMIT: usize = 2;
+const LIMIT: usize = 2000;
 
 Q!(
 
     fav_li:
-    SELECT id,cid,rid,ctime,action FROM fav.user WHERE user_id=$1 AND id>$2 ORDER BY id LIMIT 2
+    SELECT id,cid,rid,ctime,action FROM fav.user WHERE user_id=$1 AND id>$2 ORDER BY id LIMIT 2000
 
 );
 
@@ -51,7 +51,7 @@ macro_rules! es_sync {
             let json = &json[..json.len() - 1];
             es::publish_b64(
               &channel_id,
-              format!("[{user_id},{EVENT_SYNC_FAV},{id},{json}]"),
+              format!("[{user_id},{EVENT_SYNC_FAV},{json},{id}]"),
             );
           }
           if len != LIMIT {
@@ -60,6 +60,7 @@ macro_rules! es_sync {
         }
       }
 
+      dbg!(n, r[1]);
       Ok::<_, anyhow::Error>(())
     });
   };
