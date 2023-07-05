@@ -70,18 +70,20 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
 
     if client.is_login(user_id).await? {
       let client_id = u64_bin(client.id);
+      let channel_id = xxai::b64(&client_id[..]);
 
-      KV.zadd(
-        &[&b"nchan:"[..], &u64_bin(user_id)].concat()[..],
-        None,
-        None,
-        false,
-        false,
-        (xxai::now() as f64, &client_id[..]),
-      )
-      .await?;
-
-      let channel_id = xxai::b64(client_id);
+      trt::spawn!({
+        KV.zadd(
+          &*K::nchan(user_id),
+          None,
+          None,
+          false,
+          false,
+          (xxai::now() as f64, &client_id[..]),
+        )
+        .await?;
+        Ok::<_, anyhow::Error>(())
+      });
 
       let url = format!("/nchan/{}", channel_id);
 

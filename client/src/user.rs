@@ -19,7 +19,7 @@ impl crate::_Client {
     )))
   }
 
-  pub async fn is_login(&mut self, user_id: u64) -> anyhow::Result<bool> {
+  pub async fn is_login(&self, user_id: u64) -> anyhow::Result<bool> {
     let key = &[R_CLIENT_USER, &xxai::u64_bin_ordered(self.id)].concat()[..];
     let r: Option<u64> = R.zscore(key, &u64_bin_ordered(user_id)[..]).await?;
     Ok(if let Some(s) = r { s > 0 } else { false })
