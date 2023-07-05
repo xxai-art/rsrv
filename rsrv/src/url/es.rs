@@ -9,6 +9,16 @@ use xxai::u64_bin;
 
 use crate::es;
 
+pub fn es_sync(channel_id: String, li: Box<[u64]>) {
+  tokio::spawn(async move {
+    let fav_synced = li[0];
+    let fav_synced_id = li[1];
+    dbg!(fav_synced, fav_synced_id);
+    // TODO KV.hmget
+    es::publish_b64(channel_id, "good s");
+  });
+}
+
 pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Response> {
   let li = xxai::b64_u64_li(li);
   if li.len() >= 3 {
@@ -31,13 +41,7 @@ pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Resp
 
       let url = format!("/nchan/{}", channel_id);
 
-      let fav_synced = li[1];
-      let fav_synced_id = li[2];
-      tokio::spawn(async move {
-        dbg!(fav_synced, fav_synced_id);
-        // TODO KV.hmget
-        es::publish_b64(channel_id, "good s");
-      });
+      es_sync(channel_id, Box::from(&li[1..]));
 
       return Ok(
         (
