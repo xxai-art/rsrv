@@ -11,4 +11,4 @@ description = "tokio global runtime"
 [dependencies]
 anyhow = "1.0.71"
 lazy_static = "1.4.0"
-tokio = { version = "1.28.2", features = ["rt-multi-thread"] }
+tokio = { version = "1.29.1", features = ["rt-multi-thread"] }

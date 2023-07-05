@@ -9,10 +9,10 @@ anyhow = { version = "1.0.71", features = ["backtrace"] }
 tracing = "0.1.37"
 axum = "0.6.18"
 tower = { version = "0.4.13", features = ["timeout"] }
-const-str = "0.5.5"
+const-str = "0.5.6"
 futures-util = "0.3.28"
 tower-http = { version = "0.4.1", features = ["cors", "tokio"] }
-ctor = "0.2.2"
+ctor = "0.2.3"
 trt = { version = "0.1.4", path = "../trt" }
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
 xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
@@ -23,8 +23,8 @@ awp = { path = "../awp" }
 xxpg = { path = "../xxpg" }
 lazy_static = "1.4.0"
 coarsetime = "0.1.23"
-serde_json = "1.0.99"
-serde = { version = "1.0.164", features = ["derive"] }
+serde_json = "1.0.100"
+serde = { version = "1.0.166", features = ["derive"] }
 vbyte = "0.1.0"
 paste = "1.0.13"
 
@@ -34,7 +34,7 @@ paste = "1.0.13"
 #   "ring"
 # ] }
 [dependencies.tokio]
-version = "1.28.2"
+version = "1.29.1"
 features = ["macros", "rt-multi-thread"]
 
 [dependencies.reqwest]

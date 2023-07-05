@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 axum = "0.6.18"
-ctor = "0.2.2"
-trt = "0.1.4"
+ctor = "0.2.3"
+trt = "0.1.5"
 xkv = "0.1.10"
 xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
 x0 = { path = "../x0" }
