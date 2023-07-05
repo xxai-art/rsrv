@@ -48,11 +48,13 @@ pub fn publish_to_user_client(
   });
 }
 
+const TIMEOUT: u64 = 100;
+
 pub async fn client_id_by_user_id(user_id: u64) -> Vec<Vec<u8>> {
   let key = &*K::nchan(user_id);
   let r = vec![];
-  let now = xxai::now();
   let p = KV.pipeline();
+  let now = xxai::now();
   // p.hincrby(K::FAV_SUM, user_id, n).await?;
   // p.hset(K::FAV_ID, (user_id, id)).await?;
   // p.all().await?;
