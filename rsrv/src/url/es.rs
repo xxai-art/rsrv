@@ -48,8 +48,7 @@ macro_rules! es_sync {
             for i in &fav_li {
               json += &format!("{},{},{},{},", i.1, i.2, i.3, i.4);
             }
-            let json = &json[..json.len() - 1];
-            es::publish_b64(&channel_id, KIND_SYNC_FAV, format!("{user_id},{json},{id}"));
+            es::publish_b64(&channel_id, KIND_SYNC_FAV, format!("{user_id},{json}{id}"));
           }
           if len != LIMIT {
             break;
