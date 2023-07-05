@@ -2431,9 +2431,9 @@ dependencies = [
 
 [[package]]
 name = "xxai-postgres-types"
-version = "0.2.7"
+version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e799708f3d08439b6f84cd1bcd32c8a3de6bc981d9f2d72c9f9bb09d2e37d566"
+checksum = "8b6d9508ff475ed4e7bcdf39a3682845731d75db580a23de36bbe61c936bd682"
 dependencies = [
  "bytes",
  "fallible-iterator",
@@ -2442,9 +2442,9 @@ dependencies = [
 
 [[package]]
 name = "xxai-tokio-postgres"
-version = "0.7.11"
+version = "0.7.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99886fc9d585c161f5773b54d979afeea0dd5f139987259ff18a024f44a94dfa"
+checksum = "7939c912b15ced826e93f6e4c081e3c440052d03c3e6eac94e9da56c0fbddfe6"
 dependencies = [
  "async-trait",
  "byteorder",
