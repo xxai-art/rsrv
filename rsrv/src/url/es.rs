@@ -11,10 +11,9 @@ use x0::{
 use xxai::u64_bin;
 use xxpg::Q;
 
-use crate::{es, K};
+use crate::{es, es::EVENT_SYNC, K};
 
 const LIMIT: usize = 2;
-const EVENT_SYNC: u64 = 1;
 
 Q!(
 
