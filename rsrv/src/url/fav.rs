@@ -5,7 +5,6 @@ use x0::{fred::interfaces::HashesInterface, KV};
 use xxpg::Q01;
 
 use crate::{
-  es,
   es::{publish_to_user_client, KIND_SYNC_FAV},
   K,
 };

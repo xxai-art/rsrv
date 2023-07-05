@@ -33,7 +33,7 @@ macro_rules! es_sync {
       let r: Vec<u64> = p.all().await?;
 
       let fav_synced_id = $li[0];
-      let fav_synced = $li[1];
+      let _fav_synced = $li[1];
       let mut n = 0;
 
       if fav_synced_id < r[0] {
@@ -62,7 +62,7 @@ macro_rules! es_sync {
   };
 }
 
-pub async fn get(mut client: Client, Path(li): Path<String>) -> awp::Result<Response> {
+pub async fn get(client: Client, Path(li): Path<String>) -> awp::Result<Response> {
   let li = xxai::b64_u64_li(li);
   if li.len() >= 3 {
     let user_id = li[0];
