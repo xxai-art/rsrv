@@ -57,8 +57,6 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
 
       r.push_str(&format!("sql_{var}:\"{sql}\""));
 
-      println!("\n❯ {var} :\n{sql}");
-
       let mut result = String::new();
       let mut row_get = String::new();
       let prepare = TRT.block_on(async move { PG.force().await.prepare(sql).await.unwrap() });
@@ -146,7 +144,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
       let fn_var =
         format!("\npub async fn {var}{type_li}({arg_li}) -> Result<{result}, xxpg::Error>");
       let func = &format!("{fn_var} {{\n  {body}\n}}");
-      println!("{func}\n");
+      println!("\n❯ {var} → {result} :\n{sql}");
       f += func;
     }
   }
