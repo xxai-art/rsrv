@@ -1,5 +1,6 @@
+use anyhow::Result;
 use lazy_static::lazy_static;
-use x0::KV;
+use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::{b64, u64_bin};
 
 use crate::K;
@@ -39,7 +40,7 @@ pub fn publish_to_user_client(
     let msg = format!("{user_id},{}", msg);
     let sender_client_id = &u64_bin(sender_client_id)[..];
 
-    for client_id in client_id_by_user_id(user_id).await {
+    for client_id in client_id_by_user_id(user_id).await? {
       if &client_id[..] != sender_client_id {
         let client_id = b64(client_id);
         publish_b64(client_id, kind, &msg);
@@ -50,13 +51,12 @@ pub fn publish_to_user_client(
 
 const TIMEOUT: u64 = 100;
 
-pub async fn client_id_by_user_id(user_id: u64) -> Vec<Vec<u8>> {
+pub async fn client_id_by_user_id(user_id: u64) -> Result<Vec<Vec<u8>>> {
   let key = &*K::nchan(user_id);
-  let r = vec![];
-  let p = KV.pipeline();
   let now = xxai::now();
-  // p.hincrby(K::FAV_SUM, user_id, n).await?;
-  // p.hset(K::FAV_ID, (user_id, id)).await?;
-  // p.all().await?;
-  r
+  let p = KV.pipeline();
+  p.zremrangebyscore(key, "-inf", (now - TIMEOUT) as f64)
+    .await?;
+  p.zrange(key, 0, -1, None, false, None, false).await?;
+  Ok(p.last().await?)
 }
