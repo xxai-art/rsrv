@@ -51,7 +51,7 @@ macro_rules! es_sync {
             let json = &json[..json.len() - 1];
             es::publish_b64(
               &channel_id,
-              format!("[{user_id},{EVENT_SYNC_FAV},{json},{id}]"),
+              format!("[{EVENT_SYNC_FAV},{user_id},{json},{id}]"),
             );
           }
           if len != LIMIT {

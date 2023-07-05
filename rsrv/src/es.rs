@@ -19,3 +19,8 @@ pub fn publish_b64(channel_id: impl AsRef<str>, msg: impl Into<String>) {
     Ok::<(), anyhow::Error>(())
   });
 }
+
+pub fn publish(channel_id: u64, msg: impl Into<String>) {
+  let channel_id = xxai::u64_bin(channel_id);
+  publish_b64(xxai::b64(channel_id), msg.into());
+}
