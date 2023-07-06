@@ -39,7 +39,7 @@ fn max_n(s: &str) -> usize {
 }
 
 fn _q(q: &str, input: TokenStream) -> TokenStream {
-  let mut r = String::new();
+  let mut macro_rules = String::new();
   let mut f = String::new();
 
   for s in input.to_string().split(';') {
@@ -51,11 +51,12 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
         .replace(", ", ",")
         .replace("\r\n", " ")
         .replace(['\n', '\r'], " ");
-      if !r.is_empty() {
-        r.push(',');
+      if !macro_rules.is_empty() {
+        macro_rules.push(',');
       }
 
-      r.push_str(&format!("sql_{var}:\"{sql}\""));
+      let escaped_sql = sql.replace("\"", "\\\"");
+      macro_rules.push_str(&format!("sql_{var}:\"{escaped_sql}\""));
 
       let mut result = String::new();
       let mut row_get = String::new();
@@ -149,10 +150,11 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
     }
   }
   let s = if !f.is_empty() {
-    format!("xxpg::sql!({r});\n{f}")
+    format!("xxpg::sql!({macro_rules});\n{f}")
   } else {
     "".to_string()
   };
+  println!("{s}");
   s.parse::<proc_macro2::TokenStream>().unwrap().into()
 }
 
