@@ -45,7 +45,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
   for s in input.to_string().split(';') {
     if let Some(pos) = s.find(':') {
       let var = &s[..pos].trim();
-      let sql = &s[pos + 1..]
+      let mut sql = s[pos + 1..]
         .trim()
         .replace(", ", ",")
         .replace(" :: ", "::")
@@ -55,16 +55,24 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
         .replace(" < ", "<")
         .replace("\r\n", " ")
         .replace(['\n', '\r'], " ");
+
+      if sql.starts_with('"') {
+        sql = sql[1..sql.len() - 1].to_string()
+      }
+
       if !macro_rules.is_empty() {
         macro_rules.push(',');
       }
 
       let escaped_sql = sql.replace("\"", "\\\"");
+
+      dbg!(&escaped_sql);
       macro_rules.push_str(&format!("sql_{var}:\"{escaped_sql}\""));
 
       let mut result = String::new();
       let mut row_get = String::new();
-      let prepare = TRT.block_on(async move { PG.force().await.prepare(sql).await.unwrap() });
+      let ref_sql = &sql;
+      let prepare = TRT.block_on(async move { PG.force().await.prepare(ref_sql).await.unwrap() });
 
       let columns = prepare.columns();
       let columns_len = columns.len();
@@ -104,7 +112,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
       let mut array = String::new();
       let mut type_li = String::new();
 
-      let n = max_n(sql);
+      let n = max_n(&sql);
       if n > 0 {
         let mut i = 0;
 
@@ -149,7 +157,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
       let fn_var =
         format!("\npub async fn {var}{type_li}({arg_li}) -> Result<{result}, xxpg::Error>");
       let func = &format!("{fn_var} {{\n  {body}\n}}");
-      println!("\n❯ {var} → {result} :\n{sql}");
+      //println!("\n❯ {var} → {result} :\n{sql}");
       f += func;
     }
   }
