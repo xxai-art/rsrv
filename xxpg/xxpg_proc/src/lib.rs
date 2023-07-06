@@ -47,8 +47,12 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
       let var = &s[..pos].trim();
       let sql = &s[pos + 1..]
         .trim()
-        .replace(" :: ", "::")
         .replace(", ", ",")
+        .replace(" :: ", "::")
+        .replace(" = ", "=")
+        .replace(" / ", "/")
+        .replace(" > ", ">")
+        .replace(" < ", "<")
         .replace("\r\n", " ")
         .replace(['\n', '\r'], " ");
       if !macro_rules.is_empty() {
