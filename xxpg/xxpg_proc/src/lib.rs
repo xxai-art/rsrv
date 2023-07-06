@@ -66,7 +66,6 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
 
       let escaped_sql = sql.replace("\"", "\\\"");
 
-      dbg!(&escaped_sql);
       macro_rules.push_str(&format!("sql_{var}:\"{escaped_sql}\""));
 
       let mut result = String::new();
@@ -157,7 +156,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
       let fn_var =
         format!("\npub async fn {var}{type_li}({arg_li}) -> Result<{result}, xxpg::Error>");
       let func = &format!("{fn_var} {{\n  {body}\n}}");
-      //println!("\n❯ {var} → {result} :\n{sql}");
+      println!("\n❯ {var} → {result} :\n{sql}");
       f += func;
     }
   }
@@ -166,7 +165,6 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
   } else {
     "".to_string()
   };
-  println!("{s}");
   s.parse::<proc_macro2::TokenStream>().unwrap().into()
 }
 
