@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[derive(Serialize, Debug, Deserialize)]
-struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
+struct Data(u64, Vec<Vec<u64>>);
 
 Q!(
   fav_ym:
@@ -19,13 +19,18 @@ Q!(
 
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   let mut li = Vec::new();
-  // let FavSync(user_id, fav_li) =
-  //   serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
-  //
+  let Data(user_id, ym_li_li) =
+    serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
   // let mut id = 0;
   // let mut n = 0;
   // let mut json = String::new();
-  // if client.is_login(user_id).await? {
+  if client.is_login(user_id).await? {
+    for ym_li in ym_li_li {
+      let ym = *&ym_li[0];
+      let fav_li = &ym_li[1..];
+      dbg!(xxai::n_to_year_month(ym as u32));
+    }
+  }
   //   // batch_insert!(
   //   //   "INSERT INTO fav.user (user_id,cid,rid,ctime,action) VALUES {} ON CONFLICT (user_id, cid, rid, ctime) DO NOTHING RETURNING id",
   //   //   fav_li.into_iter().map(|x|( user_id,x.0,x.1,x.2,x.3 )).collect::<Vec<_>>()
