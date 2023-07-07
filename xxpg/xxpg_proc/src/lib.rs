@@ -56,15 +56,20 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
         .replace("\r\n", " ")
         .replace(['\n', '\r'], " ");
 
-      if sql.starts_with('"') {
+      let is_str = sql.starts_with('"');
+      if is_str {
         sql = sql[1..sql.len() - 1].to_string()
       }
+
+      let escaped_sql = if is_str {
+        sql.clone()
+      } else {
+        sql.replace("\"", "\\\"")
+      };
 
       if !macro_rules.is_empty() {
         macro_rules.push(',');
       }
-
-      let escaped_sql = sql.replace("\"", "\\\"");
 
       macro_rules.push_str(&format!("sql_{var}:\"{escaped_sql}\""));
 
