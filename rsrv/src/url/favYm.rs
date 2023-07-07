@@ -8,6 +8,7 @@ use xxpg::Q;
 
 use crate::{
   es::{publish_to_user_client, KIND_SYNC_FAV},
+  url::fav::fav_batch_add,
   K,
 };
 
@@ -20,12 +21,10 @@ Q!(
 );
 
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
-  let mut li = Vec::new();
+  let mut result = Vec::new();
   let Data(user_id, ym_li_li) =
     serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
-  // let mut id = 0;
-  // let mut n = 0;
-  // let mut json = String::new();
+
   if client.is_login(user_id).await? {
     let mut map = HashMap::new();
     for ym_li in ym_li_li {
@@ -39,33 +38,21 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
       let ms = xxai::time::ym_ms_range(ym.0, ym.1);
       for i in fav_ym(user_id, ms.0, ms.1).await? {
         let key = (i.0, i.1, i.2);
-        if let Some(action) = map.get(&key) {
-          if *action != i.3 {
-            dbg!(i.3);
-          }
+        if map.remove(&key).is_none() {
+          result.push(i.0 as u64);
+          result.push(i.1);
+          result.push(i.2);
+          result.push(i.3 as _);
         }
       }
     }
+
+    fav_batch_add(
+      client.id,
+      user_id,
+      map.into_iter().map(|(k, v)| (k.0, k.1, k.2, v)).collect(),
+    )
+    .await?;
   }
-  //   // batch_insert!(
-  //   //   "INSERT INTO fav.user (user_id,cid,rid,ctime,action) VALUES {} ON CONFLICT (user_id, cid, rid, ctime) DO NOTHING RETURNING id",
-  //   //   fav_li.into_iter().map(|x|( user_id,x.0,x.1,x.2,x.3 )).collect::<Vec<_>>()
-  //   // );
-  //   for (cid, rid, ctime, action) in fav_li {
-  //     if let Some(_id) = fav_user(&user_id, &cid, &rid, &ctime, &action).await? {
-  //       id = _id;
-  //       n += 1;
-  //       json += &format!("{cid},{rid},{ctime},{action},");
-  //     }
-  //   }
-  // }
-  // if n > 0 {
-  //   let p = KV.pipeline();
-  //   p.hincrby(K::FAV_SUM, user_id, n).await?;
-  //   p.hset(K::FAV_ID, (user_id, id)).await?;
-  //   p.all().await?;
-  //
-  //   publish_to_user_client(client.id, user_id, KIND_SYNC_FAV, format!("{json}{id}"));
-  // }
-  Ok(li)
+  Ok(result)
 }
