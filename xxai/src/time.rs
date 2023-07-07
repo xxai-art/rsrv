@@ -1,12 +1,12 @@
-use chrono::{Datelike, TimeZone, Utc};
+use chrono::{TimeZone, Utc};
 
 // 获取一个月的第一天的毫秒数
 pub fn first_millis_of_month(year: i32, month: u8) -> u64 {
   // 使用 Utc.ymd 创建指定年月的第一天的日期
-  let begin_date = Utc.ymd(year, month as _, 1);
+  let begin_date = Utc.with_ymd_and_hms(year, month as _, 1, 0, 0, 0).unwrap();
 
   // 使用 timestamp_millis 方法获取日期对应的毫秒级时间戳
-  begin_date.and_hms(0, 0, 0).timestamp_millis() as u64
+  begin_date.timestamp_millis() as u64
 }
 
 // 根据年份和月份计算该月起始和结束的时间戳

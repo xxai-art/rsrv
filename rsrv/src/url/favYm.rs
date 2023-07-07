@@ -3,14 +3,9 @@ use std::collections::HashMap;
 use axum::body::Bytes;
 use client::Client;
 use serde::{Deserialize, Serialize};
-use x0::{fred::interfaces::HashesInterface, KV};
 use xxpg::Q;
 
-use crate::{
-  es::{publish_to_user_client, KIND_SYNC_FAV},
-  url::fav::fav_batch_add,
-  K,
-};
+use crate::url::fav::fav_batch_add;
 
 #[derive(Serialize, Debug, Deserialize)]
 struct Data(u64, Vec<Vec<u64>>);
@@ -28,7 +23,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   if client.is_login(user_id).await? {
     let mut map = HashMap::new();
     for ym_li in ym_li_li {
-      let ym = *&ym_li[0];
+      let ym = ym_li[0];
       for i in ym_li[1..].chunks(4) {
         map.insert((i[0] as u16, i[1], i[2]), i[3] as i8);
         // dbg!(cid, rid, ctime, action);

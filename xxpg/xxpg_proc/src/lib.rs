@@ -64,7 +64,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
       let escaped_sql = if is_str {
         sql.clone()
       } else {
-        sql.replace("\"", "\\\"")
+        sql.replace('\"', "\\\"")
       };
 
       if !macro_rules.is_empty() {
