@@ -1,14 +1,14 @@
 use chrono::{Datelike, TimeZone, Utc};
 
 // 根据年份和月份计算该月起始和结束的时间戳
-fn ym_ms_range(year: i32, month: u32) -> (u64, u64) {
+pub fn ym_ms_range(year: i32, month: u32) -> (u64, u64) {
   // 使用 Utc.ymd 创建指定年月的第一天的日期
   let begin_date = Utc.ymd(year, month, 1);
 
   // 使用 with_month 计算下个月的日期
   // 注意 with_month 返回一个 Option，所以需要使用 unwrap_or_else 处理错误情况
   let next_month_date = begin_date
-    .with_month(month % 12 + 1)
+    .with_month(month + 1)
     .unwrap_or_else(|| Utc.ymd(year + 1, 1, 1));
 
   // 由于 Rust 的时间戳默认单位为秒，所以我们需要把这两个时间转换为毫秒级的时间戳
@@ -23,9 +23,9 @@ fn ym_ms_range(year: i32, month: u32) -> (u64, u64) {
   (begin_ms, end_ms)
 }
 
-fn main() {
-  // 测试函数
-  let (begin_ms, end_ms) = ym_ms_range(2023, 7);
-  println!("For 2023, 7, the first millisecond is: {}", begin_ms);
-  println!("For 2023, 7, the last millisecond is: {}", end_ms);
-}
+// fn main() {
+//   // 测试函数
+//   let (begin_ms, end_ms) = ym_ms_range(2023, 7);
+//   println!("For 2023, 7, the first millisecond is: {}", begin_ms);
+//   println!("For 2023, 7, the last millisecond is: {}", end_ms);
+// }
