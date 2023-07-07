@@ -2575,7 +2575,7 @@ dependencies = [
 
 [[package]]
 name = "xxpg_proc"
-version = "0.1.6"
+version = "0.1.7"
 dependencies = [
  "async-lazy",
  "lazy_static",
