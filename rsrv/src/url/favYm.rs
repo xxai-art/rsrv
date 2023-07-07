@@ -28,7 +28,9 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
     for ym_li in ym_li_li {
       let ym = *&ym_li[0];
       let fav_li = &ym_li[1..];
-      dbg!(xxai::n_to_year_month(ym as u32));
+      let ym = xxai::time::n_to_year_month(ym as _);
+
+      dbg!(xxai::time::ym_ms_range(ym.0, ym.1));
     }
   }
   //   // batch_insert!(

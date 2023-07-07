@@ -1,5 +1,5 @@
+pub mod time;
 mod tld;
-
 use anyhow::Result;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 pub use tld::tld;
@@ -90,8 +90,4 @@ pub fn b64(bin: impl AsRef<[u8]>) -> String {
 
 pub fn u64_b64(n: u64) -> String {
   URL_SAFE_NO_PAD.encode(&u64_bin(n))
-}
-
-pub fn n_to_year_month(n: u32) -> (u32, u32) {
-  (n / 12, n % 12)
 }
