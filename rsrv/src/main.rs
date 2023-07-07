@@ -2,6 +2,7 @@
 #![feature(impl_trait_in_assoc_type)]
 #![feature(type_alias_impl_trait)]
 #![feature(let_chains)]
+#![allow(non_snake_case)]
 
 use awp::anypack::FnAny;
 use axum::{
