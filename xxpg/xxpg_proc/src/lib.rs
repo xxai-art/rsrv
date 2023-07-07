@@ -130,7 +130,8 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
           let t = &format!("T{i}");
           let v = &format!("_{i}");
           type_li += &format!("{t}:xxpg::ToSql+Sync");
-          arg_li += &format!("{v}:&{t}");
+          arg_li += &format!("{v}:{t}");
+          array.push('&');
           array += v;
         }
         type_li = format!("<{type_li}>");

@@ -30,7 +30,9 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
       let fav_li = &ym_li[1..];
       let ym = xxai::time::n_to_year_month(ym as _);
 
-      dbg!(xxai::time::ym_ms_range(ym.0, ym.1));
+      let ms = xxai::time::ym_ms_range(ym.0, ym.1);
+      let li = fav_ym(user_id, ms.0, ms.1).await?;
+      dbg!(li);
     }
   }
   //   // batch_insert!(

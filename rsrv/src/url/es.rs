@@ -43,7 +43,7 @@ macro_rules! es_sync {
       if fav_synced_id < r[0] {
         let mut id = fav_synced_id;
         loop {
-          let fav_li = fav_li(&user_id, &id).await?;
+          let fav_li = fav_li(user_id, id).await?;
           let len = fav_li.len();
           n += len;
           if len > 0 {
@@ -64,7 +64,7 @@ macro_rules! es_sync {
       if (fav_synced + n as u64) != sum {
         let mut total = 0;
         let mut json = String::new();
-        for i in fav_ym_n(&user_id).await? {
+        for i in fav_ym_n(user_id).await? {
           let ym = i.0;
           let ym = 12 * (ym / 100) + ym % 100;
 

@@ -13,8 +13,8 @@ use crate::{
 struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
 
 Q01!(
-    fav_user:
-    INSERT INTO fav.user (user_id,cid,rid,ctime,action) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (user_id, cid, rid, ctime) DO NOTHING RETURNING id
+fav_user:
+INSERT INTO fav.user (user_id,cid,rid,ctime,action) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (user_id, cid, rid, ctime) DO NOTHING RETURNING id
 );
 
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
@@ -30,7 +30,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
     //   fav_li.into_iter().map(|x|( user_id,x.0,x.1,x.2,x.3 )).collect::<Vec<_>>()
     // );
     for (cid, rid, ctime, action) in fav_li {
-      if let Some(_id) = fav_user(&user_id, &cid, &rid, &ctime, &action).await? {
+      if let Some(_id) = fav_user(user_id, cid, rid, ctime, action).await? {
         id = _id;
         n += 1;
         json += &format!("{cid},{rid},{ctime},{action},");
