@@ -1,3 +1,4 @@
+use awp::anypack::Any;
 use axum::body::Bytes;
 use client::Client;
 use serde::{Deserialize, Serialize};
@@ -43,23 +44,40 @@ use xxpg::Q01;
 // }
 //
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
+  let r: Any;
   if let Some(first) = body.first() {
     match *first {
-      b'[' => {}
       b'"' => {
         let t = xxai::b64_u64_li(&body[1..body.len() - 1]);
         let cid = t[0];
         match cid {
-          CID_USER => {}
-          _ => {}
+          crate::cid::CID_USER => {
+            let result: Vec<Option<String>> = R
+              .hmget(
+                "userName",
+                t[1..]
+                  .into_iter()
+                  .map(|i| xxai::u64_bin(*i))
+                  .collect::<Vec<_>>(),
+              )
+              .await?;
+            r = result.into();
+          }
+          _ => {
+            r = Any::Null;
+          }
         }
-        dbg!(cid, t);
       }
-      _ => {}
+      // b'[' => {}
+      _ => {
+        r = Any::Null;
+      }
     }
+  } else {
+    r = Any::Null;
   }
 
-  Ok("[]")
+  Ok(r)
   //   let FavSync(user_id, fav_li) =
   //     serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
   //

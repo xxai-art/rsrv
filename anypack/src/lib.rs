@@ -1,8 +1,7 @@
 #![feature(min_specialization)]
 
 mod tuple;
-
-use std::ops::Deref;
+use std::{iter, ops::Deref};
 
 pub use axum::http::HeaderValue;
 use axum::response::{IntoResponse, Response};
@@ -31,6 +30,7 @@ macro_rules! any {
         paste! {
             #[derive(Clone, Debug)]
             pub enum Any {
+                Null,
                 $([<$cls:camel>]($cls),)+
             }
         }
@@ -43,12 +43,36 @@ macro_rules! any {
             {
                 paste! {
                     match self {
+                        Any::Null => {
+    vec.extend(iter::once(0xc0u8));
+    1
+
+                        },
                         $(Any::[< $cls:camel>](t)=>Packable::pack(&t, vec)),+
                     }
                 }
             }
         }
     };
+}
+
+impl<T: Into<Any>> From<Option<T>> for Any {
+  fn from(t: Option<T>) -> Self {
+    match t {
+      Some(t) => t.into(),
+      None => Any::Null,
+    }
+  }
+}
+
+impl<const N: usize, T: Into<Any>> From<[T; N]> for Any {
+  fn from(li: [T; N]) -> Self {
+    let mut r = VecAny::new();
+    for i in li {
+      r.push(i.into());
+    }
+    r.into()
+  }
 }
 
 impl<T: Into<Any>> From<Vec<T>> for Any {
