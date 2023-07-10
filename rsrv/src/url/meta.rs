@@ -1,13 +1,13 @@
-// use axum::body::Bytes;
-// use client::Client;
-// use serde::{Deserialize, Serialize};
-// use x0::{fred::interfaces::HashesInterface, KV};
-// use xxpg::Q01;
-//
-// use crate::{
-//   es::{publish_to_user_client, KIND_SYNC_FAV},
-//   K,
-// };
+use axum::body::Bytes;
+use client::Client;
+use serde::{Deserialize, Serialize};
+use x0::{fred::interfaces::HashesInterface, KV};
+use xxpg::Q01;
+
+use crate::{
+  es::{publish_to_user_client, KIND_SYNC_FAV},
+  K,
+};
 //
 // #[derive(Serialize, Debug, Deserialize)]
 // struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
@@ -46,14 +46,14 @@
 //   Ok(id)
 // }
 //
-// pub async fn post(client: Client, body: Bytes) -> awp::any!() {
-//   let FavSync(user_id, fav_li) =
-//     serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
-//
-//   Ok(if client.is_login(user_id).await? {
-//     fav_batch_add(client.id, user_id, fav_li).await?
-//   } else {
-//     0
-//   })
-// }
-//
+pub async fn post(client: Client, body: Bytes) -> awp::any!() {
+  Ok(0)
+  //   let FavSync(user_id, fav_li) =
+  //     serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
+  //
+  //   Ok(if client.is_login(user_id).await? {
+  //     fav_batch_add(client.id, user_id, fav_li).await?
+  //   } else {
+  //     0
+  //   })
+}
