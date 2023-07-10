@@ -35,7 +35,8 @@ pub fn is_ascii_digit(bytes: impl AsRef<[u8]>) -> bool {
 // }
 
 pub fn b64_u64_li(bin: impl AsRef<[u8]>) -> Vec<u64> {
-  if let Ok(r) = URL_SAFE_NO_PAD.decode(bin.as_ref()) {
+  let bin = bin.as_ref();
+  if let Ok(r) = URL_SAFE_NO_PAD.decode(bin) {
     return bin_u64_li(r);
   }
   vec![]
