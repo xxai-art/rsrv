@@ -13,6 +13,7 @@ use axum::{
 use client::client;
 use trt::TRT;
 
+pub mod cid;
 mod es;
 mod url;
 
