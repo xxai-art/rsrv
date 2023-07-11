@@ -13,8 +13,8 @@ use crate::{
 // struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
 
 Q01!(
-fav_user:
-INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (uid, cid, rid, ts) DO NOTHING RETURNING id
+    fav_user:
+    INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (uid, cid, rid, ts) DO NOTHING RETURNING id
 );
 
 pub async fn fav_batch_add(
@@ -49,12 +49,16 @@ pub async fn fav_batch_add(
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   // let FavSync(uid, fav_li) =
   let li: Vec<u64> = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
-  dbg!(li);
-  // Ok(if client.is_login(uid).await? {
-  //   fav_batch_add(client.id, uid, fav_li).await?
-  // } else {
-  //   0
-  // })
+  let uid = li[0];
+  if client.is_login(uid).await? {
+    let last_sync_id = li[1];
+    for i in (&li[2..]).chunks_exact(4) {
+      dbg!(uid, last_sync_id, i);
+    }
+    //   fav_batch_add(client.id, uid, fav_li).await?
+    // } else {
+    //   0
+  };
   Ok(0)
 }
 
