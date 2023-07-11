@@ -49,16 +49,23 @@ pub async fn fav_batch_add(
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   // let FavSync(uid, fav_li) =
   let li: Vec<u64> = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
-  let uid = li[0];
-  if client.is_login(uid).await? {
-    let last_sync_id = li[1];
-    for i in (&li[2..]).chunks_exact(4) {
-      dbg!(uid, last_sync_id, i);
-    }
-    //   fav_batch_add(client.id, uid, fav_li).await?
-    // } else {
-    //   0
-  };
+  if li.len() > 2 {
+    let uid = li[0];
+    if client.is_login(uid).await? {
+      let last_sync_id = li[1];
+
+      for i in (&li[2..]).chunks_exact(4) {
+        dbg!(uid, last_sync_id, i);
+      }
+
+      // > id
+
+      //
+      //   fav_batch_add(client.id, uid, fav_li).await?
+      // } else {
+      //   0
+    };
+  }
   Ok(0)
 }
 
