@@ -33,16 +33,16 @@ macro_rules! sql {
             }
         )+
 
-            mod private {
-                #[$crate::ctor]
-                fn pg_statement_init() {
-                    $crate::TRT.block_on(async move {
-                        $crate::paste!{
-                            $(super::[<$var:upper>].statement.force().await;)+
-                        }
-                    });
-                }
-            }
+       $crate::paste!{
+           mod [<private $(_$var )+>] {
+               #[$crate::ctor]
+               fn pg_statement_init() {
+                   $crate::TRT.block_on(async move {
+                       $(super::[<$var:upper>].statement.force().await;)+
+                   });
+               }
+           }
+       }
     };
 }
 

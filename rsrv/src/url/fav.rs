@@ -2,7 +2,7 @@ use axum::body::Bytes;
 use client::Client;
 use serde::{Deserialize, Serialize};
 use x0::{fred::interfaces::HashesInterface, KV};
-use xxpg::Q01;
+use xxpg::{Q, Q01};
 
 use crate::{
   es::{publish_to_user_client, KIND_SYNC_FAV},
@@ -13,11 +13,14 @@ use crate::{
 // struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
 
 Q01!(
-fav_user:
-INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (uid, cid, rid, ts) DO NOTHING RETURNING id;
+    fav_user:
+    INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (uid, cid, rid, ts) DO NOTHING RETURNING id;
 
-fav_li:
-SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id;
+);
+
+Q!(
+    fav_li:
+        SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id;
 );
 
 pub async fn fav_batch_add(
@@ -56,6 +59,9 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
     let uid = li[0];
     if client.is_login(uid).await? {
       let last_sync_id = li[1];
+
+      let mut fav_li = fav_li(uid, last_sync_id).await?;
+      dbg!(fav_li);
 
       for i in (&li[2..]).chunks_exact(4) {
         dbg!(uid, last_sync_id, i);
