@@ -13,8 +13,11 @@ use crate::{
 // struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
 
 Q01!(
-    fav_user:
-    INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (uid, cid, rid, ts) DO NOTHING RETURNING id
+fav_user:
+INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (uid, cid, rid, ts) DO NOTHING RETURNING id;
+
+fav_li:
+SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id;
 );
 
 pub async fn fav_batch_add(
