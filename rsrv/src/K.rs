@@ -13,6 +13,6 @@ macro_rules! key {
 
 key!(favSum, favId);
 
-pub fn nchan(user_id: u64) -> Vec<u8> {
-  [&b"nchan:"[..], &u64_bin(user_id)].concat()
+pub fn nchan(uid: u64) -> Vec<u8> {
+  [&b"nchan:"[..], &u64_bin(uid)].concat()
 }

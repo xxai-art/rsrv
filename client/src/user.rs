@@ -11,7 +11,7 @@ const ZMAX: &str = "zmax";
 
 impl crate::_Client {
   pub async fn logined(&mut self) -> std::result::Result<u64, awp::Err> {
-    if let Some(id) = self.user_id().await? {
+    if let Some(id) = self.uid().await? {
       return Ok(id);
     }
     Err(awp::Err(Error::Response(
@@ -19,20 +19,20 @@ impl crate::_Client {
     )))
   }
 
-  pub async fn is_login(&self, user_id: u64) -> anyhow::Result<bool> {
+  pub async fn is_login(&self, uid: u64) -> anyhow::Result<bool> {
     let key = &[R_CLIENT_USER, &xxai::u64_bin_ordered(self.id)].concat()[..];
-    let r: Option<u64> = R.zscore(key, &u64_bin_ordered(user_id)[..]).await?;
+    let r: Option<u64> = R.zscore(key, &u64_bin_ordered(uid)[..]).await?;
     Ok(if let Some(s) = r { s > 0 } else { false })
   }
 
-  pub async fn user_id(&mut self) -> anyhow::Result<Option<u64>> {
-    Ok(if let Some(id) = self._user_id {
+  pub async fn uid(&mut self) -> anyhow::Result<Option<u64>> {
+    Ok(if let Some(id) = self._uid {
       if id == 0 {
         let key = [R_CLIENT_USER, &xxai::u64_bin_ordered(self.id)].concat();
         // let id: Option<u64> = R.fcall_ro(ZMAX, vec![&key[..]], vec![0]).await?;
         let id: Option<Vec<u8>> = R.fcall_ro(ZMAX, vec![&key[..]], vec![0]).await.unwrap();
         let id = id.map(ordered_bin_u64);
-        self._user_id = id;
+        self._uid = id;
         id
       } else {
         Some(id)

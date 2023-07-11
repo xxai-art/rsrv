@@ -32,16 +32,16 @@ pub fn publish_b64(client_id: impl AsRef<str>, kind: u16, msg: impl Into<String>
 
 pub fn publish_to_user_client(
   sender_client_id: u64,
-  user_id: u64,
+  uid: u64,
   kind: u16,
   msg: impl Into<String>,
 ) {
   let msg = msg.into();
   trt::spawn!({
-    let msg = format!("{user_id},{}", msg);
+    let msg = format!("{uid},{}", msg);
     let sender_client_id = &u64_bin(sender_client_id)[..];
 
-    for client_id in client_id_by_user_id(user_id).await? {
+    for client_id in client_id_by_uid(uid).await? {
       if &client_id[..] != sender_client_id {
         let client_id = b64(client_id);
         publish_b64(client_id, kind, &msg);
@@ -52,8 +52,8 @@ pub fn publish_to_user_client(
 
 const TIMEOUT: u64 = 100;
 
-pub async fn client_id_by_user_id(user_id: u64) -> Result<Vec<Vec<u8>>> {
-  let key = &*K::nchan(user_id);
+pub async fn client_id_by_uid(uid: u64) -> Result<Vec<Vec<u8>>> {
+  let key = &*K::nchan(uid);
   let now = xxai::now();
   let p = KV.pipeline();
   p.zremrangebyscore(key, "-inf", (now - TIMEOUT) as f64)

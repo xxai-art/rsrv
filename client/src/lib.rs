@@ -17,7 +17,7 @@ use xxhash_rust::xxh3::xxh3_64;
 #[derive(Debug, Clone, Copy)]
 pub struct _Client {
   pub id: u64,
-  _user_id: Option<u64>,
+  _uid: Option<u64>,
 }
 
 pub type Client = Extension<_Client>;
@@ -123,7 +123,7 @@ pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, 
           ClientState::Ok(id) => {
             req.extensions_mut().insert(_Client {
               id,
-              _user_id: Some(0),
+              _uid: Some(0),
             });
             return Ok(next.run(req).await);
           }
@@ -135,7 +135,7 @@ pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, 
   }
 
   let host = xxai::tld(header_get(&req, http::header::HOST).unwrap());
-  let _user_id = if client == 0 {
+  let _uid = if client == 0 {
     client = gid!(client);
     Some(0)
   } else {
@@ -143,7 +143,7 @@ pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, 
   };
   req.extensions_mut().insert(_Client {
     id: client,
-    _user_id,
+    _uid,
   });
 
   let mut r = next.run(req).await;

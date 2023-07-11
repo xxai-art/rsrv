@@ -22,7 +22,7 @@ mod K;
 
 fn main() -> anyhow::Result<()> {
   // let prepare =
-  //   TRT.block_on(async move { xxpg::PG.force().await.prepare(" INSERT INTO fav.user (user_id,cid,rid,ctime,action) VALUES ($1) ON CONFLICT (user_id, cid, rid, ctime) DO NOTHING RETURNING id").await.unwrap() });
+  //   TRT.block_on(async move { xxpg::PG.force().await.prepare(" INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES ($1) ON CONFLICT (uid, cid, rid, ts) DO NOTHING RETURNING id").await.unwrap() });
 
   awp::init();
 
