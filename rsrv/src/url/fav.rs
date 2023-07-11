@@ -9,8 +9,8 @@ use crate::{
   K,
 };
 
-#[derive(Serialize, Debug, Deserialize)]
-struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
+// #[derive(Serialize, Debug, Deserialize)]
+// struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
 
 Q01!(
 fav_user:
@@ -47,14 +47,15 @@ pub async fn fav_batch_add(
 }
 
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
-  let FavSync(uid, fav_li) =
-    serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
-
-  Ok(if client.is_login(uid).await? {
-    fav_batch_add(client.id, uid, fav_li).await?
-  } else {
-    0
-  })
+  // let FavSync(uid, fav_li) =
+  let li: Vec<u64> = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
+  dbg!(li);
+  // Ok(if client.is_login(uid).await? {
+  //   fav_batch_add(client.id, uid, fav_li).await?
+  // } else {
+  //   0
+  // })
+  Ok(0)
 }
 
 // macro_rules! batch_insert {
