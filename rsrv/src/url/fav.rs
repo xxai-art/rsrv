@@ -19,8 +19,10 @@ Q01!(
 );
 
 Q!(
+    fav_rm:
+    DELETE FROM fav.user WHERE uid=$1 AND cid=$2 AND rid=$3;
     fav_li:
-        SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id;
+    SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id;
 );
 
 pub async fn fav_batch_add(
@@ -59,11 +61,22 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
     let uid = li[0];
     if client.is_login(uid).await? {
       let last_sync_id = li[1];
+      let li: Vec<_> = (&li[2..])
+        .chunks_exact(4)
+        .map(|i| (i[0] as u16, i[1], i[2], i[3] as i8))
+        .collect();
+      for i in &li {
+        fav_rm(uid, i.0, i.1).await?
+      }
 
       let mut fav_li = fav_li(uid, last_sync_id).await?;
       dbg!(fav_li);
+      for i in li {
+        dbg!(i);
+      }
 
-      for i in (&li[2..]).chunks_exact(4) {
+      // struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
+      for i in li {
         dbg!(uid, last_sync_id, i);
       }
 
