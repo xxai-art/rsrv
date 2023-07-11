@@ -58,7 +58,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
         dbg!(uid, last_sync_id, i);
       }
 
-      // > id
+      // TODO select > id 返回，如果没有，就返回last id
 
       //
       //   fav_batch_add(client.id, uid, fav_li).await?
