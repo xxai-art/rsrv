@@ -71,7 +71,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
 
       let mut fav_li = fav_li(uid, last_sync_id).await?;
       dbg!(fav_li);
-      for i in li {
+      for i in &li {
         dbg!(i);
       }
 
