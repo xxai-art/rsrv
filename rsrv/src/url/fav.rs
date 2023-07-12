@@ -56,6 +56,7 @@ pub async fn fav_batch_add(
 
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   // let FavSync(uid, fav_li) =
+  let mut r = Vec::new();
   let li: Vec<u64> = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
   if li.len() > 2 {
     let uid = li[0];
@@ -65,14 +66,21 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
         .chunks_exact(4)
         .map(|i| (i[0] as u16, i[1], i[2], i[3] as i8))
         .collect();
+
       for i in &li {
         fav_rm(uid, i.0, i.1).await?
       }
 
-      let mut fav_li = fav_li(uid, last_sync_id).await?;
-      dbg!(fav_li);
+      for i in fav_li(uid, last_sync_id).await? {
+        r.push(i.1 as u64);
+        r.push(i.2);
+        r.push(i.3);
+        r.push(i.4 as u64);
+      }
+
+      // let r = vec![];
       for i in &li {
-        dbg!(i);
+        // id,cid,rid,ts,aid
       }
 
       // struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
@@ -88,7 +96,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
       //   0
     };
   }
-  Ok(0)
+  Ok(r)
 }
 
 // macro_rules! batch_insert {
