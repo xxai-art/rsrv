@@ -11,7 +11,7 @@ macro_rules! key {
     };
 }
 
-key!(favSum, favId);
+// key!(favSum, favId);
 
 pub fn nchan(uid: u64) -> Vec<u8> {
   [&b"nchan:"[..], &u64_bin(uid)].concat()
