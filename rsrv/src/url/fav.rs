@@ -13,15 +13,15 @@ use crate::{
 // struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
 
 Q01!(
-    fav_user:
+fav_user:
     INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (uid, cid, rid, ts) DO NOTHING RETURNING id;
 
 );
 
 Q!(
-    fav_rm:
+fav_rm:
     DELETE FROM fav.user WHERE uid=$1 AND cid=$2 AND rid=$3;
-    fav_li:
+fav_li:
     SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id;
 );
 
@@ -45,17 +45,16 @@ pub async fn fav_batch_add(
     }
   }
   if n > 0 {
-    let p = KV.pipeline();
-    p.hincrby(K::FAV_SUM, uid, n).await?;
-    p.hset(K::FAV_ID, (uid, id)).await?;
-    p.all().await?;
+    // let p = KV.pipeline();
+    // p.hincrby(K::FAV_SUM, uid, n).await?;
+    // p.hset(K::FAV_ID, (uid, id)).await?;
+    // p.all().await?;
     publish_to_user_client(client_id, uid, KIND_SYNC_FAV, format!("{json}{id}"));
   }
   Ok(id)
 }
 
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
-  // let FavSync(uid, fav_li) =
   let mut r = Vec::new();
   let li: Vec<u64> = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
   if li.len() > 2 {
@@ -71,29 +70,26 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
         fav_rm(uid, i.0, i.1).await?
       }
 
-      for i in fav_li(uid, last_sync_id).await? {
-        r.push(i.1 as u64);
-        r.push(i.2);
-        r.push(i.3);
-        r.push(i.4 as u64);
+      let fav_li = fav_li(uid, last_sync_id).await?;
+      let mut id = 0;
+      if !fav_li.is_empty() {
+        for i in fav_li {
+          id = i.0;
+          r.push(i.1 as u64);
+          r.push(i.2);
+          r.push(i.3);
+          r.push(i.4 as u64);
+        }
       }
 
-      // let r = vec![];
-      for i in &li {
-        // id,cid,rid,ts,aid
+      let _id = fav_batch_add(client.id, uid, li).await?;
+      if _id != 0 {
+        id = _id;
       }
 
-      // struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
-      for i in li {
-        dbg!(uid, last_sync_id, i);
+      if id != 0 {
+        r.push(id);
       }
-
-      // TODO select > id 返回，如果没有，就返回last id
-
-      //
-      //   fav_batch_add(client.id, uid, fav_li).await?
-      // } else {
-      //   0
     };
   }
   Ok(r)
