@@ -1,9 +1,7 @@
 use awp::anypack::Any;
 use axum::body::Bytes;
 use client::Client;
-use serde::{Deserialize, Serialize};
 use x0::{fred::interfaces::HashesInterface, R};
-use xxpg::Q01;
 
 //
 // #[derive(Serialize, Debug, Deserialize)]
@@ -43,7 +41,7 @@ use xxpg::Q01;
 //   Ok(id)
 // }
 //
-pub async fn post(client: Client, body: Bytes) -> awp::any!() {
+pub async fn post(_client: Client, body: Bytes) -> awp::any!() {
   let r: Any;
   if let Some(first) = body.first() {
     match *first {
@@ -55,10 +53,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
             let result: Vec<Option<String>> = R
               .hmget(
                 "userName",
-                t[1..]
-                  .into_iter()
-                  .map(|i| xxai::u64_bin(*i))
-                  .collect::<Vec<_>>(),
+                t[1..].iter().map(|i| xxai::u64_bin(*i)).collect::<Vec<_>>(),
               )
               .await?;
             r = result.into();

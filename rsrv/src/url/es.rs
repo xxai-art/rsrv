@@ -4,18 +4,11 @@ use axum::{
   response::{IntoResponse, Response},
 };
 use client::Client;
-use x0::{
-  fred::interfaces::{HashesInterface, SortedSetsInterface},
-  KV,
-};
+use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::u64_bin;
 use xxpg::Q;
 
-use crate::{
-  es,
-  es::{KIND_SYNC_FAV, KIND_SYNC_FAV_SYNC_BY_YEAR_MONTH},
-  K,
-};
+use crate::K;
 
 const LIMIT: usize = 1024;
 

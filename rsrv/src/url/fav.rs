@@ -1,13 +1,8 @@
 use axum::body::Bytes;
 use client::Client;
-use serde::{Deserialize, Serialize};
-use x0::{fred::interfaces::HashesInterface, KV};
 use xxpg::{Q, Q01};
 
-use crate::{
-  es::{publish_to_user_client, KIND_SYNC_FAV},
-  K,
-};
+use crate::es::{publish_to_user_client, KIND_SYNC_FAV};
 
 // #[derive(Serialize, Debug, Deserialize)]
 // struct FavSync(u64, Vec<(u16, u64, u64, i8)>);
@@ -61,7 +56,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
     let uid = li[0];
     if client.is_login(uid).await? {
       let last_sync_id = li[1];
-      let li: Vec<_> = (&li[2..])
+      let li: Vec<_> = li[2..]
         .chunks_exact(4)
         .map(|i| (i[0] as u16, i[1], i[2], i[3] as i8))
         .collect();
