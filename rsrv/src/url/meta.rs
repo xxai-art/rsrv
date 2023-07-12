@@ -63,7 +63,9 @@ pub async fn post(_client: Client, body: Bytes) -> awp::any!() {
           }
         }
       }
-      // b'[' => {}
+      b'[' => {
+        todo!()
+      }
       _ => {
         r = Any::Null;
       }

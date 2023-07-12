@@ -1,4 +1,3 @@
-use paste::paste;
 use xxai::u64_bin;
 
 macro_rules! key {
