@@ -30,12 +30,7 @@ pub fn publish_b64(client_id: impl AsRef<str>, kind: u16, msg: impl Into<String>
 //   publish_b64(client_id, kind, msg);
 // }
 
-pub fn publish_to_user_client(
-  sender_client_id: u64,
-  uid: u64,
-  kind: u16,
-  msg: impl Into<String>,
-) {
+pub fn publish_to_user_client(sender_client_id: u64, uid: u64, kind: u16, msg: impl Into<String>) {
   let msg = msg.into();
   trt::spawn!({
     let msg = format!("{uid},{}", msg);

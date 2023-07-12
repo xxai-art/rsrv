@@ -121,10 +121,7 @@ pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, 
             client = id;
           }
           ClientState::Ok(id) => {
-            req.extensions_mut().insert(_Client {
-              id,
-              _uid: Some(0),
-            });
+            req.extensions_mut().insert(_Client { id, _uid: Some(0) });
             return Ok(next.run(req).await);
           }
           _ => {}
@@ -141,10 +138,7 @@ pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, 
   } else {
     None
   };
-  req.extensions_mut().insert(_Client {
-    id: client,
-    _uid,
-  });
+  req.extensions_mut().insert(_Client { id: client, _uid });
 
   let mut r = next.run(req).await;
 

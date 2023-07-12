@@ -17,8 +17,7 @@ Q!(
 
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   let mut result = Vec::new();
-  let Data(uid, ym_li_li) =
-    serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
+  let Data(uid, ym_li_li) = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
 
   if client.is_login(uid).await? {
     let mut map = HashMap::new();
