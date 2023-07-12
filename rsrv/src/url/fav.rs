@@ -21,6 +21,7 @@ fav_li:
 );
 
 pub async fn fav_batch_add(
+  prev_id: u64,
   client_id: u64,
   uid: u64,
   fav_li: Vec<(u16, u64, u64, i8)>,
@@ -44,7 +45,12 @@ pub async fn fav_batch_add(
     // p.hincrby(K::FAV_SUM, uid, n).await?;
     // p.hset(K::FAV_ID, (uid, id)).await?;
     // p.all().await?;
-    publish_to_user_client(client_id, uid, KIND_SYNC_FAV, format!("{json}{id}"));
+    publish_to_user_client(
+      client_id,
+      uid,
+      KIND_SYNC_FAV,
+      format!("{json},{prev_id},{id}"),
+    );
   }
   Ok(id)
 }
@@ -77,7 +83,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
         }
       }
 
-      let _id = fav_batch_add(client.id, uid, li).await?;
+      let _id = fav_batch_add(id, client.id, uid, li).await?;
       if _id != 0 {
         id = _id;
       }
