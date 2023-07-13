@@ -36,7 +36,9 @@ macro_rules! es_sync {
       let last_fav_id: Option<Vec<u8>> = KV.hget(K::FAV_LAST, uid_bin).await?;
       if let Some(last_fav_id) = last_fav_id {
         let last_fav_id = bin_u64(last_fav_id);
-        dbg!(fav_id, last_fav_id);
+        if fav_id < last_fav_id {
+          dbg!(fav_id, last_fav_id);
+        }
       }
       //
       // let mut n = 0;

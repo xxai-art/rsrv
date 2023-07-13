@@ -25,6 +25,22 @@ fav_li:
     SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id;
 );
 
+pub fn publish_fav_sync_to_user_client(
+  client_id: u64,
+  uid: u64,
+  prev_id: u64,
+  now_id: u64,
+  json: impl AsRef<str>,
+) {
+  let json = json.as_ref();
+  publish_to_user_client(
+    client_id,
+    uid,
+    KIND_SYNC_FAV,
+    format!("{prev_id},{now_id},{json}"),
+  );
+}
+
 pub async fn fav_batch_add(
   prev_id: u64,
   client_id: u64,
@@ -46,16 +62,11 @@ pub async fn fav_batch_add(
     }
   }
   if n > 0 {
+    publish_fav_sync_to_user_client(client_id, uid, prev_id, id, json);
     // let p = KV.pipeline();
     // p.hincrby(K::FAV_SUM, uid, n).await?;
     // p.hset(K::FAV_ID, (uid, id)).await?;
     // p.all().await?;
-    publish_to_user_client(
-      client_id,
-      uid,
-      KIND_SYNC_FAV,
-      format!("{prev_id},{id},{json}"),
-    );
   }
   Ok(id)
 }
