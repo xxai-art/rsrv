@@ -64,7 +64,10 @@ pub async fn post(_client: Client, body: Bytes) -> awp::any!() {
         }
       }
       b'[' => {
-        todo!()
+        let body = String::from_utf8_lossy(&body);
+        let li: Vec<Vec<u64>> = serde_json::from_str(&body)?;
+        dbg!(&li);
+        r = Any::Null;
       }
       _ => {
         r = Any::Null;
