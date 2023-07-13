@@ -4,7 +4,10 @@ use axum::{
   response::{IntoResponse, Response},
 };
 use client::Client;
-use x0::{fred::interfaces::SortedSetsInterface, KV};
+use x0::{
+  fred::interfaces::{HashesInterface, SortedSetsInterface},
+  KV,
+};
 use xxai::u64_bin;
 use xxpg::Q;
 
