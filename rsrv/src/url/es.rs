@@ -8,7 +8,7 @@ use x0::{
   fred::interfaces::{HashesInterface, SortedSetsInterface},
   KV,
 };
-use xxai::u64_bin;
+use xxai::{bin_u64, u64_bin};
 use xxpg::Q;
 
 use crate::K;
@@ -27,12 +27,17 @@ macro_rules! es_sync {
     trt::spawn!({
       let channel_id = $channel_id;
       let uid = $uid;
+      let uid_bin = u64_bin(uid);
       let fav_id = $li[0];
-      dbg!(channel_id, uid, fav_id);
       // let p = KV.pipeline();
       // p.hincrby(K::FAV_ID, uid, 0).await?;
       // p.hincrby(K::FAV_SUM, uid, 0).await?;
       // let r: Vec<u64> = p.all().await?;
+      let last_fav_id: Option<Vec<u8>> = KV.hget(K::FAV_LAST, uid_bin).await?;
+      if let Some(last_fav_id) = last_fav_id {
+        let last_fav_id = bin_u64(last_fav_id);
+        dbg!(fav_id, last_fav_id);
+      }
       //
       // let mut n = 0;
       //

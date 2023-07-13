@@ -65,11 +65,16 @@ pub fn ordered_bin_u64(bin: impl AsRef<[u8]>) -> u64 {
 
 pub fn b64_u64(bin: impl AsRef<[u8]>) -> u64 {
   if let Ok(r) = URL_SAFE_NO_PAD.decode(bin.as_ref()) {
-    let mut bin = [0u8; 8];
-    bin[..r.len()].copy_from_slice(&r);
-    return u64::from_le_bytes(bin);
+    return bin_u64(r);
   }
   0
+}
+
+pub fn bin_u64(bin: impl AsRef<[u8]>) -> u64 {
+  let bin = bin.as_ref();
+  let mut b = [0u8; 8];
+  b[..bin.len()].copy_from_slice(bin);
+  return u64::from_le_bytes(b);
 }
 
 pub fn u64_bin(n: u64) -> Box<[u8]> {
