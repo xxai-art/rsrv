@@ -65,29 +65,6 @@ macro_rules! es_sync {
           }
         }
       }
-      //
-      // let mut n = 0;
-      //
-      // if fav_synced_id < r[0] {
-      //   let mut id = fav_synced_id;
-      //   loop {
-      //     let fav_li = fav_li(uid, id).await?;
-      //     let len = fav_li.len();
-      //     n += len;
-      //     if len > 0 {
-      //       id = fav_li.last().unwrap().0;
-      //       let mut json = String::new();
-      //       for i in &fav_li {
-      //         json += &format!("{},{},{},{},", i.1, i.2, i.3, i.4);
-      //       }
-      //       es::publish_b64(&channel_id, KIND_SYNC_FAV, format!("{uid},{json}{id}"));
-      //     }
-      //     if len != LIMIT {
-      //       break;
-      //     }
-      //   }
-      // }
-      //
       // let sum = r[1];
       // if (fav_synced + n as u64) != sum {
       //   let mut total = 0;
