@@ -37,7 +37,6 @@ macro_rules! es_sync {
       if let Some(last_fav_id) = last_fav_id {
         let last_fav_id = bin_u64(last_fav_id);
         if fav_id < last_fav_id {
-          dbg!(fav_id, last_fav_id);
           let mut id = fav_id;
           loop {
             let prev_id = id;
