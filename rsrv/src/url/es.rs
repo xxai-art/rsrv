@@ -11,13 +11,13 @@ use x0::{
 use xxai::{bin_u64, u64_bin};
 use xxpg::Q;
 
-use crate::K;
+use crate::{es, es::KIND_SYNC_FAV, url::fav::kv_hset_fav_last, K};
 
-const LIMIT: usize = 1024;
+const LIMIT: usize = 2;
 
 Q! {
     fav_li:
-        SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 1024;
+        SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 2;
 
     fav_ym_n: "SELECT TO_CHAR(to_timestamp(cast(ts/1000 as u64)) AT TIME ZONE 'UTC','YYYYMM')::u64 AS ym, COUNT(1)::u64 FROM fav.user WHERE uid=$1 GROUP BY ym"
 }
@@ -38,6 +38,31 @@ macro_rules! es_sync {
         let last_fav_id = bin_u64(last_fav_id);
         if fav_id < last_fav_id {
           dbg!(fav_id, last_fav_id);
+          let mut id = fav_id;
+          loop {
+            let prev_id = id;
+            let fav_li = fav_li(uid, id).await?;
+            let len = fav_li.len();
+            if len > 0 {
+              id = fav_li.last().unwrap().0;
+              let mut json = String::new();
+              for i in &fav_li {
+                json += &format!(",{},{},{},{}", i.1, i.2, i.3, i.4);
+              }
+              es::publish_b64(
+                &channel_id,
+                KIND_SYNC_FAV,
+                format!("{uid},{prev_id},{id}{json}"),
+              )
+              .await?;
+            }
+            if len != LIMIT {
+              break;
+            }
+          }
+          if id != last_fav_id {
+            kv_hset_fav_last(uid, id);
+          }
         }
       }
       //

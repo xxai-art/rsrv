@@ -25,7 +25,7 @@ fav_li:
     SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id;
 );
 
-pub fn publish_fav_sync_to_user_client(
+pub fn publish_fav_sync(
   client_id: u64,
   uid: u64,
   prev_id: u64,
@@ -37,7 +37,7 @@ pub fn publish_fav_sync_to_user_client(
     client_id,
     uid,
     KIND_SYNC_FAV,
-    format!("{prev_id},{now_id},{json}"),
+    format!("{prev_id},{now_id}{json}"),
   );
 }
 
@@ -62,7 +62,7 @@ pub async fn fav_batch_add(
     }
   }
   if n > 0 {
-    publish_fav_sync_to_user_client(client_id, uid, prev_id, id, json);
+    publish_fav_sync(client_id, uid, prev_id, id, json);
     // let p = KV.pipeline();
     // p.hincrby(K::FAV_SUM, uid, n).await?;
     // p.hset(K::FAV_ID, (uid, id)).await?;
@@ -99,18 +99,24 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
         }
       }
 
-      let last_id = fav_batch_add(id, client.id, uid, li).await?;
+      let last_id = fav_batch_add(last_sync_id, client.id, uid, li).await?;
       if last_id != 0 {
         id = last_id;
       }
 
       if id != 0 {
         r.push(id);
-        KV.hset(K::FAV_LAST, (u64_bin(uid), u64_bin(id))).await?;
+        kv_hset_fav_last(uid, id);
       }
     };
   }
   Ok(r)
+}
+
+pub fn kv_hset_fav_last(uid: u64, id: u64) {
+  trt::spawn!({
+    KV.hset(K::FAV_LAST, (u64_bin(uid), u64_bin(id))).await?;
+  });
 }
 
 // macro_rules! batch_insert {

@@ -11,17 +11,20 @@ lazy_static! {
 
 pub const KIND_SYNC_FAV: u16 = 1;
 
-pub fn publish_b64(client_id: impl AsRef<str>, kind: u16, msg: impl Into<String>) {
+pub async fn publish_b64(
+  client_id: impl AsRef<str>,
+  kind: u16,
+  msg: impl Into<String>,
+) -> Result<()> {
   let client_id = client_id.as_ref();
   let msg = msg.into();
   let nchan_url = format!("{}{client_id}", &*NCHAN_URL);
-  trt::spawn!({
-    reqwest::Client::new()
-      .post(&nchan_url)
-      .body(format!("[{kind},{msg}]"))
-      .send()
-      .await?;
-  });
+  reqwest::Client::new()
+    .post(&nchan_url)
+    .body(format!("[{kind},{msg}]"))
+    .send()
+    .await?;
+  Ok(())
 }
 
 // pub fn publish(client_id: u64, kind: u16, msg: impl Into<String>) {
@@ -38,7 +41,7 @@ pub fn publish_to_user_client(sender_client_id: u64, uid: u64, kind: u16, msg: i
     for client_id in client_id_by_uid(uid).await? {
       if &client_id[..] != sender_client_id {
         let client_id = b64(client_id);
-        publish_b64(client_id, kind, &msg);
+        publish_b64(client_id, kind, &msg).await?;
       }
     }
   });
