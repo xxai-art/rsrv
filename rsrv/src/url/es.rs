@@ -13,13 +13,13 @@ use xxpg::Q;
 
 use crate::{es, es::KIND_SYNC_FAV, url::fav::kv_hset_fav_last, K};
 
-const LIMIT: usize = 2;
+const LIMIT: usize = 2048;
 
 Q! {
-    fav_li:
-        SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 2;
+fav_li:
+SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 2048;
 
-    fav_ym_n: "SELECT TO_CHAR(to_timestamp(cast(ts/1000 as u64)) AT TIME ZONE 'UTC','YYYYMM')::u64 AS ym, COUNT(1)::u64 FROM fav.user WHERE uid=$1 GROUP BY ym"
+fav_ym_n: "SELECT TO_CHAR(to_timestamp(cast(ts/1000 as u64)) AT TIME ZONE 'UTC','YYYYMM')::u64 AS ym, COUNT(1)::u64 FROM fav.user WHERE uid=$1 GROUP BY ym"
 }
 
 macro_rules! es_sync {
