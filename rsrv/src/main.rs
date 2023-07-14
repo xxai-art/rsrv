@@ -31,7 +31,7 @@ fn main() -> anyhow::Result<()> {
             (=> $func:ident) => {
                 post!("", $func)
             };
-            ($($url:ident);+) => {
+            ($($url:ident),+) => {
                 post!($($url=>$url);+)
             };
             ($($url:stmt => $func:ident);+) => {
@@ -59,7 +59,7 @@ fn main() -> anyhow::Result<()> {
         }
 
   // get!( => stat);
-  post!(li;fav;meta);
+  post!(li, fav, meta, q);
   // post!(li => li;fav=>fav);
 
   router = router.route("/es/:li", get(crate::url::es::get));
