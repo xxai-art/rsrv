@@ -12,7 +12,11 @@ pub async fn post(body: Bytes) -> any!() {
         let begin_time = args[1];
         let duration = args[2];
         let q = String::from_utf8_lossy(&body[1 + pos..]);
-        dbg!(rating, begin_time, duration, q);
+        if q.is_empty() {
+          dbg!("TODO 推荐");
+        } else {
+          dbg!(rating, begin_time, duration, q);
+        }
       }
       break;
     }
