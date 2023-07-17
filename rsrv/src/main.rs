@@ -59,7 +59,7 @@ fn main() -> anyhow::Result<()> {
         }
 
   // get!( => stat);
-  post!(li, fav, meta, q);
+  post!(li, fav, liMeta, q);
   // post!(li => li;fav=>fav);
 
   router = router.route("/es/:li", get(crate::url::es::get));
