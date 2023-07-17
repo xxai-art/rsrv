@@ -1,7 +1,11 @@
+use anypack::VecAny;
 use awp::anypack::Any;
 use axum::body::Bytes;
 use client::Client;
 use x0::{fred::interfaces::HashesInterface, R};
+use xxai::u64_bin;
+
+use crate::cid::CID_IMG;
 
 //
 // #[derive(Serialize, Debug, Deserialize)]
@@ -65,9 +69,29 @@ pub async fn post(_client: Client, body: Bytes) -> awp::any!() {
       }
       b'[' => {
         let body = String::from_utf8_lossy(&body);
-        let li: Vec<Vec<u64>> = serde_json::from_str(&body)?;
-        dbg!(&li);
-        r = Any::Null;
+        let input_li: Vec<Vec<u64>> = serde_json::from_str(&body)?;
+
+        let rli: Vec<_> = input_li
+          .into_iter()
+          .map(|li| {
+            let cid = &li[0];
+
+            let mut tli = anypack::VecAny::new();
+            match *cid {
+              CID_IMG => {
+                let key_map: Vec<_> = li.into_iter().map(|i| u64_bin(i)).collect();
+                // for i in li {
+                //   tli.push(i);
+                // }
+              }
+              _ => {}
+            }
+            tli
+          })
+          .collect();
+        let rli: VecAny = rli.into();
+
+        r = rli.into();
       }
       _ => {
         r = Any::Null;

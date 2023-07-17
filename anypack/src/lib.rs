@@ -129,6 +129,12 @@ impl Deref for VecAny {
   }
 }
 
+impl<T: Into<Any>> From<Vec<T>> for VecAny {
+  fn from(li: Vec<T>) -> Self {
+    VecAny(li.into_iter().map(|i| i.into()).collect())
+  }
+}
+
 pub fn response(r: impl IntoResponse) -> Response {
   let mut r = IntoResponse::into_response(r);
   r.headers_mut()
