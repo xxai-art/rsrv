@@ -2,7 +2,7 @@ use anypack::VecAny;
 use awp::anypack::Any;
 use axum::body::Bytes;
 use client::Client;
-use x0::{fred::interfaces::HashesInterface, R};
+use x0::{fred::interfaces::HashesInterface, KV, R};
 use xxai::u64_bin;
 
 use crate::cid::CID_IMG;
@@ -71,26 +71,28 @@ pub async fn post(_client: Client, body: Bytes) -> awp::any!() {
         let body = String::from_utf8_lossy(&body);
         let input_li: Vec<Vec<u64>> = serde_json::from_str(&body)?;
 
-        let rli: Vec<_> = input_li
-          .into_iter()
-          .map(|li| {
-            let cid = &li[0];
+        let mut rli = VecAny::new();
+        for li in input_li {
+          let cid = &li[0];
 
-            let mut tli = anypack::VecAny::new();
-            match *cid {
-              CID_IMG => {
-                let key_map: Vec<_> = li.into_iter().map(|i| u64_bin(i)).collect();
-                // for i in li {
-                //   tli.push(i);
-                // }
+          let mut tli = anypack::VecAny::new();
+          match *cid {
+            CID_IMG => {
+              let key_map: Vec<_> = li.into_iter().map(|i| u64_bin(i)).collect();
+              let vli: Vec<Option<Vec<u8>>> = KV.hmget("liMeta", key_map).await?;
+
+              for i in vli {
+                if let Some(i) = i {
+                  tli.push(i)
+                } else {
+                  tli.push(Any::Null)
+                }
               }
-              _ => {}
             }
-            tli
-          })
-          .collect();
-        let rli: VecAny = rli.into();
-
+            _ => {}
+          }
+          rli.push(tli)
+        }
         r = rli.into();
       }
       _ => {
