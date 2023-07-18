@@ -12,23 +12,23 @@ pub async fn post(_client: Client, body: Bytes) -> awp::any!() {
   if let Some(first) = body.first() {
     match *first {
       b'"' => {
-        let t = xxai::b64_u64_li(&body[1..body.len() - 1]);
+        let t = xxai::b64_u64_li(&body[1 .. body.len() - 1]);
         let cid = t[0];
         match cid {
           crate::cid::CID_USER => {
             let result: Vec<Option<String>> = R
               .hmget(
                 "userName",
-                t[1..].iter().map(|i| xxai::u64_bin(*i)).collect::<Vec<_>>(),
+                t[1 ..].iter().map(|i| xxai::u64_bin(*i)).collect::<Vec<_>>(),
               )
               .await?;
             r = result.into();
-          }
+          },
           _ => {
             r = Any::Null;
-          }
+          },
         }
-      }
+      },
       b'[' => {
         let body = String::from_utf8_lossy(&body);
         let input_li: Vec<Vec<u64>> = serde_json::from_str(&body)?;
@@ -36,33 +36,31 @@ pub async fn post(_client: Client, body: Bytes) -> awp::any!() {
         let mut rli = VecAny::new();
         for li in input_li {
           let cid = &li[0];
-          let li = &li[1..];
+          let li = &li[1 ..];
           let mut tli = anypack::VecAny::new();
           match *cid {
             CID_IMG => {
               let key_map: Vec<_> = li.into_iter().map(|i| u64_bin(*i)).collect();
-              dbg!(111);
-              let vli: Vec<Option<Vec<u8>>> = KV.hmget("liMeta", key_map).await?;
-              dbg!(11122);
 
-              // for i in vli {
-              //   if let Some(i) = i {
-              //     tli.push(i)
-              //   } else {
-              //     tli.push(Any::Null)
-              //   }
-              // }
-              tli.push(Any::Null)
-            }
-            _ => {}
+              if key_map.len() == 1 {
+                let v: Option<Vec<u8>> = KV.hmget("liMeta", key_map).await?;
+                tli.push(v);
+              } else {
+                let vli: Vec<Option<Vec<u8>>> = KV.hmget("liMeta", key_map).await?;
+                for v in vli {
+                  tli.push(v)
+                }
+              }
+            },
+            _ => {},
           }
           rli.push(tli)
         }
         r = rli.into();
-      }
+      },
       _ => {
         r = Any::Null;
-      }
+      },
     }
   } else {
     r = Any::Null;

@@ -1,0 +1,3 @@
+[submodule "xkv/fred.rs"]
+	path = xkv/fred.rs
+	url = git@github.com:xxai-fork/fred.rs.git
