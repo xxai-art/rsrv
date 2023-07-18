@@ -78,7 +78,7 @@ pub async fn post(_client: Client, body: Bytes) -> awp::any!() {
           let mut tli = anypack::VecAny::new();
           match *cid {
             CID_IMG => {
-              let key_map: Vec<_> = li.into_iter().map(|i| u64_bin(i)).collect();
+              let key_map: Vec<_> = li.into_iter().map(|i| u64_bin(*i)).collect();
               let vli: Vec<Option<Vec<u8>>> = KV.hmget("liMeta", key_map).await?;
 
               for i in vli {
