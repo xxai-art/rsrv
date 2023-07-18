@@ -74,7 +74,7 @@ pub async fn post(_client: Client, body: Bytes) -> awp::any!() {
         let mut rli = VecAny::new();
         for li in input_li {
           let cid = &li[0];
-
+          let li = &li[1..];
           let mut tli = anypack::VecAny::new();
           match *cid {
             CID_IMG => {
