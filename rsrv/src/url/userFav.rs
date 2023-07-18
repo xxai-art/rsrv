@@ -10,10 +10,10 @@ Q!(
 );
 
 pub async fn post(body: Bytes) -> any!() {
-  let uid: u64 = serde_json::from_str(&String::from_utf8_lossy(&body))?;
-  let name: String = R.hget("userName", uid).await?;
-  let mut r = VecAny::new();
-  r.push(li(uid).await?);
-  r.push(name);
-  Ok(r)
+    let uid: u64 = serde_json::from_str(&String::from_utf8_lossy(&body))?;
+    let name: String = R.hget("userName", uid).await?;
+    let mut r = VecAny::new();
+    r.push(name);
+    r.push(li(uid).await?);
+    Ok(r)
 }

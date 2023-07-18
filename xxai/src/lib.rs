@@ -74,7 +74,7 @@ pub fn bin_u64(bin: impl AsRef<[u8]>) -> u64 {
   let bin = bin.as_ref();
   let mut b = [0u8; 8];
   b[..bin.len()].copy_from_slice(bin);
-  return u64::from_le_bytes(b);
+  u64::from_le_bytes(b)
 }
 
 pub fn u64_bin(n: u64) -> Box<[u8]> {
