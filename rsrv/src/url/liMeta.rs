@@ -1,7 +1,6 @@
 use anypack::VecAny;
 use awp::anypack::Any;
 use axum::body::Bytes;
-use client::Client;
 use x0::{fred::interfaces::HashesInterface, KV, R};
 use xxai::u64_bin;
 
@@ -40,7 +39,7 @@ pub async fn post(body: Bytes) -> awp::any!() {
           let mut tli = anypack::VecAny::new();
           match *cid {
             CID_IMG => {
-              let key_map: Vec<_> = li.into_iter().map(|i| u64_bin(*i)).collect();
+              let key_map: Vec<_> = li.iter().map(|i| u64_bin(*i)).collect();
 
               if key_map.len() == 1 {
                 let v: Option<Vec<u8>> = KV.hmget("liMeta", key_map).await?;
