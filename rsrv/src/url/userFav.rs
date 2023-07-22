@@ -7,9 +7,9 @@ use xxpg::Q;
 
 Q!(
 li_first_page:
-    SELECT cid,rid,ts FROM fav.user WHERE uid=$1 AND aid>0 ORDER BY ts DESC LIMIT 256;
+    SELECT cid,rid,ts FROM fav.user WHERE uid=$1 AND aid>0 ORDER BY ts DESC LIMIT 1024;
 li:
-    SELECT cid,rid,ts FROM fav.user WHERE uid=$1 AND aid>0 AND ts<$2 ORDER BY ts DESC LIMIT 256
+    SELECT cid,rid,ts FROM fav.user WHERE uid=$1 AND aid>0 AND ts<$2 ORDER BY ts DESC LIMIT 1024
 );
 
 fn cid_rid_ts_li(li: Vec<(u16, u64, u64)>) -> VecAny {
