@@ -1212,6 +1212,8 @@ checksum = "9b2a4787296e9989611394c33f193f676704af1686e70b8f8033ab5ba9a35a94"
 name = "pgw"
 version = "0.1.0"
 dependencies = [
+ "tokio",
+ "tracing",
  "xxai-tokio-postgres",
 ]
 
@@ -2545,6 +2547,7 @@ dependencies = [
  "ctor",
  "msgpacker",
  "paste",
+ "pgw",
  "tokio",
  "tracing",
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -2558,6 +2561,7 @@ version = "0.1.7"
 dependencies = [
  "async-lazy",
  "lazy_static",
+ "pgw",
  "proc-macro2",
  "regex",
  "tokio",

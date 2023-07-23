@@ -20,3 +20,4 @@ regex = "1.9.1"
 tokio = { version = "1.29.1", features = ["rt-multi-thread"] }
 tokio-postgres = { package = "xxai-tokio-postgres", version = "0.7.13" }
 trt = "0.1.5"
+pgw = { path = "../../pgw" }

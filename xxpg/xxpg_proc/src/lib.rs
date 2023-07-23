@@ -11,21 +11,7 @@ lazy_static! {
   static ref RE: Regex = Regex::new(r"\$(\d+)").unwrap();
 }
 
-static PG: Lazy<Client> = Lazy::const_new(|| {
-  let pg_uri = std::env::var("PG_URI").unwrap();
-  Box::pin(async move {
-    let (client, connection) = tokio_postgres::connect(&format!("postgres://{}", pg_uri), NoTls)
-      .await
-      .unwrap();
-    tokio::spawn(async move {
-      if let Err(e) = connection.await {
-        eprintln!("postgres connection error: {e}");
-      }
-    });
-
-    client
-  })
-});
+static PG: Lazy<Client> = Lazy::const_new(|| Box::pin(async move { pgw::conn("PG_URI").await }));
 
 fn max_n(s: &str) -> usize {
   let mut max = 0;
