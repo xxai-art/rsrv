@@ -4,7 +4,7 @@ use async_lazy::Lazy;
 use lazy_static::lazy_static;
 use proc_macro::TokenStream;
 use regex::Regex;
-use tokio_postgres::{Client, NoTls};
+use tokio_postgres::Client;
 use trt::TRT;
 
 lazy_static! {
