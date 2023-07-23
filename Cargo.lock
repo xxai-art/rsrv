@@ -1211,6 +1211,9 @@ checksum = "9b2a4787296e9989611394c33f193f676704af1686e70b8f8033ab5ba9a35a94"
 [[package]]
 name = "pgw"
 version = "0.1.0"
+dependencies = [
+ "xxai-tokio-postgres",
+]
 
 [[package]]
 name = "phf"
@@ -1284,17 +1287,6 @@ dependencies = [
  "rand",
  "sha2",
  "stringprep",
-]
-
-[[package]]
-name = "postgres-types"
-version = "0.2.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f028f05971fe20f512bcc679e2c10227e57809a3af86a7606304435bc8896cd6"
-dependencies = [
- "bytes",
- "fallible-iterator",
- "postgres-protocol",
 ]
 
 [[package]]
@@ -1952,30 +1944,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tokio-postgres"
-version = "0.7.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e89f6234aa8fd43779746012fcf53603cdb91fdd8399aa0de868c2d56b6dde1"
-dependencies = [
- "async-trait",
- "byteorder",
- "bytes",
- "fallible-iterator",
- "futures-channel",
- "futures-util",
- "log",
- "parking_lot",
- "percent-encoding",
- "phf",
- "pin-project-lite",
- "postgres-protocol",
- "postgres-types",
- "socket2 0.5.3",
- "tokio",
- "tokio-util",
-]
-
-[[package]]
 name = "tokio-rustls"
 version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2540,9 +2508,9 @@ dependencies = [
 
 [[package]]
 name = "xxai-tokio-postgres"
-version = "0.7.12"
+version = "0.7.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7939c912b15ced826e93f6e4c081e3c440052d03c3e6eac94e9da56c0fbddfe6"
+checksum = "7e88bf15b954e4cf15251801d67f1f21754aa42863bdf28c367f082240acad83"
 dependencies = [
  "async-trait",
  "byteorder",
@@ -2593,6 +2561,6 @@ dependencies = [
  "proc-macro2",
  "regex",
  "tokio",
- "tokio-postgres",
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "xxai-tokio-postgres",
 ]
