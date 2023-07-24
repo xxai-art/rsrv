@@ -3,10 +3,11 @@ use std::collections::HashSet;
 use anyhow::Result;
 use axum::body::Bytes;
 use client::Client;
-use gt::GQ;
 use serde_json::Value;
 use xxai::u64_bin;
+use xxpg::Q as GQ;
 
+// use gt::GQ;
 use crate::{
   es::{publish_to_user_client, KIND_SYNC_SEEN},
   kv::sync::{has_more, set_last},
@@ -31,14 +32,12 @@ regions = 1
 pub async fn seen_after_ts(uid: u64, ts: u64) -> Result<Vec<u64>> {
   let mut r = Vec::new();
   for i in GQ(
-    &format!(
-      "SELECT cid,rid,CAST(ts as BIGINT) t FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY TS"
-    ),
+    &format!("SELECT cid,rid,ts t FROM ts.seen WHERE uid={uid} AND ts>{ts} ORDER BY TS"),
     &[],
   )
   .await?
   {
-    let cid: i8 = i.get(0);
+    let cid: i16 = i.get(0);
     r.push(cid as u64);
     let rid: i64 = i.get(1);
     r.push(rid as u64);
@@ -81,7 +80,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
 
                   for i in GQ(
                     &format!(
-                      "SELECT rid FROM seen WHERE uid={uid} AND cid={cid} AND rid IN ({rid_in})"
+                      "SELECT rid FROM ts.seen WHERE uid={uid} AND cid={cid} AND rid IN ({rid_in})"
                     ),
                     &[],
                   )
@@ -121,7 +120,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
             ts -= 1;
             let to_insert = to_insert.join(",");
             GQ(
-              &format!("INSERT INTO seen (uid,cid,rid,ts) VALUES {to_insert}"),
+              &format!("INSERT INTO ts.seen (uid,cid,rid,ts) VALUES {to_insert}"),
               &[],
             )
             .await?;

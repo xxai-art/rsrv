@@ -29,8 +29,8 @@ serde_json = "1.0.103"
 serde = { version = "1.0.171", features = ["derive"] }
 vbyte = "0.1.0"
 paste = "1.0.14"
-gt = { path = "../gt" }
 
+#gt = { path = "../gt" }
 # quinn = { version = "0.10", default-features = false, features = [
 #   "runtime-tokio",
 #   "tls-rustls",
