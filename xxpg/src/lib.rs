@@ -1,3 +1,5 @@
+use std::fmt::{Debug, Formatter};
+
 pub use async_lazy;
 use async_lazy::Lazy;
 pub use ctor::ctor;
@@ -11,6 +13,13 @@ pub use xxpg_proc::{Q, Q01, Q1};
 pub struct LazyStatement {
   pub statement: async_lazy::Lazy<tokio_postgres::Statement>,
   pub sql: &'static str,
+}
+
+impl Debug for LazyStatement {
+  fn fmt(&self, fmt: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+    fmt.write_str(self.sql)?;
+    Ok(())
+  }
 }
 
 impl ToStatement for LazyStatement {
@@ -69,13 +78,13 @@ macro_rules! q {
     #[allow(non_snake_case)]
     pub async fn $name<T>(statement: &T, params: &[&(dyn ToSql + Sync)]) -> Result<$rt, Error>
     where
-      T: ?Sized + ToStatement,
+      T: ?Sized + ToStatement + Debug,
     {
       match PG.get().unwrap().$func(statement, params).await {
         Ok(r) => Ok(r),
         Err(err) => {
           if err.is_closed() {
-            error!("{}", err);
+            error!("{:?}\n{}", statement, err);
             std::process::exit(1);
           }
           Err(err)

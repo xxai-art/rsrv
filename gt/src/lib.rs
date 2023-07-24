@@ -17,8 +17,9 @@ macro_rules! q {
     #[allow(non_snake_case)]
     pub async fn $name<T>(statement: &T, params: &[&(dyn ToSql + Sync)]) -> Result<$rt, Error>
     where
-      T: ?Sized + ToStatement,
+      T: ?Sized + ToStatement + std::fmt::Debug,
     {
+      dbg!(&statement);
       match DB.get().unwrap().$func(statement, params).await {
         Ok(r) => Ok(r),
         Err(err) => {
