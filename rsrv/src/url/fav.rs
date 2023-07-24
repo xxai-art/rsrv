@@ -54,11 +54,13 @@ pub async fn fav_batch_add(
   //   "INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES {} ON CONFLICT (uid, cid, rid, ts) DO NOTHING RETURNING id",
   //   fav_li.into_iter().map(|x|( uid,x.0,x.1,x.2,x.3 )).collect::<Vec<_>>()
   // );
+  let mut ts = xxai::time::ms();
   for (cid, rid, aid) in fav_li {
     if let Some(_id) = fav_user(uid, cid, rid, ts, aid).await? {
       id = _id;
       n += 1;
       json += &format!(",{cid},{rid},{ts},{aid}");
+      ts += 1;
     }
   }
   if n > 0 {
