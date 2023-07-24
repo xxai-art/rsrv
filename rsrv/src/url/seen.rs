@@ -32,16 +32,16 @@ regions = 1
 pub async fn seen_after_ts(uid: u64, ts: u64) -> Result<Vec<u64>> {
   let mut r = Vec::new();
   for i in GQ(
-    &format!("SELECT cid,rid,ts t FROM ts.seen WHERE uid={uid} AND ts>{ts} ORDER BY TS"),
+    &format!("SELECT cid,rid,ts t FROM ts.seen WHERE uid={uid} AND ts>{ts} ORDER BY ts"),
     &[],
   )
   .await?
   {
-    let cid: i16 = i.get(0);
+    let cid: u16 = i.get(0);
     r.push(cid as u64);
-    let rid: i64 = i.get(1);
+    let rid: u64 = i.get(1);
     r.push(rid as u64);
-    let ts: i64 = i.get(2);
+    let ts: u64 = i.get(2);
     r.push(ts as u64);
   }
   Ok(r)
