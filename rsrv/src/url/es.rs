@@ -4,11 +4,8 @@ use axum::{
   response::{IntoResponse, Response},
 };
 use client::Client;
-use x0::{
-  fred::interfaces::{HashesInterface, SortedSetsInterface},
-  KV,
-};
-use xxai::{bin_u64, u64_bin};
+use x0::{fred::interfaces::SortedSetsInterface, KV};
+use xxai::u64_bin;
 use xxpg::Q;
 
 use crate::{

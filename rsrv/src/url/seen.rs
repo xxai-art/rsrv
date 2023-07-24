@@ -5,7 +5,6 @@ use axum::body::Bytes;
 use client::Client;
 use gt::GQ;
 use serde_json::Value;
-use x0::{fred::interfaces::HashesInterface, KV};
 use xxai::u64_bin;
 
 use crate::{
