@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 
+use anyhow::Result;
 use axum::body::Bytes;
 use client::Client;
 use gt::GQ;
@@ -9,7 +10,7 @@ use xxai::u64_bin;
 
 use crate::{
   es::{publish_to_user_client, KIND_SYNC_SEEN},
-  kv::sync::set_last,
+  kv::sync::{has_more, set_last},
   K,
 };
 
@@ -28,6 +29,24 @@ regions = 1
 )
 */
 
+pub async fn seen_after_ts(uid: u64, ts: u64) -> Result<Vec<u64>> {
+  let mut r = Vec::new();
+  for i in GQ(
+    &format!("SELECT cid,rid,CAST(ts as BIGINT) t FROM seen WHERE uid={uid} AND ts>{ts}"),
+    &[],
+  )
+  .await?
+  {
+    let cid: i8 = i.get(0);
+    r.push(cid as u64);
+    let rid: i64 = i.get(1);
+    r.push(rid as u64);
+    let ts: i64 = i.get(2);
+    r.push(ts as u64);
+  }
+  Ok(r)
+}
+
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   let mut r = Vec::new();
   let li: Vec<Value> = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
@@ -39,6 +58,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
           let mut to_insert = Vec::new();
           let mut to_publish = Vec::new();
           let mut ts = xxai::time::ms();
+          let uid_bin = u64_bin(uid);
 
           for i in &li[2..] {
             if let Some(cid_rid_li) = i.as_array() {
@@ -86,16 +106,33 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
               }
             }
           }
+
+          if has_more(K::SEEN_LAST, uid_bin, last_sync_id)
+            .await?
+            .is_some()
+          {
+            for i in seen_after_ts(uid, last_sync_id).await? {
+              r.push(i);
+            }
+          }
+
           if !to_insert.is_empty() {
+            ts -= 1;
             let to_insert = to_insert.join(",");
-            dbg!(to_insert);
-            set_last(K::SEEN_LAST, uid, ts - 1);
+            GQ(
+              &format!("INSERT INTO seen (uid,cid,rid,ts) VALUES {to_insert}"),
+              &[],
+            )
+            .await?;
+            set_last(K::SEEN_LAST, uid, ts);
             let to_publish = to_publish.join(",");
             publish_to_user_client(client.id, uid, KIND_SYNC_SEEN, format!("[{to_publish}]"));
+            r.push(ts);
           }
         }
       }
     }
   }
+  dbg!(&r);
   Ok(r)
 }
