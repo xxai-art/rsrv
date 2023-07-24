@@ -25,6 +25,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
               if let Some(cid) = cid_rid_li[0].as_u64() {
                 for i in &cid_rid_li[1..] {
                   dbg!(&i);
+                  "SELECT rid FROM seen WHERE uid={uid} AND cid=2 AND rid in (3,4)";
                 }
               }
             }

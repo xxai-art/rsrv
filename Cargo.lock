@@ -698,6 +698,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6c80984affa11d98d1b88b66ac8853f143217b399d3c74116778ff8fdb4ed2e"
 
 [[package]]
+name = "gt"
+version = "0.1.0"
+dependencies = [
+ "async-lazy",
+ "pgw",
+ "tokio",
+ "tracing",
+ "xxai-tokio-postgres",
+]
+
+[[package]]
 name = "h2"
 version = "0.3.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
