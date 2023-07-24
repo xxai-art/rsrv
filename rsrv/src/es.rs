@@ -10,6 +10,7 @@ lazy_static! {
 }
 
 pub const KIND_SYNC_FAV: u16 = 1;
+pub const KIND_SYNC_SEEN: u16 = 2;
 
 pub async fn publish_b64(
   client_id: impl AsRef<str>,

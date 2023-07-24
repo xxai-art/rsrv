@@ -5,7 +5,7 @@ use xxpg::{Q, Q01};
 
 use crate::{
   es::{publish_to_user_client, KIND_SYNC_FAV},
-  kv::sync::set_last,
+  kv::sync::{has_more, set_last},
   K,
 };
 
@@ -14,7 +14,7 @@ use crate::{
 
 Q01!(
 fav_user:
-    INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (uid, cid, rid, ts) DO NOTHING RETURNING id;
+    INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (uid,cid,rid,ts) DO NOTHING RETURNING id;
 
 );
 
@@ -65,10 +65,6 @@ pub async fn fav_batch_add(
   }
   if n > 0 {
     publish_fav_sync(client_id, uid, prev_id, id, json);
-    // let p = KV.pipeline();
-    // p.hincrby(K::FAV_SUM, uid, n).await?;
-    // p.hset(K::FAV_ID, (uid, id)).await?;
-    // p.all().await?;
   }
   Ok(id)
 }
@@ -78,6 +74,8 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   let li: Vec<u64> = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
   if li.len() > 2 {
     let uid = li[0];
+    let uid_bin = xxai::u64_bin(uid);
+
     if client.is_login(uid).await? {
       let last_sync_id = li[1];
       let li: Vec<_> = li[2..]
@@ -89,15 +87,21 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
         fav_rm(uid, i.0, i.1).await?
       }
 
-      let fav_li = fav_li(uid, last_sync_id).await?;
       let mut id = 0;
-      if !fav_li.is_empty() {
-        id = fav_li.last().unwrap().0;
-        for i in fav_li {
-          r.push(i.1 as u64);
-          r.push(i.2);
-          r.push(i.3);
-          r.push(i.4 as u64);
+
+      if has_more(K::FAV_LAST, &uid_bin, last_sync_id)
+        .await?
+        .is_some()
+      {
+        let fav_li = fav_li(uid, last_sync_id).await?;
+        if !fav_li.is_empty() {
+          id = fav_li.last().unwrap().0;
+          for i in fav_li {
+            r.push(i.1 as u64);
+            r.push(i.2);
+            r.push(i.3);
+            r.push(i.4 as u64);
+          }
         }
       }
 

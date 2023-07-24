@@ -11,7 +11,12 @@ use x0::{
 use xxai::{bin_u64, u64_bin};
 use xxpg::Q;
 
-use crate::{es, es::KIND_SYNC_FAV, kv::sync::set_last, K};
+use crate::{
+  es,
+  es::KIND_SYNC_FAV,
+  kv::sync::{has_more, set_last},
+  K,
+};
 
 const LIMIT: usize = 2048;
 
@@ -29,67 +34,33 @@ macro_rules! es_sync {
       let uid = $uid;
       let uid_bin = u64_bin(uid);
       let fav_id = $li[0];
-      // let p = KV.pipeline();
-      // p.hincrby(K::FAV_ID, uid, 0).await?;
-      // p.hincrby(K::FAV_SUM, uid, 0).await?;
-      // let r: Vec<u64> = p.all().await?;
-      let last_fav_id: Option<Vec<u8>> = KV.hget(K::FAV_LAST, uid_bin).await?;
-      if let Some(last_fav_id) = last_fav_id {
-        let last_fav_id = bin_u64(last_fav_id);
-        dbg!(&fav_id, &last_fav_id);
-        if fav_id < last_fav_id {
-          let mut id = fav_id;
-          loop {
-            let prev_id = id;
-            let fav_li = fav_li(uid, id).await?;
-            let len = fav_li.len();
-            if len > 0 {
-              id = fav_li.last().unwrap().0;
-              let mut json = String::new();
-              for i in &fav_li {
-                json += &format!(",{},{},{},{}", i.1, i.2, i.3, i.4);
-              }
-              es::publish_b64(
-                &channel_id,
-                KIND_SYNC_FAV,
-                format!("{uid},{prev_id},{id}{json}"),
-              )
-              .await?;
+      if let Some(last_fav_id) = has_more(K::FAV_LAST, &uid_bin, fav_id).await? {
+        let mut id = fav_id;
+        loop {
+          let prev_id = id;
+          let fav_li = fav_li(uid, id).await?;
+          let len = fav_li.len();
+          if len > 0 {
+            id = fav_li.last().unwrap().0;
+            let mut json = String::new();
+            for i in &fav_li {
+              json += &format!(",{},{},{},{}", i.1, i.2, i.3, i.4);
             }
-            if len != LIMIT {
-              break;
-            }
+            es::publish_b64(
+              &channel_id,
+              KIND_SYNC_FAV,
+              format!("{uid},{prev_id},{id}{json}"),
+            )
+            .await?;
           }
-          if id != last_fav_id {
-            set_last(K::FAV_LAST, uid, id);
+          if len != LIMIT {
+            break;
           }
         }
+        if id != last_fav_id {
+          set_last(K::FAV_LAST, uid, id);
+        }
       }
-      // let sum = r[1];
-      // if (fav_synced + n as u64) != sum {
-      //   let mut total = 0;
-      //   let mut json = String::new();
-      //   for i in fav_ym_n(uid).await? {
-      //     let ym = i.0;
-      //     let ym = 12 * (ym / 100) + ym % 100;
-      //
-      //     let n = i.1;
-      //     total += n;
-      //     json += &format!(",{ym},{n}");
-      //   }
-      //
-      //   if total != sum {
-      //     KV.hset(K::FAV_SUM, (uid, total)).await?;
-      //   }
-      //
-      //   if total != fav_synced {
-      //     es::publish_b64(
-      //       &channel_id,
-      //       KIND_SYNC_FAV_SYNC_BY_YEAR_MONTH,
-      //       format!("{uid}{json}"),
-      //     );
-      //   }
-      // }
     });
   };
 }
