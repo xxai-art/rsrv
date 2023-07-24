@@ -1,7 +1,8 @@
 use tokio_postgres::{error::SqlState, Client, NoTls};
 
-pub async fn conn(env: impl AsRef<str>) -> Client {
-  let pg_uri = std::env::var(env.as_ref()).unwrap();
+pub async fn conn(env: impl Into<String>) -> Client {
+  let env = env.into();
+  let pg_uri = std::env::var(&env).unwrap();
   let (client, connection) = tokio_postgres::connect(&format!("postgres://{}", pg_uri), NoTls)
     .await
     .unwrap();
@@ -13,7 +14,7 @@ pub async fn conn(env: impl AsRef<str>) -> Client {
         Some(code) => code.code(),
         None => "",
       };
-      tracing::error!("❌ POSTGRES ERROR CODE {code} : {e}\n SEE https://www.postgresql.org/docs/current/errcodes-appendix.html\n");
+      tracing::error!("❌ {env} ERROR CODE {code} : {e}");
 
       if err_code == Some(&SqlState::ADMIN_SHUTDOWN) || e.is_closed() {
         std::process::exit(1)
