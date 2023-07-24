@@ -109,16 +109,20 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
             }
           }
 
-          if has_more(K::SEEN_LAST, uid_bin, last_sync_id)
-            .await?
-            .is_some()
-          {
+          let to_insert_is_empty = to_insert.is_empty();
+
+          if let Some(prev_id) = has_more(K::SEEN_LAST, uid_bin, last_sync_id).await? {
             for i in seen_after_ts(uid, last_sync_id).await? {
               r.push(i);
             }
+            if to_insert_is_empty {
+              r.push(prev_id);
+            }
+          } else if to_insert_is_empty {
+            r.push(last_sync_id);
           }
 
-          if !to_insert.is_empty() {
+          if !to_insert_is_empty {
             ts -= 1;
             let to_insert = to_insert.join(",");
             GQ(
