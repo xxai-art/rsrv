@@ -32,7 +32,7 @@ pub async fn seen_after_ts(uid: u64, ts: u64) -> Result<Vec<u64>> {
   let mut r = Vec::new();
   for i in GQ(
     &format!(
-      "SELECT cid,rid,CAST(ts as BIGINT) t FROM seen WHERE uid={uid} AND ts>{ts}" // TODO ORDER BY TS"
+      "SELECT cid,rid,CAST(ts as BIGINT) t FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY TS"
     ),
     &[],
   )
