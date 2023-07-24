@@ -1,5 +1,5 @@
 use async_lazy::Lazy;
-use tokio_postgres::{types::ToSql, Client, Error, NoTls, Row, ToStatement};
+use tokio_postgres::{types::ToSql, Client, Error, Row, ToStatement};
 
 pub static DB: Lazy<Client> =
   Lazy::const_new(|| Box::pin(async move { pgw::conn("GT_URI").await }));
