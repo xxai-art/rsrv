@@ -45,7 +45,7 @@ pub async fn fav_batch_add(
   prev_id: u64,
   client_id: u64,
   uid: u64,
-  fav_li: Vec<(u16, u64, u64, i8)>,
+  fav_li: Vec<(u16, u64, i8)>,
 ) -> anyhow::Result<u64> {
   let mut id = 0;
   let mut n = 0;
@@ -54,7 +54,7 @@ pub async fn fav_batch_add(
   //   "INSERT INTO fav.user (uid,cid,rid,ts,aid) VALUES {} ON CONFLICT (uid, cid, rid, ts) DO NOTHING RETURNING id",
   //   fav_li.into_iter().map(|x|( uid,x.0,x.1,x.2,x.3 )).collect::<Vec<_>>()
   // );
-  for (cid, rid, ts, aid) in fav_li {
+  for (cid, rid, aid) in fav_li {
     if let Some(_id) = fav_user(uid, cid, rid, ts, aid).await? {
       id = _id;
       n += 1;
@@ -79,8 +79,8 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
     if client.is_login(uid).await? {
       let last_sync_id = li[1];
       let li: Vec<_> = li[2..]
-        .chunks_exact(4)
-        .map(|i| (i[0] as u16, i[1], i[2], i[3] as i8))
+        .chunks_exact(3)
+        .map(|i| (i[0] as u16, i[1], i[2] as i8))
         .collect();
 
       for i in &li {
