@@ -1,7 +1,16 @@
 use async_lazy::Lazy;
 use tokio_postgres::{types::ToSql, Client, Error, NoTls, Row, ToStatement};
 
-static GT: Lazy<Client> = Lazy::const_new(|| Box::pin(async move { pgw::conn("GT_URI").await }));
+pub static DB: Lazy<Client> =
+  Lazy::const_new(|| Box::pin(async move { pgw::conn("GT_URI").await }));
+
+#[ctor::ctor]
+fn init() {
+  trt::TRT.block_on(async move {
+    use std::future::IntoFuture;
+    DB.into_future().await;
+  });
+}
 
 macro_rules! q {
   ($name:ident,$func:ident,$rt:ty) => {
@@ -10,7 +19,7 @@ macro_rules! q {
     where
       T: ?Sized + ToStatement,
     {
-      match GT.get().unwrap().$func(statement, params).await {
+      match DB.get().unwrap().$func(statement, params).await {
         Ok(r) => Ok(r),
         Err(err) => {
           if err.is_closed() {
@@ -24,4 +33,6 @@ macro_rules! q {
   };
 }
 
-q!(G, query, Vec<Row>);
+q!(GQ, query, Vec<Row>);
+q!(GQ1, query_one, Row);
+q!(GQ01, query_opt, Option<Row>);

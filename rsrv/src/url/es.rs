@@ -11,7 +11,7 @@ use x0::{
 use xxai::{bin_u64, u64_bin};
 use xxpg::Q;
 
-use crate::{es, es::KIND_SYNC_FAV, url::fav::kv_hset_fav_last, K};
+use crate::{es, es::KIND_SYNC_FAV, kv::sync::set_last, K};
 
 const LIMIT: usize = 2048;
 
@@ -61,7 +61,7 @@ macro_rules! es_sync {
             }
           }
           if id != last_fav_id {
-            kv_hset_fav_last(uid, id);
+            set_last(K::FAV_LAST, uid, id);
           }
         }
       }

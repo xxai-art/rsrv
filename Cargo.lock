@@ -702,9 +702,11 @@ name = "gt"
 version = "0.1.0"
 dependencies = [
  "async-lazy",
+ "ctor",
  "pgw",
  "tokio",
  "tracing",
+ "trt 0.1.5",
  "xxai-tokio-postgres",
 ]
 

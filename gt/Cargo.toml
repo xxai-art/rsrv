@@ -10,3 +10,5 @@ pgw = { path = "../pgw" }
 tracing = "0.1.37"
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
 tokio = { version = "1.29.1", features = ["macros", "rt", "rt-multi-thread"] }
+trt = { version = "0.1.5", path = "../trt" }
+ctor = "0.2.4"
