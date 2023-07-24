@@ -2,6 +2,7 @@
 members = [
   "rsrv",
   "gt",
+  "init",
   "trt",
   "client",
   "x0",
