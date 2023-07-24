@@ -32,7 +32,7 @@ pub async fn seen_after_ts(uid: u64, ts: u64) -> Result<Vec<u64>> {
   let mut r = Vec::new();
   for i in GQ(
     &format!(
-      "SELECT cid,rid,CAST(ts as BIGINT) t FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY TS"
+      "SELECT cid,rid,CAST(ts as BIGINT) t FROM seen WHERE uid={uid} AND ts>{ts}" // TODO ORDER BY TS"
     ),
     &[],
   )
@@ -87,7 +87,8 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
                   )
                   .await?
                   {
-                    rid_set.remove(&i.get(0));
+                    let rid: i64 = i.get(0);
+                    rid_set.remove(&(rid as u64));
                   }
                 }
                 if !rid_set.is_empty() {

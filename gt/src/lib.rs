@@ -19,12 +19,11 @@ macro_rules! q {
     where
       T: ?Sized + ToStatement + std::fmt::Debug,
     {
-      dbg!(&statement);
       match DB.get().unwrap().$func(statement, params).await {
         Ok(r) => Ok(r),
         Err(err) => {
           if err.is_closed() {
-            tracing::error!("{}", err);
+            tracing::error!("{:?}\n{}", statement, err);
             std::process::exit(1);
           }
           Err(err)
