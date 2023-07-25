@@ -88,10 +88,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
 
       let mut id = 0;
 
-      if has_more(K::FAV_LAST, &uid_bin, last_sync_id)
-        .await?
-        .is_some()
-      {
+      if has_more(K::FAV_LAST, &uid_bin, last_sync_id).await?.more {
         let fav_li = fav_li(uid, last_sync_id).await?;
         if !fav_li.is_empty() {
           id = fav_li.last().unwrap().0;

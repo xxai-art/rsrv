@@ -79,7 +79,9 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
 
           let to_insert_is_empty = to_insert.is_empty();
 
-          if let Some(prev_id) = has_more(K::SEEN_LAST, uid_bin, last_sync_id).await? {
+          let has_more = has_more(K::SEEN_LAST, uid_bin, last_sync_id).await?;
+          let prev_id = has_more.id;
+          if has_more.more {
             for i in seen::after_ts(seen::after_ts_sql(uid, last_sync_id)).await? {
               r.push(i);
             }
@@ -100,11 +102,12 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
             .await?;
             set_last(K::SEEN_LAST, uid, ts);
             let to_publish = to_publish.join(",");
+            let diff = ts - has_more.id;
             publish_to_user_client(
               client.id,
               uid,
               KIND_SYNC_SEEN,
-              format!("[{ts},{to_publish}]"),
+              format!("[{prev_id},{diff},{to_publish}]"),
             );
             r.push(ts);
           }
