@@ -104,7 +104,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
               client.id,
               uid,
               KIND_SYNC_SEEN,
-              format!("[{prev_id},{diff},{to_publish}]"),
+              format!("{prev_id},{diff},{to_publish}"),
             );
             r.push(ts);
           }
