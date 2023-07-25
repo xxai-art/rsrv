@@ -58,11 +58,14 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
                 }
                 if !rid_set.is_empty() {
                   let mut publish = Vec::with_capacity(rid_set.len() + 1);
-                  publish.push(cid);
                   for rid in rid_set {
+                    publish.push(rid);
                     to_insert.push(format!("({uid},{cid},{rid},{ts})"));
                     ts += 1;
                   }
+                  xxai::diffli(&mut publish);
+
+                  publish.push(cid);
                   let publish = publish
                     .into_iter()
                     .map(|i| i.to_string())
