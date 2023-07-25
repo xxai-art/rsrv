@@ -38,11 +38,12 @@ macro_rules! es_sync {
       let uid = $uid;
       let uid_bin = u64_bin(uid);
       paste! {
-      if let Some(last_fav_id) = has_more(K::[< $key:upper _LAST >], &uid_bin, $prev_id).await? {
+      let last_key = K::[< $key:upper _LAST >];
+      if let Some(last_id) = has_more(last_key, &uid_bin, $prev_id).await? {
         let mut id = $prev_id;
         loop {
           let prev_id = id;
-          let li = fav_li(uid, id).await?;
+          let li = [<$key _li>](uid, id).await?;
           let len = li.len();
           if len > 0 {
             id = li.last().unwrap().0;
@@ -61,8 +62,8 @@ macro_rules! es_sync {
             break;
           }
         }
-        if id != last_fav_id {
-          set_last(K::FAV_LAST, uid, id);
+        if id != last_id {
+          set_last(last_key, uid, id);
         }
       }
       }
