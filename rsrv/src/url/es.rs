@@ -59,7 +59,6 @@ macro_rules! es_sync {
           if let Some(last_id) = has_more(last_key, &uid_bin, prev_id).await? {
               let mut id = prev_id;
               loop {
-                  let prev_id = id;
                   let li = [<$key _li>](uid, id).await?;
                   let len = li.len();
                   if len > 0 {
@@ -71,9 +70,8 @@ macro_rules! es_sync {
                       es::publish_b64(
                           &channel_id,
                           es::[<KIND_SYNC_ $key:upper>],
-                          format!("{uid},{prev_id},{id}{json}"),
-                      )
-                          .await?;
+                          format!("{uid}{json}"),
+                      ).await?;
                   }
                   if len != LIMIT {
                       break;
