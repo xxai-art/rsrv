@@ -1,6 +1,5 @@
 use std::collections::HashSet;
 
-use anyhow::Result;
 use axum::body::Bytes;
 use client::Client;
 use gt::GQ;
@@ -13,21 +12,6 @@ use crate::{
   kv::sync::{has_more, set_last},
   K,
 };
-
-/*
-CREATE TABLE IF NOT EXISTS seen (
-uid BIGINT NULL,
-cid TINYINT NULL,
-rid BIGINT NULL,
-ts TIMESTAMP(3) NOT NULL,
-TIME INDEX (ts),
-PRIMARY KEY (uid, cid, rid)
-)
-ENGINE=mito
-WITH(
-regions = 1
-)
-*/
 
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   let mut r = Vec::new();

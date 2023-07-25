@@ -1,6 +1,17 @@
 use anyhow::Result;
 use gt::GQ;
 
+/*
+CREATE TABLE IF NOT EXISTS seen (
+uid BIGINT NULL,
+cid TINYINT NULL,
+rid BIGINT NULL,
+ts TIMESTAMP(3) NOT NULL,
+TIME INDEX (ts),
+PRIMARY KEY (uid, cid, rid)
+)
+*/
+
 pub fn after_ts_sql(uid: u64, ts: u64) -> String {
   format!("SELECT cid,rid,CAST(ts as BIGINT) t FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY TS")
 }

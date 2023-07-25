@@ -18,28 +18,25 @@ use crate::{
 const LIMIT: usize = 2048;
 
 Q! {
-    fav_li:
-        SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 2048;
-
+    fav_li:SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 2048;
 }
-
-pub struct EsSync {
-  kv_last: &'static [u8],
-}
-
-pub static ES_SYNC_FAV: EsSync = EsSync {
-  kv_last: K::FAV_LAST,
-};
 
 // fav_ym_n: "SELECT TO_CHAR(to_timestamp(cast(ts/1000 as u64)) AT TIME ZONE 'UTC','YYYYMM')::u64 AS ym, COUNT(1)::u64 FROM fav.user WHERE uid=$1 GROUP BY ym"
 
+macro_rules! json_fav {
+  ($i:expr) => {{
+    let i = $i;
+    format!(",{},{},{},{}", i.1, i.2, i.3, i.4)
+  }};
+}
+
 macro_rules! es_sync {
-  ($uid:expr, $channel_id: expr, $li: expr) => {
+  ($uid:expr, $channel_id: expr, $prev_id: expr, $json:ident) => {
     trt::spawn!({
       let channel_id = $channel_id;
       let uid = $uid;
       let uid_bin = u64_bin(uid);
-      let fav_id = $li[0];
+      let fav_id = $prev_id;
       if let Some(last_fav_id) = has_more(K::FAV_LAST, &uid_bin, fav_id).await? {
         let mut id = fav_id;
         loop {
@@ -50,7 +47,7 @@ macro_rules! es_sync {
             id = fav_li.last().unwrap().0;
             let mut json = String::new();
             for i in &fav_li {
-              json += &format!(",{},{},{},{}", i.1, i.2, i.3, i.4);
+              json += &$json!(i);
             }
             es::publish_b64(
               &channel_id,
@@ -68,6 +65,12 @@ macro_rules! es_sync {
         }
       }
     });
+  };
+}
+
+macro_rules! es_sync_li {
+  ($uid:expr, $channel_id: expr, $li: expr) => {
+    es_sync!($uid, $channel_id, $li[0], json_fav)
   };
 }
 
@@ -93,7 +96,7 @@ pub async fn get(client: Client, Path(li): Path<String>) -> awp::Result<Response
 
       let url = format!("/nchan/{}", channel_id);
 
-      es_sync!(uid, channel_id, &li[1..]);
+      es_sync_li!(uid, channel_id, &li[1..]);
 
       return Ok(
         (
