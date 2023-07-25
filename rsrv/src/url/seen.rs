@@ -66,12 +66,8 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
                   xxai::diffli(&mut publish);
 
                   publish.push(cid);
-                  let publish = publish
-                    .into_iter()
-                    .map(|i| i.to_string())
-                    .collect::<Vec<_>>()
-                    .join(",");
-                  to_publish.push(format!("[{publish}]"));
+                  let publish = xxai::z85_encode_u64_li(publish);
+                  to_publish.push(format!("\"{publish}\""));
                 }
               }
             }
