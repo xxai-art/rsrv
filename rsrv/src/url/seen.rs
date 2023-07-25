@@ -71,7 +71,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
                     .map(|i| i.to_string())
                     .collect::<Vec<_>>()
                     .join(",");
-                  to_publish.push(format!("[{publish}]"));
+                  to_publish.push(format!("[0,{publish}]"));
                 }
               }
             }
