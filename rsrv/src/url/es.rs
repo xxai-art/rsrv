@@ -5,55 +5,50 @@ use axum::{
   response::{IntoResponse, Response},
 };
 use client::Client;
+use gt::GQ;
 use paste::paste;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::u64_bin;
 use xxpg::Q;
 
 use crate::{
-  db, es,
+  es,
   kv::sync::{has_more, set_last},
   K,
 };
 
-const LIMIT: usize = 2048;
+const LIMIT: usize = 4096;
 
 Q! {
     fav_li:SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 2048;
 }
 
-async fn seen_li(uid: u64, ts: u64) -> Result<Vec<u64>> {
-  let sql = &format!("SELECT cid,rid,CAST(ts as BIGINT) t FROM seen WHERE uid={uid} AND ts>CAST({ts} as TIMESTAMP) ORDER BY ts LIMIT 3");
-  db::seen::after_ts(sql).await
+async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
+  // let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY ts LIMIT {LIMIT}");
+  // TODO fix https://github.com/GreptimeTeam/greptimedb/issues/2026
+  let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>CAST({ts} as TIMESTAMP) ORDER BY ts LIMIT {LIMIT}");
+  Ok(
+    GQ(sql, &[])
+      .await?
+      .into_iter()
+      .map(|i| (i.get::<_, i64>(0) as u64, i.get(1), i.get(2)))
+      .collect(),
+  )
 }
 
-macro_rules! last_0 {
-  ($last:expr) => {
-    $last.0
-  };
-}
-
-macro_rules! last {
-  ($last:expr) => {
-    *$last
-  };
-}
-
-macro_rules! json_seen {
-  ($i:expr) => {{
-    format!(",{}", $i)
-  }};
-}
-
-macro_rules! json_fav {
-  ($i:expr) => {{
+macro_rules! json {
+  (fav, $i:expr) => {{
     let i = $i;
     format!(",{},{},{},{}", i.1, i.2, i.3, i.4)
+  }};
+  (seen, $i:expr) => {{
+    let i = $i;
+    format!(",{},{},{}", i.0, i.1, i.2)
   }};
 }
 
 macro_rules! es_sync {
-  ($uid:expr, $channel_id: expr, $prev_id: expr, $key:ident, $last:ident) => {{
+  ($uid:expr, $channel_id: expr, $prev_id: expr, $key:ident) => {{
     let channel_id = $channel_id.clone();
     let prev_id = $prev_id;
     let uid = $uid;
@@ -68,10 +63,10 @@ macro_rules! es_sync {
                   let li = [<$key _li>](uid, id).await?;
                   let len = li.len();
                   if len > 0 {
-                      id = $last!(li.last().unwrap());
+                      id = li.last().unwrap().0;
                       let mut json = String::new();
                       for i in &li {
-                          json += &[<json_ $key>]!(i);
+                          json += &json!($key, i);
                       }
                       es::publish_b64(
                           &channel_id,
@@ -94,14 +89,14 @@ macro_rules! es_sync {
 }
 
 macro_rules! es_sync_li {
-  ($uid:expr, $channel_id: expr, $li:ident: $($pos:expr,$key:ident,$last:ident);*) => {
+  ($uid:expr, $channel_id:expr, $li:ident : $($pos:expr,$key:ident);*) => {
     $(
-      es_sync!($uid, $channel_id, $li[$pos], $key, $last);
+      es_sync!($uid, $channel_id, $li[$pos], $key);
     )*
   };
   ($uid:expr, $channel_id: expr, $li: expr) => {{
     let li = $li;
-    es_sync_li!($uid, $channel_id, li: 0, fav, last_0; 1, seen, last);
+    es_sync_li!($uid, $channel_id, li : 0, fav; 1, seen);
   }}
 }
 
