@@ -4,6 +4,7 @@ use axum::{
   response::{IntoResponse, Response},
 };
 use client::Client;
+use paste::paste;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::u64_bin;
 use xxpg::Q;
@@ -31,27 +32,27 @@ macro_rules! json_fav {
 }
 
 macro_rules! es_sync {
-  ($uid:expr, $channel_id: expr, $prev_id: expr, $json:ident) => {
+  ($uid:expr, $channel_id: expr, $prev_id: expr, $key:ident) => {
     trt::spawn!({
       let channel_id = $channel_id;
       let uid = $uid;
       let uid_bin = u64_bin(uid);
-      let fav_id = $prev_id;
-      if let Some(last_fav_id) = has_more(K::FAV_LAST, &uid_bin, fav_id).await? {
-        let mut id = fav_id;
+      paste! {
+      if let Some(last_fav_id) = has_more(K::[< $key:upper _LAST >], &uid_bin, $prev_id).await? {
+        let mut id = $prev_id;
         loop {
           let prev_id = id;
-          let fav_li = fav_li(uid, id).await?;
-          let len = fav_li.len();
+          let li = fav_li(uid, id).await?;
+          let len = li.len();
           if len > 0 {
-            id = fav_li.last().unwrap().0;
+            id = li.last().unwrap().0;
             let mut json = String::new();
-            for i in &fav_li {
-              json += &$json!(i);
+            for i in &li {
+              json += &[<json_ $key>]!(i);
             }
             es::publish_b64(
               &channel_id,
-              KIND_SYNC_FAV,
+              [<KIND_SYNC_ $key:upper>],
               format!("{uid},{prev_id},{id}{json}"),
             )
             .await?;
@@ -64,13 +65,14 @@ macro_rules! es_sync {
           set_last(K::FAV_LAST, uid, id);
         }
       }
+      }
     });
   };
 }
 
 macro_rules! es_sync_li {
   ($uid:expr, $channel_id: expr, $li: expr) => {
-    es_sync!($uid, $channel_id, $li[0], json_fav)
+    es_sync!($uid, $channel_id, $li[0], fav)
   };
 }
 
