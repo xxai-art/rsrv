@@ -17,16 +17,16 @@ use crate::{
   K,
 };
 
-const LIMIT: usize = 4096;
+const LIMIT: usize = 8192;
 
 Q! {
-    fav_li:SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 2048;
+  fav_li:SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 8192;
 }
 
 async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
   // let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY ts LIMIT {LIMIT}");
   // TODO fix https://github.com/GreptimeTeam/greptimedb/issues/2026
-  let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>CAST({ts} as TIMESTAMP) ORDER BY ts LIMIT {LIMIT}");
+  let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>CAST({ts} as TIMESTAMP) ORDER BY ts LIMIT 8192");
   Ok(
     GQ(sql, &[])
       .await?
@@ -37,13 +37,16 @@ async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
 }
 
 macro_rules! json {
-  (fav, $i:expr) => {{
-    let i = $i;
-    format!(",{},{},{},{}", i.1, i.2, i.3, i.4)
+  (fav, $prev_id:ident,$str:ident, $li:expr) => {{
+    $str += &format!(",{},{}", $prev_id, $li.last().unwrap().0);
+    for i in $li {
+      $str += &format!(",{},{},{},{}", i.1, i.2, i.3, i.4)
+    }
   }};
-  (seen, $i:expr) => {{
-    let i = $i;
-    format!(",{},{},{}", i.0, i.1, i.2)
+  (seen, $prev_id:ident, $str:ident, $li:expr) => {{
+    for i in $li {
+      $str += &format!(",{},{},{}", i.0, i.1, i.2);
+    }
   }};
 }
 
@@ -62,16 +65,14 @@ macro_rules! es_sync {
                   let li = [<$key _li>](uid, id).await?;
                   let len = li.len();
                   if len > 0 {
-                      id = li.last().unwrap().0;
                       let mut json = String::new();
-                      for i in &li {
-                          json += &json!($key, i);
-                      }
+                      json!($key,id,json,&li);
                       es::publish_b64(
                           &channel_id,
                           es::[<KIND_SYNC_ $key:upper>],
                           format!("{uid}{json}"),
                       ).await?;
+                      id = li.last().unwrap().0;
                   }
                   if len != LIMIT {
                       break;
