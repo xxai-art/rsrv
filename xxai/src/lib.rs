@@ -1,10 +1,12 @@
 mod diffli;
-pub use diffli::diffli;
 pub mod time;
 mod tld;
+mod vbyte_decode;
 use anyhow::Result;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 pub use tld::tld;
+
+pub use crate::{diffli::diffli, vbyte_decode::vbyte_decode};
 
 const COOKIE_SAFE_CHAR: &str =
   "!#$%&'()*+-./0123456789:<>?@ABDEFGHIJKLMNQRSTUVXYZ[]^_`abdefghijklmnqrstuvxyz{|}~";
@@ -35,6 +37,10 @@ pub fn is_ascii_digit(bytes: impl AsRef<[u8]>) -> bool {
 //   }
 //   vbyte::compress_list(&u64_li)
 // }
+
+pub fn z85_decode_u64_li(s: impl AsRef<str>) -> Result<Vec<u64>> {
+  Ok(vbyte_decode(&z85::decode(s.as_ref())?)?)
+}
 
 pub fn z85_encode_u64_li(u64_li: Vec<u64>) -> String {
   z85::encode(vbyte::compress_list(&u64_li))
