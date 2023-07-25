@@ -6,7 +6,7 @@ pub async fn post(body: Bytes) -> any!() {
   let body = &body[1..body.len() - 1];
   for (pos, i) in body.iter().enumerate() {
     if *i == b'/' {
-      let args = xxai::b64_u64_li(&body[..pos]);
+      let args = xxai::b64_decode_u64_li(&body[..pos]);
       if args.len() >= 3 {
         let rating = args[0];
         let begin_time = args[1];

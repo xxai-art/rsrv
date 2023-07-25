@@ -11,7 +11,7 @@ pub async fn post(body: Bytes) -> awp::any!() {
   if let Some(first) = body.first() {
     match *first {
       b'"' => {
-        let t = xxai::b64_u64_li(&body[1..body.len() - 1]);
+        let t = xxai::b64_decode_u64_li(&body[1..body.len() - 1]);
         let cid = t[0];
         match cid {
           crate::cid::CID_USER => {

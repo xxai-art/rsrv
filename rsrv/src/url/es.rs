@@ -1,3 +1,5 @@
+use std::collections::{HashMap, HashSet};
+
 use anyhow::Result;
 use axum::{
   extract::Path,
@@ -26,7 +28,7 @@ Q! {
 async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
   // let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY ts LIMIT {LIMIT}");
   // TODO fix https://github.com/GreptimeTeam/greptimedb/issues/2026
-  let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>CAST({ts} as TIMESTAMP) ORDER BY ts LIMIT 8192");
+  let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>arrow_cast({ts}, 'Timestamp(Millisecond, None)') ORDER BY ts LIMIT 8192");
   Ok(
     GQ(sql, &[])
       .await?
@@ -37,17 +39,35 @@ async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
 }
 
 macro_rules! json {
-  (fav, $prev_id:ident,$str:ident, $li:expr) => {{
-    $str += &format!(",{},{}", $prev_id, $li.last().unwrap().0);
+  (fav, $prev_id:ident,$last_id:ident,$str:ident, $li:expr) => {{
+    $str += &format!(",{},{}", $prev_id, $last_id);
     for i in $li {
       $str += &format!(",{},{},{},{}", i.1, i.2, i.3, i.4)
     }
   }};
-  (seen, $prev_id:ident, $str:ident, $li:expr) => {{
-    for i in $li {
-      $str += &format!(",{},{},{}", i.0, i.1, i.2);
+  (seen, $prev_id:ident, $last_id:ident, $str:ident, $li:expr) => {{
+    let li = $li;
+    let mut map = HashMap::new();
+    for i in li {
+      map.entry(i.1).or_insert_with(Vec::new).push((i.0, i.2));
     }
-    $str += &format!(",{}", $prev_id)
+
+    for (cid, ts_rid_li) in map {
+      let mut li = Vec::with_capacity(ts_rid_li.len() * 2 + 1);
+      li.push(cid as u64);
+      let t0 = ts_rid_li[0];
+      let begin = t0.0 as u64;
+      li.push(begin);
+      li.push(t0.1 as _);
+      for (ts, rid) in &ts_rid_li[1..] {
+        li.push(*ts as u64 - begin);
+        li.push(*rid as _);
+      }
+      dbg!(xxai::z85_encode_u64_li(li));
+    }
+    //  $str += &format!(",{},{},{}", i.0, i.1, i.2);
+    // }
+    // $str += &format!(",{}", $prev_id)
   }};
 }
 
@@ -68,13 +88,14 @@ macro_rules! es_sync {
                   let len = li.len();
                   if len > 0 {
                       let mut json = String::new();
-                      json!($key,id,json,&li);
+                      let last_id = li.last().unwrap().0;
+                      json!($key,id,last_id,json,&li);
                       es::publish_b64(
                           &channel_id,
                           es::[<KIND_SYNC_ $key:upper>],
                           format!("{uid}{json}"),
                       ).await?;
-                      id = li.last().unwrap().0;
+                      id = last_id;
                   }
                   if len != LIMIT {
                       break;
@@ -102,7 +123,7 @@ macro_rules! es_sync_li {
 }
 
 pub async fn get(client: Client, Path(li): Path<String>) -> awp::Result<Response> {
-  let li = xxai::b64_u64_li(li);
+  let li = xxai::b64_decode_u64_li(li);
   if li.len() >= 2 {
     let uid = li[0];
     if client.is_login(uid).await? {

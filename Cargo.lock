@@ -1548,6 +1548,7 @@ dependencies = [
  "xxai",
  "xxhash-rust",
  "xxpg",
+ "z85",
 ]
 
 [[package]]
@@ -2509,6 +2510,7 @@ dependencies = [
  "psl",
  "rand",
  "vbyte",
+ "z85",
 ]
 
 [[package]]
@@ -2591,3 +2593,9 @@ dependencies = [
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "xxai-tokio-postgres",
 ]
+
+[[package]]
+name = "z85"
+version = "3.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a599daf1b507819c1121f0bf87fa37eb19daac6aff3aefefd4e6e2e0f2020fc"

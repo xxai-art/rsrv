@@ -82,7 +82,8 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
           let has_more = has_more(K::SEEN_LAST, uid_bin, last_sync_id).await?;
           let prev_id = has_more.id;
           if has_more.more {
-            for i in seen::after_ts(seen::after_ts_sql(uid, last_sync_id)).await? {
+            let seen_li = seen::after_ts(seen::after_ts_sql(uid, last_sync_id)).await?;
+            for i in seen_li {
               r.push(i);
             }
             if to_insert_is_empty {

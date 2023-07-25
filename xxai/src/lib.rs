@@ -36,7 +36,11 @@ pub fn is_ascii_digit(bytes: impl AsRef<[u8]>) -> bool {
 //   vbyte::compress_list(&u64_li)
 // }
 
-pub fn b64_u64_li(bin: impl AsRef<[u8]>) -> Vec<u64> {
+pub fn z85_encode_u64_li(u64_li: Vec<u64>) -> String {
+  z85::encode(vbyte::compress_list(&u64_li))
+}
+
+pub fn b64_decode_u64_li(bin: impl AsRef<[u8]>) -> Vec<u64> {
   let bin = bin.as_ref();
   if let Ok(r) = URL_SAFE_NO_PAD.decode(bin) {
     return bin_u64_li(r);
