@@ -71,7 +71,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
                     .map(|i| i.to_string())
                     .collect::<Vec<_>>()
                     .join(",");
-                  to_publish.push(format!("[0,{publish}]"));
+                  to_publish.push(format!("[{publish}]"));
                 }
               }
             }
@@ -100,7 +100,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
             .await?;
             set_last(K::SEEN_LAST, uid, ts);
             let to_publish = to_publish.join(",");
-            publish_to_user_client(client.id, uid, KIND_SYNC_SEEN, format!("[{to_publish}]"));
+            publish_to_user_client(client.id, uid, KIND_SYNC_SEEN, format!("[0,{to_publish}]"));
             r.push(ts);
           }
         }
