@@ -8,6 +8,7 @@ use serde_json::Value;
 use xxai::u64_bin;
 
 use crate::{
+  db::seen,
   es::{publish_to_user_client, KIND_SYNC_SEEN},
   kv::sync::{has_more, set_last},
   K,
@@ -27,23 +28,6 @@ WITH(
 regions = 1
 )
 */
-
-pub fn seen_after_ts_sql(uid: u64, ts: u64) -> String {
-  format!("SELECT cid,rid,CAST(ts as BIGINT) t FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY TS")
-}
-
-pub async fn seen_after_ts(sql: impl AsRef<str>) -> Result<Vec<u64>> {
-  let mut r = Vec::new();
-  for i in GQ(sql.as_ref(), &[]).await? {
-    let cid: i8 = i.get(0);
-    r.push(cid as u64);
-    let rid: i64 = i.get(1);
-    r.push(rid as u64);
-    let ts: i64 = i.get(2);
-    r.push(ts as u64);
-  }
-  Ok(r)
-}
 
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   let mut r = Vec::new();
@@ -109,7 +93,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
           let to_insert_is_empty = to_insert.is_empty();
 
           if let Some(prev_id) = has_more(K::SEEN_LAST, uid_bin, last_sync_id).await? {
-            for i in seen_after_ts(seen_after_ts_sql(uid, last_sync_id)).await? {
+            for i in seen::after_ts(seen::after_ts_sql(uid, last_sync_id)).await? {
               r.push(i);
             }
             if to_insert_is_empty {

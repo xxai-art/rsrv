@@ -15,6 +15,7 @@ use client::client;
 use trt::TRT;
 
 pub mod cid;
+mod db;
 mod es;
 mod kv;
 mod url;
