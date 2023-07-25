@@ -18,10 +18,19 @@ use crate::{
 const LIMIT: usize = 2048;
 
 Q! {
-fav_li:
-SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 2048;
+    fav_li:
+        SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 2048;
 
 }
+
+pub struct EsSync {
+  kv_last: &'static [u8],
+}
+
+pub static ES_SYNC_FAV: EsSync = EsSync {
+  kv_last: K::FAV_LAST,
+};
+
 // fav_ym_n: "SELECT TO_CHAR(to_timestamp(cast(ts/1000 as u64)) AT TIME ZONE 'UTC','YYYYMM')::u64 AS ym, COUNT(1)::u64 FROM fav.user WHERE uid=$1 GROUP BY ym"
 
 macro_rules! es_sync {

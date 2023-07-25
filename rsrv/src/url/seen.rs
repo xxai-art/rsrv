@@ -28,16 +28,13 @@ regions = 1
 )
 */
 
-pub async fn seen_after_ts(uid: u64, ts: u64) -> Result<Vec<u64>> {
+pub fn seen_after_ts_sql(uid: u64, ts: u64) -> String {
+  format!("SELECT cid,rid,CAST(ts as BIGINT) t FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY TS")
+}
+
+pub async fn seen_after_ts(sql: impl AsRef<str>) -> Result<Vec<u64>> {
   let mut r = Vec::new();
-  for i in GQ(
-    &format!(
-      "SELECT cid,rid,CAST(ts as BIGINT) t FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY TS"
-    ),
-    &[],
-  )
-  .await?
-  {
+  for i in GQ(sql.as_ref(), &[]).await? {
     let cid: i8 = i.get(0);
     r.push(cid as u64);
     let rid: i64 = i.get(1);
@@ -112,7 +109,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
           let to_insert_is_empty = to_insert.is_empty();
 
           if let Some(prev_id) = has_more(K::SEEN_LAST, uid_bin, last_sync_id).await? {
-            for i in seen_after_ts(uid, last_sync_id).await? {
+            for i in seen_after_ts(seen_after_ts_sql(uid, last_sync_id)).await? {
               r.push(i);
             }
             if to_insert_is_empty {
