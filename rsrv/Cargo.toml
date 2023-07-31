@@ -12,7 +12,7 @@ axum = "0.6.19"
 tower = { version = "0.4.13", features = ["timeout"] }
 const-str = "0.5.6"
 futures-util = "0.3.28"
-tower-http = { version = "0.4.1", features = ["cors", "tokio"] }
+tower-http = { version = "0.4.3", features = ["cors", "tokio"] }
 ctor = "0.2.4"
 trt = { version = "0.1.5" }
 # trt = { version = "0.1.4", path = "../trt" }
@@ -25,8 +25,8 @@ awp = { path = "../awp" }
 xxpg = { path = "../xxpg" }
 lazy_static = "1.4.0"
 coarsetime = "0.1.23"
-serde_json = "1.0.103"
-serde = { version = "1.0.171", features = ["derive"] }
+serde_json = "1.0.104"
+serde = { version = "1.0.179", features = ["derive"] }
 vbyte = "0.1.0"
 paste = "1.0.14"
 gt = { path = "../gt" }
