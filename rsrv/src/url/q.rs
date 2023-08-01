@@ -1,8 +1,8 @@
 use awp::any;
-use axum::body::Bytes;
+use axum::{body::Bytes, http::header::HeaderMap};
 use clip_search_txt_client::{DayRange, OffsetLimit, QIn};
 
-pub async fn post(body: Bytes) -> any!() {
+pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   let (txt, level, duration, end): (String, u64, u64, u64) =
     serde_json::from_str(&String::from_utf8_lossy(&body))?;
   /*
@@ -11,13 +11,21 @@ pub async fn post(body: Bytes) -> any!() {
 
   if txt.is_empty() {
   } else {
+    let lang = header
+      .get("accept-language")
+      .map(|h| h.to_str().unwrap())
+      .unwrap_or("en")
+      .to_string()
+      .into();
+
     let day_range = None;
+
     let req = QIn {
       txt: txt.into(),
       nsfw: if level == 1 { -1 } else { level as _ },
       offset_limit: None,
       day_range,
-      lang: "zh".into(),
+      lang,
     };
     dbg!(&req);
   }
