@@ -1,11 +1,27 @@
 use awp::any;
 use axum::body::Bytes;
+use clip_search_txt_client::{DayRange, OffsetLimit, QIn};
 
 pub async fn post(body: Bytes) -> any!() {
-  let (q, level, duration, end): (String, u64, u64, u64) =
+  let (txt, level, duration, end): (String, u64, u64, u64) =
     serde_json::from_str(&String::from_utf8_lossy(&body))?;
+  /*
+  分级 0 安全 1 不限 2 成人
+  */
 
-  dbg!(q, level, duration, end);
+  if txt.is_empty() {
+  } else {
+    let day_range = None;
+    let req = QIn {
+      txt: txt.into(),
+      nsfw: if level == 1 { -1 } else { level as _ },
+      offset_limit: None,
+      day_range,
+      lang: "zh".into(),
+    };
+    dbg!(&req);
+  }
+
   // let body = &body[1..body.len() - 1];
   // for (pos, i) in body.iter().enumerate() {
   //   if *i == b'/' {
