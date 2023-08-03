@@ -42,7 +42,9 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
       day_range,
       lang,
     };
+    dbg!(&req);
     let li = clip(req).await?.li;
+    dbg!(&li);
     let mut r = Vec::with_capacity(li.len() * 2);
     for i in li {
       r.push(CID_IMG);
