@@ -1,4 +1,7 @@
+use std::time;
+
 use chrono::{TimeZone, Utc};
+use tokio::time::interval;
 
 // 获取一个月的第一天的毫秒数
 pub fn first_millis_of_month(year: i32, month: u8) -> u64 {
@@ -32,4 +35,28 @@ pub fn n_to_year_month(n: i32) -> (i32, u8) {
 
 pub fn ms() -> u64 {
   coarsetime::Clock::now_since_epoch().as_millis()
+}
+
+pub static mut TODAY: u32 = 0;
+
+pub fn today() -> u32 {
+  return unsafe { TODAY };
+}
+
+pub async fn update_today() {
+  loop {
+    let now = time::SystemTime::now()
+      .duration_since(time::UNIX_EPOCH)
+      .unwrap()
+      .as_secs();
+
+    let today = now / 86400;
+    unsafe {
+      TODAY = today as u32;
+    }
+
+    let next = (1 + today) * 86400 + 1;
+
+    interval(time::Duration::from_secs(next - now)).tick().await;
+  }
 }

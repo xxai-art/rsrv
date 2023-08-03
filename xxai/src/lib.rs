@@ -1,7 +1,6 @@
 mod diffli;
 pub mod time;
 mod tld;
-pub mod today;
 mod vbyte_decode;
 use anyhow::Result;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};

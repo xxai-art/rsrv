@@ -13,6 +13,7 @@ use axum::{
 };
 use client::client;
 use trt::TRT;
+use xxai::time::update_today;
 
 pub mod cid;
 mod db;
@@ -74,6 +75,7 @@ fn main() -> anyhow::Result<()> {
   };
 
   TRT.block_on(async move {
+    trt::spawn! { update_today().await };
     awp::srv(router.layer(middleware::from_fn(client)), port).await;
   });
   Ok(())

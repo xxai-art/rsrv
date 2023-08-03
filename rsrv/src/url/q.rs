@@ -1,6 +1,7 @@
 use awp::{any, ok};
 use axum::{body::Bytes, http::header::HeaderMap};
 use clip_search_txt_client::{DayRange, OffsetLimit, QIn};
+use xxai::time::today;
 
 use crate::db::img::rec;
 
@@ -25,6 +26,8 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
       .into();
 
     let day_range = None;
+
+    dbg!(today());
 
     let req = QIn {
       txt: txt.into(),
