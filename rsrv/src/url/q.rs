@@ -3,7 +3,7 @@ use axum::{body::Bytes, http::header::HeaderMap};
 use clip_search_txt_client::{clip, DayRange, OffsetLimit, QIn};
 use xxai::time::today;
 
-use crate::db::img::rec;
+use crate::{cid::CID_IMG, db::img::rec};
 
 pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   /*
@@ -43,6 +43,11 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
       lang,
     };
     let li = clip(req).await?.li;
-    Ok(li.into_iter().map(|i| i.id).collect::<Vec<_>>().into())
+    let mut r = Vec::with_capacity(li.len() * 2);
+    for i in li {
+      r.push(CID_IMG);
+      r.push(i.id);
+    }
+    Ok(r.into())
   }
 }
