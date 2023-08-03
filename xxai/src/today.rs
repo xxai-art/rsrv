@@ -1,28 +1,27 @@
-use std::{thread, time};
+use std::time;
 
 use tokio::time::interval;
 
-static mut TODAY: u64 = 0;
+pub static mut TODAY: u32 = 0;
 
-#[ctor::ctor]
-fn init() {
-  trt::spawn!({
-    let mut interval = interval(time::Duration::from_secs(1));
+pub fn today() -> u32 {
+  return unsafe { TODAY };
+}
 
-    loop {
-      interval.tick().await;
+pub async fn update_today() {
+  loop {
+    let now = time::SystemTime::now()
+      .duration_since(time::UNIX_EPOCH)
+      .unwrap()
+      .as_secs();
 
-      let now = time::SystemTime::now()
-        .duration_since(time::UNIX_EPOCH)
-        .unwrap()
-        .as_secs();
-
-      unsafe {
-        TODAY = now / 86400;
-      }
-
-      let next = (1 + TODAY) * 86400 + 1;
-      interval.set_interval(time::Duration::from_secs(next - now));
+    let today = now / 86400;
+    unsafe {
+      TODAY = today as u32;
     }
-  });
+
+    let next = (1 + today) * 86400 + 1;
+
+    interval(time::Duration::from_secs(next - now)).tick().await;
+  }
 }

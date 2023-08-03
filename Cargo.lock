@@ -379,9 +379,9 @@ dependencies = [
 
 [[package]]
 name = "clip_search_txt_client"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b7c75f5e93bbaeaff15ac184200f89a1b5c41f9235092b5851bdba5bc3a957ce"
+checksum = "7160e92d88a63473d4dbd494e3fbc1d2947bb44a3a3000d4d7fa0684d9a6710e"
 dependencies = [
  "anyhow",
  "clip_search_txt_volo_gen",
