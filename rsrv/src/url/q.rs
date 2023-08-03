@@ -1,6 +1,8 @@
-use awp::any;
+use awp::{any, ok};
 use axum::{body::Bytes, http::header::HeaderMap};
 use clip_search_txt_client::{DayRange, OffsetLimit, QIn};
+
+use crate::db::img::rec;
 
 pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   let (txt, level, duration, end): (String, u64, u64, u64) =
@@ -10,6 +12,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   */
 
   if txt.is_empty() {
+    ok!(rec::li())
   } else {
     let lang = header
       .get("accept-language")
@@ -28,6 +31,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
       lang,
     };
     dbg!(&req);
+    Ok("".into())
   }
 
   // let body = &body[1..body.len() - 1];
@@ -48,5 +52,4 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   //     break;
   //   }
   // }
-  Ok(0)
 }

@@ -10,9 +10,10 @@ use axum::{
 
 #[macro_export]
 macro_rules! ok {
-  ($expr:expr) => {
-    Ok($expr.await?)
-  };
+  ($expr:expr) => {{
+    let r: awp::anypack::Any = $expr.await?.into();
+    Ok::<_, awp::Err>(r)
+  }};
 }
 
 #[macro_export]
