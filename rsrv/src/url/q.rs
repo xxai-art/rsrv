@@ -11,7 +11,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   */
 
   if body.is_empty() {
-    ok!(rec::li())
+    ok!(rec::img_li())
   } else {
     let (txt, level, duration, end): (String, u64, u32, u32) =
       serde_json::from_str(&String::from_utf8_lossy(&body))?;
