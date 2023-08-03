@@ -1,6 +1,6 @@
 use awp::{any, ok};
 use axum::{body::Bytes, http::header::HeaderMap};
-use clip_search_txt_client::{DayRange, OffsetLimit, QIn};
+use clip_search_txt_client::{clip, DayRange, OffsetLimit, QIn};
 use xxai::time::today;
 
 use crate::db::img::rec;
@@ -13,7 +13,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   if body.is_empty() {
     ok!(rec::li())
   } else {
-    let (txt, level, duration, end): (String, u64, u64, u64) =
+    let (txt, level, duration, end): (String, u64, u32, u32) =
       serde_json::from_str(&String::from_utf8_lossy(&body))?;
     if txt.is_empty() {
       return ok!(rec::li());
@@ -25,37 +25,24 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
       .to_string()
       .into();
 
-    let day_range = None;
+    let day_range = if end == 0 && duration == 0 {
+      None
+    } else {
+      let end = if end == 0 { today() + 1 } else { end };
+      let begin = end - duration - 1;
+      Some(DayRange { begin, end })
+    };
 
-    dbg!(today());
+    let offset_limit = None; // TODO
 
     let req = QIn {
       txt: txt.into(),
       nsfw: if level == 1 { -1 } else { level as _ },
-      offset_limit: None,
+      offset_limit,
       day_range,
       lang,
     };
-    dbg!(&req);
-    Ok("".into())
+    let li = clip(req).await?.li;
+    Ok(li.into_iter().map(|i| i.id).collect::<Vec<_>>().into())
   }
-
-  // let body = &body[1..body.len() - 1];
-  // for (pos, i) in body.iter().enumerate() {
-  //   if *i == b'/' {
-  //     let args = xxai::b64_decode_u64_li(&body[..pos]);
-  //     if args.len() >= 3 {
-  //       let rating = args[0];
-  //       let begin_time = args[1];
-  //       let duration = args[2];
-  //       let q = String::from_utf8_lossy(&body[1 + pos..]);
-  //       if q.is_empty() {
-  //         dbg!("TODO 推荐");
-  //       } else {
-  //         dbg!(rating, begin_time, duration, q);
-  //       }
-  //     }
-  //     break;
-  //   }
-  // }
 }
