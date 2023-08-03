@@ -5,15 +5,18 @@ use clip_search_txt_client::{DayRange, OffsetLimit, QIn};
 use crate::db::img::rec;
 
 pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
-  let (txt, level, duration, end): (String, u64, u64, u64) =
-    serde_json::from_str(&String::from_utf8_lossy(&body))?;
   /*
   分级 0 安全 1 不限 2 成人
   */
 
-  if txt.is_empty() {
+  if body.is_empty() {
     ok!(rec::li())
   } else {
+    let (txt, level, duration, end): (String, u64, u64, u64) =
+      serde_json::from_str(&String::from_utf8_lossy(&body))?;
+    if txt.is_empty() {
+      return ok!(rec::li());
+    }
     let lang = header
       .get("accept-language")
       .map(|h| h.to_str().unwrap())
