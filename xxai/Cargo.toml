@@ -19,6 +19,12 @@ ordered-varint = "2.0.0"
 psl = "2.1.4"
 rand = "0.8.5"
 thiserror = "1.0.44"
-tokio = { version = "1.29.1", features = ["macros", "rt", "rt-multi-thread"] }
+tokio = { version = "1.29.1", features = [
+  "macros",
+  "rt",
+  "rt-multi-thread",
+  "time"
+] }
+trt = { version = "0.1.5", path = "../trt" }
 vbyte = "0.1.0"
 z85 = "3.0.5"

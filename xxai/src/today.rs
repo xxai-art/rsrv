@@ -5,22 +5,24 @@ use tokio::time::interval;
 static mut TODAY: u64 = 0;
 
 #[ctor::ctor]
-async fn init() {
-  let mut interval = interval(time::Duration::from_secs(1));
+fn init() {
+  trt::spawn!({
+    let mut interval = interval(time::Duration::from_secs(1));
 
-  loop {
-    interval.tick().await;
+    loop {
+      interval.tick().await;
 
-    let now = time::SystemTime::now()
-      .duration_since(time::UNIX_EPOCH)
-      .unwrap()
-      .as_secs();
+      let now = time::SystemTime::now()
+        .duration_since(time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
 
-    unsafe {
-      TODAY = now / 86400;
+      unsafe {
+        TODAY = now / 86400;
+      }
+
+      let next = (1 + TODAY) * 86400 + 1;
+      interval.set_interval(time::Duration::from_secs(next - now));
     }
-
-    let next = TODAY * 86400 + 86400;
-    interval.set_interval(time::Duration::from_secs(next - now));
-  }
+  });
 }
