@@ -13,43 +13,46 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   if body.is_empty() {
     ok!(rec::img_li())
   } else {
-    let (txt, level, duration, end): (String, u64, u32, u32) =
-      serde_json::from_str(&String::from_utf8_lossy(&body))?;
+    let (txt, z85): (String, String) = serde_json::from_str(&String::from_utf8_lossy(&body))?;
     if txt.is_empty() {
       return ok!(rec::li());
     }
-    let lang = header
-      .get("accept-language")
-      .map(|h| h.to_str().unwrap())
-      .unwrap_or("en")
-      .to_string()
-      .into();
-
-    let day_range = if end == 0 && duration == 0 {
-      None
-    } else {
-      let end = if end == 0 { today() + 1 } else { end };
-      let begin = end - duration - 1;
-      Some(DayRange { begin, end })
-    };
-
-    let offset_limit = None; // TODO
-
-    let req = QIn {
-      txt: txt.into(),
-      nsfw: if level == 1 { -1 } else { level as _ },
-      offset_limit,
-      day_range,
-      lang,
-    };
-    dbg!(&req);
-    let li = clip(req).await?.li;
-    dbg!(&li);
-    let mut r = Vec::with_capacity(li.len() * 2);
-    for i in li {
-      r.push(CID_IMG);
-      r.push(i.id);
-    }
-    Ok(r.into())
+    let z85 = xxai::z85_decode_u64_li(z85);
+    dbg!(z85);
+    // level, duration, end
+    // let lang = header
+    //   .get("accept-language")
+    //   .map(|h| h.to_str().unwrap())
+    //   .unwrap_or("en")
+    //   .to_string()
+    //   .into();
+    //
+    // let day_range = if end == 0 && duration == 0 {
+    //   None
+    // } else {
+    //   let end = if end == 0 { today() + 1 } else { end };
+    //   let begin = end - duration - 1;
+    //   Some(DayRange { begin, end })
+    // };
+    //
+    // let offset_limit = None; // TODO
+    //
+    // let req = QIn {
+    //   txt: txt.into(),
+    //   nsfw: if level == 1 { -1 } else { level as _ },
+    //   offset_limit,
+    //   day_range,
+    //   lang,
+    // };
+    // dbg!(&req);
+    // let li = clip(req).await?.li;
+    // dbg!(&li);
+    // let mut r = Vec::with_capacity(li.len() * 2);
+    // for i in li {
+    //   r.push(CID_IMG);
+    //   r.push(i.id);
+    // }
+    // Ok(r.into())
+    Ok([0].into())
   }
 }
