@@ -44,7 +44,7 @@ pub fn is_ascii_digit(bytes: impl AsRef<[u8]>) -> bool {
 // }
 
 pub fn z85_decode_u64_li(s: impl AsRef<str>) -> Result<Vec<u64>> {
-  Ok(vbyte_decode(&z85::decode(s.as_ref())?)?)
+  Ok(vbyte_decode(z85::decode(s.as_ref())?)?)
 }
 
 pub fn z85_encode_u64_li(u64_li: Vec<u64>) -> String {

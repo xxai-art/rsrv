@@ -40,7 +40,7 @@ pub fn ms() -> u64 {
 pub static mut TODAY: u32 = 0;
 
 pub fn today() -> u32 {
-  return unsafe { TODAY };
+  unsafe { TODAY }
 }
 
 pub async fn update_today() {

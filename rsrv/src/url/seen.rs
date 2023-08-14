@@ -34,7 +34,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
 
               let mut pre = 0;
               for i in &cid_rid_li[1..] {
-                pre = i + pre;
+                pre += i;
                 rid_set.insert(pre);
               }
 
