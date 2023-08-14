@@ -1,7 +1,8 @@
 use awp::{any, ok};
 use axum::{body::Bytes, http::header::HeaderMap};
 use clip_search_txt_client::{clip, DayRange, OffsetLimit, QIn};
-use xxai::time::today;
+use x0::{fred::interfaces::HashesInterface, KV};
+use xxai::{bin_u64, time::today, u64_bin};
 
 use crate::{cid::CID_IMG, db::img::rec};
 
@@ -49,9 +50,22 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
       day_range,
       lang,
     };
-    dbg!(&req);
     let li = clip(req).await?.li;
-    dbg!(&li);
+    let id_li: Vec<_> = li.iter().map(|i| u64_bin(i.id)).collect();
+    let score_li: Vec<Bytes> = KV.hmget("iaa", id_li).await?;
+    let score_li: Vec<_> = score_li
+      .into_iter()
+      .map(|i| {
+        let i = bin_u64(i);
+        if i > 128 {
+          26.0
+        } else {
+          i as f64
+        }
+      })
+      .collect();
+    dbg!(li.len());
+
     let mut r = Vec::with_capacity(li.len() * 2);
     for i in li {
       r.push(CID_IMG);
