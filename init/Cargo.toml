@@ -7,4 +7,4 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.72"
 gt = { path = "../gt" }
-tokio = { version = "1.29.1", features = ["macros", "rt", "rt-multi-thread"] }
+tokio = { version = "1.31.0", features = ["macros", "rt", "rt-multi-thread"] }

@@ -41,6 +41,8 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
     let offset_limit = None; // TODO
 
     let req = QIn {
+      w: w as u32,
+      h: h as u32,
       txt: txt.into(),
       nsfw: if level == 1 { -1 } else { level as _ },
       offset_limit,

@@ -16,8 +16,8 @@ path = "src/lib.rs"
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
 lazy_static = "1.4.0"
 proc-macro2 = "1.0.66"
-regex = "1.9.1"
-tokio = { version = "1.29.1", features = ["rt-multi-thread"] }
+regex = "1.9.3"
+tokio = { version = "1.31.0", features = ["rt-multi-thread"] }
 tokio-postgres = { package = "xxai-tokio-postgres", version = "0.7.13" }
 trt = "0.1.5"
 pgw = { path = "../../pgw" }
