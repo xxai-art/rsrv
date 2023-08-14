@@ -2,8 +2,13 @@ mod diffli;
 pub mod time;
 mod tld;
 mod vbyte_decode;
+
+#[cfg(feature = "ndarray")]
+pub mod nd;
 use anyhow::Result;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+#[cfg(feature = "ndarray")]
+pub use ndarray;
 pub use tld::tld;
 
 pub use crate::{diffli::diffli, vbyte_decode::vbyte_decode};

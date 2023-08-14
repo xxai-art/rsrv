@@ -2,9 +2,17 @@ use awp::{any, ok};
 use axum::{body::Bytes, http::header::HeaderMap};
 use clip_search_txt_client::{clip, DayRange, OffsetLimit, QIn};
 use x0::{fred::interfaces::HashesInterface, KV};
-use xxai::{bin_u64, time::today, u64_bin};
+use xxai::{
+  bin_u64,
+  nd::norm01,
+  ndarray::{prelude::arr1, Array1},
+  time::today,
+  u64_bin,
+};
 
 use crate::{cid::CID_IMG, db::img::rec};
+
+const IAA_POWER: f32 = 1.2;
 
 pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   /*
@@ -51,25 +59,48 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
       lang,
     };
     let li = clip(req).await?.li;
-    let id_li: Vec<_> = li.iter().map(|i| u64_bin(i.id)).collect();
-    let score_li: Vec<Bytes> = KV.hmget("iaa", id_li).await?;
-    let score_li: Vec<_> = score_li
+
+    let len = li.len();
+    let mut id_li = Vec::with_capacity(len);
+    let mut bin_li = Vec::with_capacity(len);
+    let mut score_li = Vec::with_capacity(len);
+    for i in li {
+      id_li.push(i.id);
+      bin_li.push(u64_bin(i.id));
+      score_li.push(i.score);
+    }
+
+    let score_li = norm01(&arr1(&score_li));
+
+    let iaa_li: Vec<Bytes> = KV.hmget("iaa", bin_li).await?;
+    let iaa_li: Vec<_> = iaa_li
       .into_iter()
       .map(|i| {
         let i = bin_u64(i);
         if i > 128 {
+          //开发服务器KV打分未必完整, None 会变成特别大的数字
           26.0
         } else {
-          i as f64
+          i as f32
         }
       })
       .collect();
-    dbg!(li.len());
+    let iaa_li = norm01(&arr1(&iaa_li));
 
-    let mut r = Vec::with_capacity(li.len() * 2);
+    let rank_li = &iaa_li * IAA_POWER + &score_li;
+
+    let mut li = rank_li
+      .into_iter()
+      .enumerate()
+      .map(|(i, n)| (id_li[i], n))
+      .collect::<Vec<_>>();
+
+    li.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap());
+
+    let mut r = Vec::with_capacity(len * 2);
     for i in li {
       r.push(CID_IMG);
-      r.push(i.id);
+      r.push(i.0);
     }
     Ok(r.into())
   }
