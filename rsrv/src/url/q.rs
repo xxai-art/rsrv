@@ -7,7 +7,7 @@ use xxai::{bin_u64, nd::norm01, ndarray::prelude::arr1, time::today, u64_bin};
 use crate::{cid::CID_IMG, db::img::rec};
 
 const IAA_POWER: f32 = 1.2;
-
+const MAX_TXT_LEN: usize = 2048;
 pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   /*
   分级 0 安全 1 不限 2 成人
@@ -20,6 +20,11 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
     if txt.is_empty() {
       return ok!(rec::li());
     }
+    let txt = if txt.len() > MAX_TXT_LEN {
+      txt[..MAX_TXT_LEN].to_string()
+    } else {
+      txt
+    };
     let z85 = xxai::z85_decode_u64_li(z85)?;
     let level = z85[0];
     let duration = z85[1] as u32;
