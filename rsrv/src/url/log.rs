@@ -15,17 +15,22 @@ use crate::{
 
 pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   let mut r = Vec::new();
-  let li: Vec<(String, String)> =
+  let all: Vec<Vec<String>> =
     serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
 
-  for (q, cid_rid_li) in li {
-    let cid_rid_li = z85_decode_u64_li(cid_rid_li)?;
-    if !cid_rid_li.is_empty() {
-      let action = cid_rid_li[0];
-      for cid_rid in (&cid_rid_li[1..]).chunks(2) {
-        let cid = cid_rid[0];
-        let rid = cid_rid[1];
-        dbg!(&q, action, cid, rid);
+  for li in all {
+    if !li.is_empty() {
+      let q = &li[0];
+      for cid_rid_li in &li[1..] {
+        let cid_rid_li = z85_decode_u64_li(cid_rid_li)?;
+        if !cid_rid_li.is_empty() {
+          let action = cid_rid_li[0];
+          for cid_rid in (&cid_rid_li[1..]).chunks(2) {
+            let cid = cid_rid[0];
+            let rid = cid_rid[1];
+            dbg!(q, action, cid, rid);
+          }
+        }
       }
     }
   }
