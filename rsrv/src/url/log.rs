@@ -22,8 +22,11 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
     let cid_rid_li = z85_decode_u64_li(cid_rid_li)?;
     if !cid_rid_li.is_empty() {
       let action = cid_rid_li[0];
-      let cid_rid_li = &cid_rid_li[1..];
-      dbg!(cid_rid_li);
+      for cid_rid in (&cid_rid_li[1..]).chunks(2) {
+        let cid = cid_rid[0];
+        let rid = cid_rid[1];
+        dbg!(&q, action, cid, rid);
+      }
     }
   }
   // if li.len() > 2 {
