@@ -3,14 +3,28 @@ use gt::GQ;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-  let seen = r#"CREATE TABLE IF NOT EXISTS seen (
-uid BIGINT NULL,
-cid TINYINT NULL,
-rid BIGINT NULL,
+  let sql_li = [
+    r#"CREATE TABLE IF NOT EXISTS seen (
+uid BIGINT NOT NULL,
+cid TINYINT NOT NULL,
+rid BIGINT NOT NULL,
 ts TIMESTAMP(3) NOT NULL,
 TIME INDEX (ts),
 PRIMARY KEY (uid, cid, rid)
-)"#;
-  GQ(seen, &[]).await?;
+)"#,
+    r#"CREATE TABLE IF NOT EXISTS log (
+uid BIGINT NOT NULL,
+aid BIGINT NOT NULL,
+cid TINYINT NOT NULL,
+rid BIGINT NOT NULL,
+ts TIMESTAMP(3) NOT NULL,
+TIME INDEX (ts),
+PRIMARY KEY (uid, aid, cid, rid)
+)"#,
+  ];
+  for sql in sql_li {
+    println!("{}", sql);
+    GQ(sql, &[]).await?;
+  }
   Ok(())
 }
