@@ -14,12 +14,12 @@ PRIMARY KEY (uid, cid, rid)
 )"#,
     r#"CREATE TABLE IF NOT EXISTS log (
 uid BIGINT NOT NULL,
-aid BIGINT NOT NULL,
+aid TINYINT NOT NULL,
 cid TINYINT NOT NULL,
 rid BIGINT NOT NULL,
 ts TIMESTAMP(3) NOT NULL,
 TIME INDEX (ts),
-PRIMARY KEY (cid, rid, aid, uid)
+PRIMARY KEY (aid, cid, rid,  uid)
 )"#,
   ];
   for sql in sql_li {
