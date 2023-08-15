@@ -18,7 +18,14 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   let li: Vec<(String, String)> =
     serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
 
-  dbg!(li);
+  for (q, cid_rid_li) in li {
+    let cid_rid_li = z85_decode_u64_li(cid_rid_li)?;
+    if !cid_rid_li.is_empty() {
+      let action = cid_rid_li[0];
+      let cid_rid_li = &cid_rid_li[1..];
+      dbg!(cid_rid_li);
+    }
+  }
   // if li.len() > 2 {
   //   if let Some(uid) = li[0].as_u64() {
   //     if client.is_login(uid).await? {
