@@ -19,7 +19,7 @@ cid TINYINT NOT NULL,
 rid BIGINT NOT NULL,
 ts TIMESTAMP(3) NOT NULL,
 TIME INDEX (ts),
-PRIMARY KEY (uid, aid, cid, rid)
+PRIMARY KEY (cid, rid, aid, uid)
 )"#,
   ];
   for sql in sql_li {
