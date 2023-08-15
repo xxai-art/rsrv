@@ -17,10 +17,10 @@ uid BIGINT NOT NULL,
 aid TINYINT NOT NULL,
 cid TINYINT NOT NULL,
 rid BIGINT NOT NULL,
-ts TIMESTAMP(3) NOT NULL,
 q BIGINT NOT NULL,
+ts TIMESTAMP(3) NOT NULL,
 TIME INDEX (ts),
-PRIMARY KEY (aid, cid, rid, uid)
+PRIMARY KEY (aid, cid, rid, q, uid)
 )"#,
   ];
   for sql in sql_li {
