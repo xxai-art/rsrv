@@ -22,6 +22,12 @@ ts TIMESTAMP(3) NOT NULL,
 TIME INDEX (ts),
 PRIMARY KEY (uid, aid, cid, rid, q)
 )"#,
+    r#"CREATE TABLE IF NOT EXISTS q (
+id TIMESTAMP(3) NOT NULL,
+q STRING NOT NULL,
+TIME INDEX (id),
+PRIMARY KEY (q)
+)"#,
   ];
   for sql in sql_li {
     println!("{}", sql);
