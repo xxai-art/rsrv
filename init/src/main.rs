@@ -20,7 +20,7 @@ rid BIGINT UNSIGNED NOT NULL,
 q BIGINT UNSIGNED NOT NULL,
 ts TIMESTAMP(3) NOT NULL,
 TIME INDEX (ts),
-PRIMARY KEY (aid, cid, rid, q, uid)
+PRIMARY KEY (uid, aid, cid, rid, q)
 )"#,
   ];
   for sql in sql_li {
