@@ -5,7 +5,7 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-anyhow = { version = "1.0.73", features = ["backtrace"] }
+anyhow = { version = "1.0.74", features = ["backtrace"] }
 anypack = { path = "../anypack" }
 tracing = "0.1.37"
 axum = "0.6.20"
@@ -25,7 +25,7 @@ awp = { path = "../awp" }
 xxpg = { path = "../xxpg" }
 lazy_static = "1.4.0"
 coarsetime = "0.1.23"
-serde_json = "1.0.104"
+serde_json = "1.0.105"
 serde = { version = "1.0.183", features = ["derive"] }
 vbyte = "0.1.0"
 paste = "1.0.14"
