@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use parking_lot::RwLock;
-use tokio::time::Delay;
+use tokio::time::interval;
 use tokio_postgres::{
   connect,
   error::SqlState,
@@ -25,7 +25,7 @@ macro_rules! client {
         let mut _client = $self._client.write();
         loop {
           match connect(&format!("postgres://{}", uri), NoTls).await {
-            Ok(client, connection) => {
+            Ok((client, connection)) => {
               *_client = Some(client);
 
               let arc = $self._client.clone();
@@ -47,7 +47,8 @@ macro_rules! client {
               break;
             }
             Err(err) => {
-              Delay::new(std::time::Duration::from_secs(5)).await;
+              tracing::error!("❌ {env} ERROR CODE {err}");
+              interval(std::time::Duration::from_secs(5)).tick().await;
             }
           }
         }
