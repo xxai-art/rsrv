@@ -17,7 +17,7 @@ async fn main() -> anyhow::Result<()> {
         dbg!(err);
       }
     }
-    // time::sleep(std::time::Duration::from_secs(6)).await;
+    time::sleep(std::time::Duration::from_secs(6)).await;
   }
   Ok(())
 }
