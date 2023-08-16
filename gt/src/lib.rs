@@ -1,8 +1,8 @@
 use async_lazy::Lazy;
+use pgw::Pg;
 use tokio_postgres::{types::ToSql, Client, Error, Row, ToStatement};
 
-pub static DB: Lazy<Client> =
-  Lazy::const_new(|| Box::pin(async move { pgw::conn("GT_URI").await }));
+pub static DB: Lazy<Pg> = Lazy::const_new(|| Box::pin(async move { pgw::conn("GT_URI").await }));
 
 #[ctor::ctor]
 fn init() {
