@@ -13,6 +13,12 @@ use crate::{
   K,
 };
 
+fn log(uid: u64, q: String, action: u64, cid: u64, rid: u64) {
+  trt::spawn!({
+    dbg!(uid, q, action, cid, rid);
+  });
+}
+
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   let mut r = Vec::new();
   if let Some(uid) = client.uid().await? {
@@ -29,7 +35,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
             for cid_rid in (&cid_rid_li[1..]).chunks(2) {
               let cid = cid_rid[0];
               let rid = cid_rid[1];
-              dbg!(uid, q, action, cid, rid);
+              log(uid, q.to_string(), action, cid, rid);
             }
           }
         }
