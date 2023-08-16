@@ -22,27 +22,32 @@ macro_rules! client {
         let env = $self.env.clone();
         let uri = std::env::var(&env).unwrap();
         let mut _client = $self._client.write();
-        let (client, connection) = connect(&format!("postgres://{}", uri), NoTls)
-          .await
-          .unwrap();
-        *_client = Some(client);
+        loop {
+          match connect(&format!("postgres://{}", uri), NoTls).await {
+            Ok(client, connection) => {
+              *_client = Some(client);
 
-        let arc = $self._client.clone();
-        tokio::spawn(async move {
-          if let Err(e) = connection.await {
-            let err_code = e.code();
-            let code = match err_code {
-              Some(code) => code.code(),
-              None => "",
-            };
-            tracing::error!("❌ {env} ERROR CODE {code} : {e}");
+              let arc = $self._client.clone();
+              tokio::spawn(async move {
+                if let Err(e) = connection.await {
+                  let err_code = e.code();
+                  let code = match err_code {
+                    Some(code) => code.code(),
+                    None => "",
+                  };
+                  tracing::error!("❌ {env} ERROR CODE {code} : {e}");
 
-            if err_code == Some(&SqlState::ADMIN_SHUTDOWN) || e.is_closed() {
-              // *arc.borrow_mut() = None;
-              *arc.write() = None;
+                  if err_code == Some(&SqlState::ADMIN_SHUTDOWN) || e.is_closed() {
+                    // *arc.borrow_mut() = None;
+                    *arc.write() = None;
+                  }
+                }
+              });
+              break;
             }
+            Err(err) => {}
           }
-        });
+        }
       }
     }
   }};
