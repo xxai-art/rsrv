@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use parking_lot::RwLock;
+use tokio::time::Delay;
 use tokio_postgres::{
   connect,
   error::SqlState,
@@ -45,7 +46,9 @@ macro_rules! client {
               });
               break;
             }
-            Err(err) => {}
+            Err(err) => {
+              Delay::new(std::time::Duration::from_secs(5)).await;
+            }
           }
         }
       }
