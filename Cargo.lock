@@ -1690,6 +1690,8 @@ dependencies = [
 name = "pgw"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
+ "loginit",
  "parking_lot 0.12.1",
  "tokio",
  "tracing",
