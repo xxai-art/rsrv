@@ -133,14 +133,15 @@ impl Pg {
     })))
   }
 
-  pub async fn query_one(
+  pub async fn query_one<T: ToStatement>(
     &self,
-    statement: &Statement,
+    statement: impl IntoStatement<T>,
     params: &[&(dyn ToSql + Sync)],
   ) -> Result<Row, Error> {
+    let statement = statement.into().await?;
     macro_rules! query_one {
       ($client:ident) => {
-        $client.query_one(statement, params)
+        $client.query_one(&statement, params)
       };
     }
     client!(self, query_one)

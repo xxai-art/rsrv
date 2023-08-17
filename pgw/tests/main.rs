@@ -13,6 +13,7 @@ lazy_static! {
 async fn main() -> anyhow::Result<()> {
   loginit::init();
   for i in 0..99999 {
+    println!("loop {i}");
     match PG.query(&*SQL_NSPNAME, &[]).await {
       Ok(li) => {
         for i in li {
@@ -25,14 +26,12 @@ async fn main() -> anyhow::Result<()> {
       }
     }
     match PG
-      .query("SELECT oid FROM pg_catalog.pg_namespace LIMIT 1", &[])
+      .query_one("SELECT oid FROM pg_catalog.pg_namespace LIMIT 1", &[])
       .await
     {
-      Ok(li) => {
-        for i in li {
-          let oid: Oid = i.try_get(0)?;
-          dbg!(oid);
-        }
+      Ok(i) => {
+        let oid: Oid = i.try_get(0)?;
+        dbg!(oid);
       }
       Err(err) => {
         dbg!(err);
