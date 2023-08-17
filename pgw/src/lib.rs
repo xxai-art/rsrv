@@ -1,12 +1,11 @@
 #![feature(async_fn_in_trait)]
 
-use std::{cell::RefCell, sync::Arc};
+use std::sync::Arc;
 
 use parking_lot::RwLock;
 use tokio::time;
 use tokio_postgres::{
-  connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, Statement, ToStatement,
-  ToStatementType,
+  connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, Statement,
 };
 
 pub struct Sql {
