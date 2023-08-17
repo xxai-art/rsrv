@@ -11,6 +11,10 @@ pub struct Pg {
   _client: Arc<RwLock<Option<Client>>>,
 }
 
+fn is_close(err: &Error, err_code: Option<&SqlState>) -> bool {
+  err_code == Some(&SqlState::ADMIN_SHUTDOWN) || err.is_closed()
+}
+
 macro_rules! client {
   ($self:ident, $body:ident) => {{
     loop {
@@ -19,8 +23,7 @@ macro_rules! client {
           match $body!(client).await {
             Ok(r) => return Ok(r),
             Err(err) => {
-              let err_code = err.code();
-              if err_code == Some(&SqlState::ADMIN_SHUTDOWN) || err.is_closed() {
+              if is_close(&err, err.code()) {
                 break;
               }
               return Err(err);
@@ -50,7 +53,7 @@ macro_rules! client {
                 };
                 tracing::error!("❌ {env} ERROR CODE {code} : {e}");
 
-                if err_code == Some(&SqlState::ADMIN_SHUTDOWN) || e.is_closed() {
+                if is_close(&e, err_code) {
                   // *arc.borrow_mut() = None;
                   *arc.write() = None;
                 }
