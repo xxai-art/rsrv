@@ -15,3 +15,12 @@ tracing = "0.1.37"
 lazy_static = "1.4.0"
 pgm = "0.0.3"
 xxpg_proc = { path = "./xxpg_proc", version = "0.1.7" }
+
+[dev-dependencies]
+anyhow = "1.0.75"
+tokio = { version = "1.32.0", features = [
+  "macros",
+  "rt",
+  "rt-multi-thread",
+  "time"
+] }
