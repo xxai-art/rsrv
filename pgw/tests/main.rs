@@ -4,7 +4,7 @@ use tokio::time;
 
 lazy_static! {
   static ref PG: Pg = Pg::new("PG_URI");
-  static ref SQL_NSPNAME: Sql = PG.sql("SELECT nspname FROM pg_catalog.pg_namespace LIMIT 1");
+  static ref SQL_NSPNAME: Sql = PG.sql("SELECT oid FROM pg_catalog.pg_namespace LIMIT 1");
 }
 
 #[tokio::test]
@@ -20,11 +20,11 @@ async fn main() -> anyhow::Result<()> {
       }
     }
     match PG
-      .query("SELECT * FROM pg_catalog.pg_namespace LIMIT 1", &[])
+      .query("SELECT oid FROM pg_catalog.pg_namespace LIMIT 1", &[])
       .await
     {
       Ok(li) => {
-        dbg!(i, li);
+        dbg!(i, li[0]);
       }
       Err(err) => {
         dbg!(err);
