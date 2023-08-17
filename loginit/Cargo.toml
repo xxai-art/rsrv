@@ -2,7 +2,7 @@
 name = "loginit"
 version = "0.1.2"
 edition = "2021"
-license = "MulanPubL-2.0"
+license = "BUSL-1.1"
 homepage = "https://github.com/xxai-art/rsrv"
 repository = "https://github.com/xxai-art/rsrv.git"
 description = "init log for tracing use tracing_subscriber"
