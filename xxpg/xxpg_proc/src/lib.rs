@@ -51,11 +51,11 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
         sql.replace('\"', "\\\"")
       };
 
-      if !macro_rules.is_empty() {
-        macro_rules.push(',');
-      }
+      let up = var.to_uppercase();
 
-      macro_rules.push_str(&format!("sql_{var}:\"{escaped_sql}\""));
+      macro_rules.push_str(&format!(
+        "pub static ref SQL_{up}: xxpg::Sql = xxpg::PG.sql(\"{escaped_sql}\");"
+      ));
 
       let mut result = String::new();
       let mut row_get = String::new();
@@ -121,8 +121,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
         type_li = format!("<{type_li}>");
       }
 
-      let up = var.to_uppercase();
-      let mut body = format!("xxpg::{q}(SQL_{up}, &[{array}]).await");
+      let mut body = format!("xxpg::{q}(&*SQL_{up}, &[{array}]).await");
       if result.is_empty() {
         body = format!("{body}?;\n  Ok(())");
         result = "()".into()
@@ -151,10 +150,11 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
     }
   }
   let s = if !f.is_empty() {
-    format!("xxpg::sql!({macro_rules});\n{f}")
+    format!("xxpg::lazy_static!{{\n{macro_rules}\n}}\n{f}")
   } else {
     "".to_string()
   };
+  println!("\n\n{s}\n\n");
   s.parse::<proc_macro2::TokenStream>().unwrap().into()
 }
 

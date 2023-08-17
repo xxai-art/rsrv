@@ -1673,9 +1673,9 @@ dependencies = [
 
 [[package]]
 name = "pgm"
-version = "0.0.2"
+version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4dc39aaf138bd12293962156eec02302d5e66befb68b70da65e96f469838976d"
+checksum = "a1cf80348d7540b38bafb40d1e8020c454cdcc4f0c4242e2068ccceea1cde36a"
 dependencies = [
  "lazy_static",
  "paste",
