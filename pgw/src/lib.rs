@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{cell::RefCell, sync::Arc};
 
 use parking_lot::RwLock;
 use tokio::time;
@@ -6,20 +6,17 @@ use tokio_postgres::{
   connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, Statement, ToStatement,
 };
 
-type Callback = Box<dyn Fn(&Arc<_Pg>) + Send + Sync>;
-
-pub struct Prepare {
-  statement: Option<Statement>,
-}
+#[derive(Clone)]
+pub struct Prepare(Arc<Option<Statement>>);
 
 pub struct _Pg {
   pub env: String,
-  pub on_close: Vec<Callback>,
-  _client: RwLock<Option<Client>>,
+  pub prepare_li: Vec<Prepare>,
+  _client: Option<Client>,
 }
 
 #[derive(Clone)]
-pub struct Pg(Arc<_Pg>);
+pub struct Pg(Arc<RwLock<_Pg>>);
 
 fn is_close(err: &Error, err_code: Option<&SqlState>) -> bool {
   err_code == Some(&SqlState::ADMIN_SHUTDOWN) || err.is_closed()
@@ -29,24 +26,26 @@ macro_rules! client {
   ($self:ident, $body:ident) => {{
     let pg = &$self.0;
     loop {
-      if let Some(client) = &*pg._client.read() {
-        loop {
-          match $body!(client).await {
-            Ok(r) => return Ok(r),
-            Err(err) => {
-              if is_close(&err, err.code()) {
-                break;
+      {
+        if let Some(client) = &pg.read()._client {
+          loop {
+            match $body!(client).await {
+              Ok(r) => return Ok(r),
+              Err(err) => {
+                if is_close(&err, err.code()) {
+                  break;
+                }
+                return Err(err);
               }
-              return Err(err);
             }
           }
         }
       }
-      let env = pg.env.clone();
+      let env = pg.read().env.clone();
       let uri = std::env::var(&env).unwrap();
 
-      let mut _client = pg._client.write();
-      if _client.is_some() {
+      let mut _pg = pg.write();
+      if _pg._client.is_some() {
         continue;
       }
 
@@ -54,7 +53,7 @@ macro_rules! client {
         let mut n = 0u64;
         match connect(&format!("postgres://{}", uri), NoTls).await {
           Ok((client, connection)) => {
-            *_client = Some(client);
+            _pg._client = Some(client);
 
             let pg = pg.clone();
             tokio::spawn(async move {
@@ -68,10 +67,11 @@ macro_rules! client {
 
                 if is_close(&e, err_code) {
                   // *arc.borrow_mut() = None;
-                  *pg._client.write() = None;
-                  for i in &pg.on_close {
-                    i(&pg);
-                  }
+                  pg.write()._client = None;
+                  // let prepare_li: &Vec<Callback> = pg.prepare_li.borrow().as_ref();
+                  // for i in prepare_li {
+                  //   i(&pg);
+                  // }
                   return;
                 }
               }
@@ -91,14 +91,11 @@ macro_rules! client {
 
 impl Pg {
   pub fn new(env: impl Into<String>) -> Self {
-    Self(
-      _Pg {
-        env: env.into(),
-        _client: RwLock::new(None),
-        on_close: Vec::new(),
-      }
-      .into(),
-    )
+    Self(Arc::new(RwLock::new(_Pg {
+      env: env.into(),
+      _client: None,
+      prepare_li: Vec::new().into(),
+    })))
   }
 
   pub async fn query_one<T>(
@@ -169,8 +166,14 @@ impl Pg {
     macro_rules! prepare {
       ($client:ident) => {
         async {
-          let statement = $client.prepare(query).await?.into();
-          Ok(Prepare { statement })
+          // let statement = Some($client.prepare(query).await?).into();
+          let prepare = Prepare(Arc::new(None));
+          let pg = self.clone();
+          let prepare_clone = prepare.clone();
+          tokio::spawn(async move {
+            pg.0.write().prepare_li.push(prepare_clone);
+          });
+          Ok(prepare)
         }
       };
     }
