@@ -29,7 +29,6 @@ impl IntoStatement for &Sql {
         return Ok(st.clone());
       }
 
-      dbg!("wait prepare");
       let st = sql.pg.prepare(&*sql.sql).await?;
       *sql.st.write() = Some(st);
     }
@@ -67,14 +66,12 @@ macro_rules! client {
             }
           }
         }
-        dbg!("pg read end 1");
       }
       let env = { pg.read().env.clone() };
       let uri = std::env::var(&env).unwrap();
 
       loop {
         let mut n = 0u64;
-        dbg!("conn write");
         let mut _pg = pg.write();
         if _pg._client.is_some() {
           continue 'outer;
