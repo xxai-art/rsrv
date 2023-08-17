@@ -8,11 +8,15 @@ use tokio_postgres::{
 
 type Callback = Box<dyn Fn() + Send + Sync>;
 
+pub trait Close {
+  fn close(&self);
+}
+
 pub struct Prepare {}
 
 pub struct _Pg {
   pub env: String,
-  pub close_hook: Vec<Callback>,
+  pub on_close: Vec<dyn Close>,
   _client: RwLock<Option<Client>>,
 }
 
@@ -54,7 +58,7 @@ macro_rules! client {
           Ok((client, connection)) => {
             *_client = Some(client);
 
-            let arc = Arc::new(pg.clone());
+            let pg = pg.clone();
             tokio::spawn(async move {
               if let Err(e) = connection.await {
                 let err_code = e.code();
@@ -66,7 +70,10 @@ macro_rules! client {
 
                 if is_close(&e, err_code) {
                   // *arc.borrow_mut() = None;
-                  *arc._client.write() = None;
+                  *pg._client.write() = None;
+                  for i in &pg.on_close {
+                    i.close();
+                  }
                   return;
                 }
               }
@@ -90,7 +97,7 @@ impl Pg {
       _Pg {
         env: env.into(),
         _client: RwLock::new(None),
-        close_hook: Vec::new(),
+        on_close: Vec::new(),
       }
       .into(),
     )
