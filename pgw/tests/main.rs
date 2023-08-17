@@ -15,7 +15,10 @@ async fn main() -> anyhow::Result<()> {
   for i in 0..99999 {
     match PG.query(&*SQL_NSPNAME, &[]).await {
       Ok(li) => {
-        dbg!(i, li);
+        for i in li {
+          let oid: Oid = i.try_get(0)?;
+          dbg!(oid);
+        }
       }
       Err(err) => {
         dbg!(err);
@@ -26,7 +29,10 @@ async fn main() -> anyhow::Result<()> {
       .await
     {
       Ok(li) => {
-        dbg!(i, &li[0]);
+        for i in li {
+          let oid: Oid = i.try_get(0)?;
+          dbg!(oid);
+        }
       }
       Err(err) => {
         dbg!(err);
