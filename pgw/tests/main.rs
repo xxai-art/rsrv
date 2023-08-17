@@ -6,7 +6,7 @@ async fn main() -> anyhow::Result<()> {
   loginit::init();
   let pg = Pg::new("PG_URI");
   let sql = pg
-    .prepare("SELECT nspname FROM pg_catalog.pg_namespace LIMIT 1")
+    .sql("SELECT nspname FROM pg_catalog.pg_namespace LIMIT 1")
     .await?;
   for i in 0..99999 {
     match pg.query(&sql, &[]).await {

@@ -4,17 +4,29 @@ use parking_lot::RwLock;
 use tokio::time;
 use tokio_postgres::{
   connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, Statement, ToStatement,
+  ToStatementType,
 };
 
 #[derive(Clone)]
-pub struct Prepare {
-  sql: Arc<Option<Statement>>,
+pub struct Sql {
+  sql: String,
+  st: Arc<Option<Statement>>,
   pg: Pg,
+}
+
+impl ToStatement for Sql {
+  fn __convert(&self) -> ToStatementType<'_> {
+    if let Some(st) = self.st.as_ref() {
+      return st.__convert();
+    }
+    todo!();
+    // let st = self.pg.read()._client.prepare(query).await?).into();
+  }
 }
 
 pub struct _Pg {
   pub env: String,
-  pub prepare_li: Vec<Prepare>,
+  pub sql_li: Vec<Sql>,
   _client: Option<Client>,
 }
 
@@ -69,12 +81,11 @@ macro_rules! client {
                 tracing::error!("❌ {env} ERROR CODE {code} : {e}");
 
                 if is_close(&e, err_code) {
-                  // *arc.borrow_mut() = None;
-                  pg.write()._client = None;
-                  // let prepare_li: &Vec<Callback> = pg.prepare_li.borrow().as_ref();
-                  // for i in prepare_li {
-                  //   i(&pg);
-                  // }
+                  let mut pg = pg.write();
+                  pg._client = None;
+                  for i in &mut pg.sql_li {
+                    i.st = None.into();
+                  }
                   return;
                 }
               }
@@ -97,7 +108,7 @@ impl Pg {
     Self(Arc::new(RwLock::new(_Pg {
       env: env.into(),
       _client: None,
-      prepare_li: Vec::new().into(),
+      sql_li: Vec::new().into(),
     })))
   }
 
@@ -165,24 +176,34 @@ impl Pg {
     client!(self, execute)
   }
 
-  pub async fn prepare(&self, query: &str) -> Result<Prepare, Error> {
+  pub async fn prepare(&self, query: impl AsRef<str>) -> Result<Statement, Error> {
     macro_rules! prepare {
       ($client:ident) => {
-        async {
-          // let statement = Some($client.prepare(query).await?).into();
-          let prepare = Prepare {
-            sql: Arc::new(None),
-            pg: self.clone(),
-          };
-          let pg = self.clone();
-          let prepare_clone = prepare.clone();
-          tokio::spawn(async move {
-            pg.0.write().prepare_li.push(prepare_clone);
-          });
-          Ok(prepare)
-        }
+        $client.prepare(query.as_ref())
       };
     }
     client!(self, prepare)
+  }
+
+  pub async fn sql(&self, query: impl Into<String>) -> Result<Sql, Error> {
+    let sql = query.into();
+    macro_rules! sql {
+      ($client:ident) => {{
+        async {
+          let sql = Sql {
+            sql: sql.clone(),
+            st: Arc::new(None),
+            pg: self.clone(),
+          };
+          let pg = self.clone();
+          let sql_clone = sql.clone();
+          tokio::spawn(async move {
+            pg.0.write().sql_li.push(sql_clone);
+          });
+          Ok(sql)
+        }
+      }};
+    }
+    client!(self, sql)
   }
 }
