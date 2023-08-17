@@ -3549,6 +3549,19 @@ dependencies = [
  "paste",
  "pgm",
  "tracing",
+ "xxpg_proc",
+]
+
+[[package]]
+name = "xxpg_proc"
+version = "0.1.7"
+dependencies = [
+ "lazy_static",
+ "pgw",
+ "proc-macro2",
+ "regex",
+ "tokio",
+ "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

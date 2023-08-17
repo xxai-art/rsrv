@@ -1,17 +1,15 @@
 use std::cmp;
 
 use lazy_static::lazy_static;
+use pgw::Pg;
 use proc_macro::TokenStream;
 use regex::Regex;
-use tokio_postgres::Client;
 use trt::TRT;
 
 lazy_static! {
   static ref RE: Regex = Regex::new(r"\$(\d+)").unwrap();
+  static ref PG: Pg = Pg::new_with_env("PG_URI");
 }
-q!(PG, Q);
-
-static PG: Lazy<Client> = Lazy::const_new(|| Box::pin(async move { pgw::conn("PG_URI").await }));
 
 fn max_n(s: &str) -> usize {
   let mut max = 0;
@@ -62,7 +60,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
       let mut result = String::new();
       let mut row_get = String::new();
       let ref_sql = &sql;
-      let prepare = TRT.block_on(async move { PG.force().await.prepare(ref_sql).await.unwrap() });
+      let prepare = TRT.block_on(async move { PG.prepare(ref_sql).await.unwrap() });
 
       let columns = prepare.columns();
       let columns_len = columns.len();
