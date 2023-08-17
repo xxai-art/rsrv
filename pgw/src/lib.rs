@@ -3,8 +3,10 @@ use std::sync::Arc;
 use parking_lot::RwLock;
 use tokio::time;
 use tokio_postgres::{
-  connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, ToStatement,
+  connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, Statement, ToStatement,
 };
+
+pub struct Prepare {}
 
 pub struct Pg {
   pub env: String,
@@ -74,7 +76,6 @@ macro_rules! client {
 }
 
 impl Pg {
-  // let pg_uri = std::env::var(&env).unwrap();
   pub fn new(env: impl Into<String>) -> Self {
     Self {
       env: env.into(),
@@ -145,32 +146,13 @@ impl Pg {
     }
     client!(self, execute)
   }
-}
 
-// pub async fn conn(env: impl Into<String>) -> Pg {
-//   let env = env.into();
-//   let pg_uri = std::env::var(&env).unwrap();
-//   let (client, connection) = tokio_postgres::connect(&format!("postgres://{}", pg_uri), NoTls)
-//     .await
-//     .unwrap();
-//
-//   let mut pg = Pg {
-//     client: Some(client),
-//   };
-//
-//   tokio::spawn(async move {
-//     if let Err(e) = connection.await {
-//       let err_code = e.code();
-//       let code = match err_code {
-//         Some(code) => code.code(),
-//         None => "",
-//       };
-//       tracing::error!("❌ {env} ERROR CODE {code} : {e}");
-//
-//       if err_code == Some(&SqlState::ADMIN_SHUTDOWN) || e.is_closed() {
-//         std::process::exit(1)
-//       }
-//     }
-//   });
-//   pg
-// }
+  pub async fn prepare(&self, query: &str) -> Result<Statement, Error> {
+    macro_rules! prepare {
+      ($client:ident) => {
+        $client.prepare(query)
+      };
+    }
+    client!(self, prepare)
+  }
+}
