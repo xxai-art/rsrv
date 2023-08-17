@@ -5,7 +5,7 @@ use std::sync::Arc;
 use parking_lot::RwLock;
 use tokio::time;
 use tokio_postgres::{
-  connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, Statement,
+  connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, Statement, ToStatement,
 };
 
 pub struct _Sql {
@@ -17,11 +17,22 @@ pub struct _Sql {
 #[derive(Clone)]
 pub struct Sql(Arc<_Sql>);
 
-pub trait IntoStatement {
-  async fn into(self) -> Result<Statement, Error>;
+// pub enum ToStatementType<'a> {
+//   Statement(&'a Statement),
+//   Query(&'a str),
+// }
+
+pub trait IntoStatement<T: ToStatement> {
+  async fn into(self) -> Result<T, Error>;
 }
 
-impl IntoStatement for &Sql {
+impl<T: ToStatement> IntoStatement<T> for T {
+  async fn into(self) -> Result<T, Error> {
+    Ok(self)
+  }
+}
+
+impl IntoStatement<Statement> for &Sql {
   async fn into(self) -> Result<Statement, Error> {
     let sql = &self.0;
     loop {
@@ -135,9 +146,9 @@ impl Pg {
     client!(self, query_one)
   }
 
-  pub async fn query(
+  pub async fn query<T: ToStatement>(
     &self,
-    statement: impl IntoStatement,
+    statement: impl IntoStatement<T>,
     params: &[&(dyn ToSql + Sync)],
   ) -> Result<Vec<Row>, Error> {
     let statement = statement.into().await?;
@@ -149,9 +160,9 @@ impl Pg {
     client!(self, query)
   }
 
-  pub async fn query_opt(
+  pub async fn query_opt<T: ToStatement>(
     &self,
-    statement: impl IntoStatement,
+    statement: impl IntoStatement<T>,
     params: &[&(dyn ToSql + Sync)],
   ) -> Result<Option<Row>, Error> {
     let statement = statement.into().await?;
@@ -163,9 +174,9 @@ impl Pg {
     client!(self, query_opt)
   }
 
-  pub async fn execute(
+  pub async fn execute<T: ToStatement>(
     &self,
-    statement: impl IntoStatement,
+    statement: impl IntoStatement<T>,
     params: &[&(dyn ToSql + Sync)],
   ) -> Result<u64, Error> {
     let statement = statement.into().await?;

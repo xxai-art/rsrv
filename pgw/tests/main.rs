@@ -19,6 +19,17 @@ async fn main() -> anyhow::Result<()> {
         dbg!(err);
       }
     }
+    match PG
+      .query("SELECT * FROM pg_catalog.pg_namespace LIMIT 1", &[])
+      .await
+    {
+      Ok(li) => {
+        dbg!(i, li);
+      }
+      Err(err) => {
+        dbg!(err);
+      }
+    }
     time::sleep(std::time::Duration::from_secs(6)).await;
   }
   Ok(())
