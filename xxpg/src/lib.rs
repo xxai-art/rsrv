@@ -1,4 +1,3 @@
-use lazy_static::lazy_static;
 use paste::paste;
 use pgw::{Error, IntoStatement, Pg, Row, ToSql, ToStatement};
 // pub use async_lazy;
@@ -77,6 +76,9 @@ use pgw::{Error, IntoStatement, Pg, Row, ToSql, ToStatement};
 #[macro_export]
 macro_rules! q {
   ($db:ident, $name:ident) => {
+    lazy_static::lazy_static! {
+      static ref $db: Pg = Pg::new_with_env("PG_URI");
+    }
     paste! {
       q!($db, $name, query, Vec<Row>);
       q!($db, [<$name 1>], query_one, Row);
@@ -92,10 +94,6 @@ macro_rules! q {
       $db.$func(statement, params).await
     }
   };
-}
-
-lazy_static! {
-  static ref PG: Pg = Pg::new_with_env("PG_URI");
 }
 
 q!(PG, Q);
