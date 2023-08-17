@@ -56,6 +56,7 @@ macro_rules! client {
                 if is_close(&e, err_code) {
                   // *arc.borrow_mut() = None;
                   *arc.write() = None;
+                  return;
                 }
               }
             });
