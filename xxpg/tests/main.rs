@@ -1,4 +1,5 @@
 use xxpg::Q;
+
 Q! {
     li:
         SELECT cid,rid,ts FROM fav.user ORDER BY ts DESC LIMIT 10

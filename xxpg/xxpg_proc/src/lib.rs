@@ -142,8 +142,9 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
         }
       }
 
-      let fn_var =
-        format!("\npub async fn {var}{type_li}({arg_li}) -> Result<{result}, xxpg::Error>");
+      let fn_var = format!(
+        "\npub async fn {var}{type_li}({arg_li}) -> std::result::Result<{result}, xxpg::Error>"
+      );
       let func = &format!("{fn_var} {{\n  {body}\n}}");
       println!("\n❯ {var} → {result} :\n{sql}");
       f += func;
