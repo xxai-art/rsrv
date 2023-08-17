@@ -1,18 +1,17 @@
 use lazy_static::lazy_static;
-use pgw::Pg;
+use pgw::{Pg, Sql};
 use tokio::time;
 
 lazy_static! {
   static ref PG: Pg = Pg::new("PG_URI");
+  static ref SQL_NSPNAME: Sql = PG.sql("SELECT nspname FROM pg_catalog.pg_namespace LIMIT 1");
 }
 
 #[tokio::test]
 async fn main() -> anyhow::Result<()> {
   loginit::init();
-  let pg = Pg::new("PG_URI");
-  let sql = pg.sql("SELECT nspname FROM pg_catalog.pg_namespace LIMIT 1");
   for i in 0..99999 {
-    match pg.query(&sql, &[]).await {
+    match PG.query(&*SQL_NSPNAME, &[]).await {
       Ok(li) => {
         dbg!(i, li);
       }
