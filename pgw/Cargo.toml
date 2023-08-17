@@ -1,6 +1,6 @@
 [package]
 name = "pgw"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "BUSL-1.1"
 homepage = "https://github.com/xxai-art/rsrv"
