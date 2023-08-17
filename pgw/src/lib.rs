@@ -34,10 +34,10 @@ macro_rules! client {
       let env = $self.env.clone();
       let uri = std::env::var(&env).unwrap();
       let mut _client = $self._client.write();
+      let mut n = 0u64;
       if _client.is_some() {
         continue;
       }
-      let mut n = 0u64;
       loop {
         match connect(&format!("postgres://{}", uri), NoTls).await {
           Ok((client, connection)) => {
