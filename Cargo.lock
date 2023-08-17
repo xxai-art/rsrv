@@ -1687,9 +1687,9 @@ dependencies = [
 
 [[package]]
 name = "pgw"
-version = "0.1.7"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84fa45c26c6e82510c4660e18a74bd2fc8db541d3cfb7b133c0737d79c9ed0c8"
+checksum = "9fc903d5e6f1799ac6abf9ae47446b7423fdaa4913b81b31b2ab6e9fcfed191a"
 dependencies = [
  "parking_lot 0.12.1",
  "tokio",
