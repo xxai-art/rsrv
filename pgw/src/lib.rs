@@ -10,7 +10,7 @@ use tokio_postgres::{
 
 pub struct Sql {
   sql: String,
-  st: Arc<RwLock<Option<Statement>>>,
+  st: RwLock<Option<Statement>>,
   pg: Pg,
 }
 
@@ -18,14 +18,15 @@ pub trait IntoStatement {
   async fn into(self) -> Result<Statement, Error>;
 }
 
-impl IntoStatement for &Sql {
+impl IntoStatement for &Arc<Sql> {
   async fn into(self) -> Result<Statement, Error> {
     loop {
       if let Some(st) = self.st.read().as_ref() {
         return Ok(st.clone());
       }
 
-      let st = self.pg.prepare(&self.sql).await?;
+      dbg!("wait prepare");
+      let st = self.pg.prepare(&*self.sql).await?;
       *self.st.write() = Some(st);
     }
   }
@@ -33,7 +34,7 @@ impl IntoStatement for &Sql {
 
 pub struct _Pg {
   pub env: String,
-  pub sql_li: Vec<Arc<RwLock<Option<Statement>>>>,
+  pub sql_li: Vec<Arc<Sql>>,
   _client: Option<Client>,
 }
 
@@ -47,8 +48,9 @@ fn is_close(err: &Error, err_code: Option<&SqlState>) -> bool {
 macro_rules! client {
   ($self:ident, $body:ident) => {{
     let pg = &$self.0;
-    loop {
+    'outer: loop {
       {
+        dbg!("pg read 1");
         if let Some(client) = &pg.read()._client {
           loop {
             match $body!(client).await {
@@ -62,17 +64,18 @@ macro_rules! client {
             }
           }
         }
+        dbg!("pg read end 1");
       }
-      let env = pg.read().env.clone();
+      let env = { pg.read().env.clone() };
       let uri = std::env::var(&env).unwrap();
-
-      let mut _pg = pg.write();
-      if _pg._client.is_some() {
-        continue;
-      }
 
       loop {
         let mut n = 0u64;
+        dbg!("conn write");
+        let mut _pg = pg.write();
+        if _pg._client.is_some() {
+          continue 'outer;
+        }
         match connect(&format!("postgres://{}", uri), NoTls).await {
           Ok((client, connection)) => {
             _pg._client = Some(client);
@@ -91,7 +94,7 @@ macro_rules! client {
                   let mut pg = pg.write();
                   pg._client = None;
                   for i in &mut pg.sql_li {
-                    *i.write() = None;
+                    *i.st.write() = None;
                   }
                   return;
                 }
@@ -183,22 +186,20 @@ impl Pg {
     client!(self, prepare)
   }
 
-  pub async fn sql(&self, query: impl Into<String>) -> Result<Sql, Error> {
-    let sql = query.into();
+  pub async fn sql(&self, query: impl Into<String>) -> Result<Arc<Sql>, Error> {
+    let sql = Arc::new(Sql {
+      sql: query.into(),
+      st: RwLock::new(None),
+      pg: self.clone(),
+    });
+    {
+      self.0.write().sql_li.push(sql.clone())
+    }
     macro_rules! sql {
       ($client:ident) => {{
         async {
-          let sql = Sql {
-            sql: sql.clone(),
-            st: Arc::new(RwLock::new(None)),
-            pg: self.clone(),
-          };
           let pg = self.clone();
-          let sql_clone = sql.st.clone();
-          tokio::spawn(async move {
-            pg.0.write().sql_li.push(sql_clone);
-          });
-          Ok(sql)
+          Ok(sql.clone())
         }
       }};
     }
