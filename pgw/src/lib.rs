@@ -8,33 +8,37 @@ use tokio_postgres::{
   connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, Statement,
 };
 
-pub struct Sql {
+pub struct _Sql {
   sql: String,
   st: RwLock<Option<Statement>>,
   pg: Pg,
 }
 
+#[derive(Clone)]
+pub struct Sql(Arc<_Sql>);
+
 pub trait IntoStatement {
   async fn into(self) -> Result<Statement, Error>;
 }
 
-impl IntoStatement for &Arc<Sql> {
+impl IntoStatement for &Sql {
   async fn into(self) -> Result<Statement, Error> {
+    let sql = &self.0;
     loop {
-      if let Some(st) = self.st.read().as_ref() {
+      if let Some(st) = sql.st.read().as_ref() {
         return Ok(st.clone());
       }
 
       dbg!("wait prepare");
-      let st = self.pg.prepare(&*self.sql).await?;
-      *self.st.write() = Some(st);
+      let st = sql.pg.prepare(&*sql.sql).await?;
+      *sql.st.write() = Some(st);
     }
   }
 }
 
 pub struct _Pg {
   pub env: String,
-  pub sql_li: Vec<Arc<Sql>>,
+  pub sql_li: Vec<Sql>,
   _client: Option<Client>,
 }
 
@@ -50,7 +54,6 @@ macro_rules! client {
     let pg = &$self.0;
     'outer: loop {
       {
-        dbg!("pg read 1");
         if let Some(client) = &pg.read()._client {
           loop {
             match $body!(client).await {
@@ -94,7 +97,7 @@ macro_rules! client {
                   let mut pg = pg.write();
                   pg._client = None;
                   for i in &mut pg.sql_li {
-                    *i.st.write() = None;
+                    *i.0.st.write() = None;
                   }
                   return;
                 }
@@ -186,23 +189,13 @@ impl Pg {
     client!(self, prepare)
   }
 
-  pub async fn sql(&self, query: impl Into<String>) -> Result<Arc<Sql>, Error> {
-    let sql = Arc::new(Sql {
+  pub fn sql(&self, query: impl Into<String>) -> Sql {
+    let sql = Sql(Arc::new(_Sql {
       sql: query.into(),
       st: RwLock::new(None),
       pg: self.clone(),
-    });
-    {
-      self.0.write().sql_li.push(sql.clone())
-    }
-    macro_rules! sql {
-      ($client:ident) => {{
-        async {
-          let pg = self.clone();
-          Ok(sql.clone())
-        }
-      }};
-    }
-    client!(self, sql)
+    }));
+    self.0.write().sql_li.push(sql.clone());
+    sql
   }
 }

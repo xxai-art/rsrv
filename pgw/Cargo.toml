@@ -16,4 +16,5 @@ tracing = "0.1.37"
 
 [dev-dependencies]
 anyhow = "1.0.75"
+lazy_static = "1.4.0"
 loginit = { path = "../loginit", version = "0.1.2" }
