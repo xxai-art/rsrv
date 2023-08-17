@@ -7,7 +7,10 @@ use tokio_postgres::{
 };
 
 #[derive(Clone)]
-pub struct Prepare(Arc<Option<Statement>>);
+pub struct Prepare {
+  sql: Arc<Option<Statement>>,
+  pg: Pg,
+}
 
 pub struct _Pg {
   pub env: String,
@@ -167,7 +170,10 @@ impl Pg {
       ($client:ident) => {
         async {
           // let statement = Some($client.prepare(query).await?).into();
-          let prepare = Prepare(Arc::new(None));
+          let prepare = Prepare {
+            sql: Arc::new(None),
+            pg: self.clone(),
+          };
           let pg = self.clone();
           let prepare_clone = prepare.clone();
           tokio::spawn(async move {
