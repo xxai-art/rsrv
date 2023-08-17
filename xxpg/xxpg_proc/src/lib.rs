@@ -1,6 +1,5 @@
 use std::cmp;
 
-use async_lazy::Lazy;
 use lazy_static::lazy_static;
 use proc_macro::TokenStream;
 use regex::Regex;
@@ -10,6 +9,7 @@ use trt::TRT;
 lazy_static! {
   static ref RE: Regex = Regex::new(r"\$(\d+)").unwrap();
 }
+q!(PG, Q);
 
 static PG: Lazy<Client> = Lazy::const_new(|| Box::pin(async move { pgw::conn("PG_URI").await }));
 
