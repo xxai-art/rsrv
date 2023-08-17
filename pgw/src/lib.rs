@@ -6,17 +6,15 @@ use tokio_postgres::{
   connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, Statement, ToStatement,
 };
 
-type Callback = Box<dyn Fn() + Send + Sync>;
+type Callback = Box<dyn Fn(&Arc<_Pg>) + Send + Sync>;
 
-pub trait Close {
-  fn close(&self);
+pub struct Prepare {
+  statement: Option<Statement>,
 }
-
-pub struct Prepare {}
 
 pub struct _Pg {
   pub env: String,
-  pub on_close: Vec<dyn Close>,
+  pub on_close: Vec<Callback>,
   _client: RwLock<Option<Client>>,
 }
 
@@ -72,7 +70,7 @@ macro_rules! client {
                   // *arc.borrow_mut() = None;
                   *pg._client.write() = None;
                   for i in &pg.on_close {
-                    i.close();
+                    i(&pg);
                   }
                   return;
                 }
@@ -167,10 +165,13 @@ impl Pg {
     client!(self, execute)
   }
 
-  pub async fn prepare(&self, query: &str) -> Result<Statement, Error> {
+  pub async fn prepare(&self, query: &str) -> Result<Prepare, Error> {
     macro_rules! prepare {
       ($client:ident) => {
-        $client.prepare(query)
+        async {
+          let statement = $client.prepare(query).await?.into();
+          Ok(Prepare { statement })
+        }
       };
     }
     client!(self, prepare)
