@@ -8,12 +8,6 @@ use tokio_postgres::{
   connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, Statement, ToStatement,
 };
 
-pub struct _Sql {
-  sql: String,
-  st: RwLock<Option<Statement>>,
-  pg: Pg,
-}
-
 fn hidden_password(s: &str) -> String {
   let at_index = s.rfind('@').unwrap();
   let password_start = s[..at_index].rfind(':').unwrap() + 1;
@@ -129,6 +123,12 @@ macro_rules! client {
       }
     }
   }};
+}
+
+pub struct _Sql {
+  sql: String,
+  st: RwLock<Option<Statement>>,
+  pg: Pg,
 }
 
 impl Pg {
