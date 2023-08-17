@@ -2,6 +2,10 @@
 name = "pgw"
 version = "0.1.0"
 edition = "2021"
+license = "BUSL-1.1"
+homepage = "https://github.com/xxai-art/rsrv"
+repository = "https://github.com/xxai-art/rsrv.git"
+description = "auto reconnect tokio postgres"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
@@ -12,4 +16,4 @@ tracing = "0.1.37"
 
 [dev-dependencies]
 anyhow = "1.0.75"
-loginit = { path = "../loginit" }
+loginit = { path = "../loginit", version = "0.1.2" }
