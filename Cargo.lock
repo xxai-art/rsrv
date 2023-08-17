@@ -910,12 +910,7 @@ checksum = "b6c80984affa11d98d1b88b66ac8853f143217b399d3c74116778ff8fdb4ed2e"
 name = "gt"
 version = "0.1.0"
 dependencies = [
- "async-lazy",
- "ctor",
- "tokio",
- "tracing",
- "trt 0.1.5",
- "xxai-tokio-postgres",
+ "pgm",
 ]
 
 [[package]]
@@ -1674,6 +1669,17 @@ checksum = "4dd7d28ee937e54fe3080c91faa1c3a46c06de6252988a7f4592ba2310ef22a4"
 dependencies = [
  "fixedbitset",
  "indexmap 1.9.3",
+]
+
+[[package]]
+name = "pgm"
+version = "0.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4dc39aaf138bd12293962156eec02302d5e66befb68b70da65e96f469838976d"
+dependencies = [
+ "lazy_static",
+ "paste",
+ "pgw",
 ]
 
 [[package]]
@@ -3541,7 +3547,7 @@ dependencies = [
  "axum",
  "lazy_static",
  "paste",
- "pgw",
+ "pgm",
  "tracing",
 ]
 

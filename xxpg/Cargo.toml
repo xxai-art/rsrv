@@ -13,5 +13,5 @@ axum = "0.6.20"
 paste = "1.0.14"
 tracing = "0.1.37"
 lazy_static = "1.4.0"
-pgw = "0.1.9"
+pgm = "0.0.2"
 # xxpg_proc = { path = "./xxpg_proc", version = "0.1.7" }
