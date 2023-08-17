@@ -6,7 +6,7 @@ use xxai::{bin_u64, nd::norm01, ndarray::prelude::arr1, time::today, u64_bin};
 
 use crate::{cid::CID_IMG, db::img::rec};
 
-const IAA_POWER: f32 = 1.2;
+const IAA_POWER: f32 = 0.5;
 const MAX_TXT_LEN: usize = 2048;
 pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   /*

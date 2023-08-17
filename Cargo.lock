@@ -1677,7 +1677,7 @@ version = "0.0.3"
 dependencies = [
  "lazy_static",
  "paste",
- "pgw 0.1.12",
+ "pgw 0.1.13",
 ]
 
 [[package]]
@@ -1694,8 +1694,9 @@ dependencies = [
 
 [[package]]
 name = "pgw"
-version = "0.1.12"
+version = "0.1.13"
 dependencies = [
+ "futures",
  "tokio",
  "tracing",
  "xxai-tokio-postgres",
