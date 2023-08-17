@@ -73,26 +73,26 @@ use std::fmt::{Debug, Formatter};
 //   });
 // }
 //
-// macro_rules! q {
-//   ($name:ident,$func:ident,$rt:ty) => {
-//     #[allow(non_snake_case)]
-//     pub async fn $name<T>(statement: &T, params: &[&(dyn ToSql + Sync)]) -> Result<$rt, Error>
-//     where
-//       T: ?Sized + ToStatement + Debug,
-//     {
-//       match PG.get().unwrap().$func(statement, params).await {
-//         Ok(r) => Ok(r),
-//         Err(err) => {
-//           if err.is_closed() {
-//             error!("{:?}\n{}", statement, err);
-//             std::process::exit(1);
-//           }
-//           Err(err)
-//         }
-//       }
-//     }
-//   };
-// }
+macro_rules! q {
+  ($name:ident,$func:ident,$rt:ty) => {
+    #[allow(non_snake_case)]
+    pub async fn $name<T>(statement: &T, params: &[&(dyn ToSql + Sync)]) -> Result<$rt, Error>
+    where
+      T: ?Sized + ToStatement + Debug,
+    {
+      match PG.get().unwrap().$func(statement, params).await {
+        Ok(r) => Ok(r),
+        Err(err) => {
+          if err.is_closed() {
+            error!("{:?}\n{}", statement, err);
+            std::process::exit(1);
+          }
+          Err(err)
+        }
+      }
+    }
+  };
+}
 //
 // q!(Q, query, Vec<Row>);
 // q!(Q1, query_one, Row);

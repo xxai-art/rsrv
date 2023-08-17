@@ -678,9 +678,9 @@ checksum = "6999dc1837253364c2ebb0704ba97994bd874e8f195d665c50b7548f6ea92764"
 
 [[package]]
 name = "faststr"
-version = "0.2.9"
+version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2081e2d954d6a9ea1764b68f04286a2add012625cb6c96599da67016538d873a"
+checksum = "284eac9300ad17d2492e1e87219768b8ab97fb2c74a61cdbc0ced31d3f711159"
 dependencies = [
  "bytes",
  "serde",
@@ -1687,9 +1687,9 @@ dependencies = [
 
 [[package]]
 name = "pgw"
-version = "0.1.5"
+version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f3af704efff9ac905c55385e85b95190966b388abc75bf701d15f7670cd252b"
+checksum = "61578aa463ecf12107c432e796fb5211f06fe67e23693e2d8014df0e7ecafa73"
 dependencies = [
  "parking_lot 0.12.1",
  "tokio",
@@ -3419,9 +3419,9 @@ checksum = "d419259aba16b663966e29e6d7c6ecfa0bb8425818bb96f6f1f3c3eb71a6e7b9"
 
 [[package]]
 name = "winnow"
-version = "0.5.11"
+version = "0.5.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e461589e194280efaa97236b73623445efa195aa633fd7004f39805707a9d53"
+checksum = "83817bbecf72c73bad717ee86820ebf286203d2e04c3951f3cd538869c897364"
 dependencies = [
  "memchr",
 ]
@@ -3480,7 +3480,6 @@ dependencies = [
  "base64 0.21.2",
  "chrono",
  "coarsetime",
- "ctor",
  "ndarray",
  "num-traits",
  "ordered-varint",
@@ -3555,21 +3554,6 @@ dependencies = [
  "pgw",
  "tokio",
  "tracing",
- "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "xxai-tokio-postgres",
- "xxpg_proc",
-]
-
-[[package]]
-name = "xxpg_proc"
-version = "0.1.7"
-dependencies = [
- "async-lazy",
- "lazy_static",
- "pgw",
- "proc-macro2",
- "regex",
- "tokio",
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "xxai-tokio-postgres",
 ]
