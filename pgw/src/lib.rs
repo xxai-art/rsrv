@@ -6,12 +6,18 @@ use tokio_postgres::{
   connect, error::SqlState, types::ToSql, Client, Error, NoTls, Row, Statement, ToStatement,
 };
 
+type Callback = Box<dyn Fn() + Send + Sync>;
+
 pub struct Prepare {}
 
-pub struct Pg {
+pub struct _Pg {
   pub env: String,
-  _client: Arc<RwLock<Option<Client>>>,
+  pub close_hook: Vec<Callback>,
+  _client: RwLock<Option<Client>>,
 }
+
+#[derive(Clone)]
+pub struct Pg(Arc<_Pg>);
 
 fn is_close(err: &Error, err_code: Option<&SqlState>) -> bool {
   err_code == Some(&SqlState::ADMIN_SHUTDOWN) || err.is_closed()
@@ -19,8 +25,9 @@ fn is_close(err: &Error, err_code: Option<&SqlState>) -> bool {
 
 macro_rules! client {
   ($self:ident, $body:ident) => {{
+    let pg = &$self.0;
     loop {
-      if let Some(client) = &*$self._client.read() {
+      if let Some(client) = &*pg._client.read() {
         loop {
           match $body!(client).await {
             Ok(r) => return Ok(r),
@@ -33,19 +40,21 @@ macro_rules! client {
           }
         }
       }
-      let env = $self.env.clone();
+      let env = pg.env.clone();
       let uri = std::env::var(&env).unwrap();
-      let mut _client = $self._client.write();
-      let mut n = 0u64;
+
+      let mut _client = pg._client.write();
       if _client.is_some() {
         continue;
       }
+
       loop {
+        let mut n = 0u64;
         match connect(&format!("postgres://{}", uri), NoTls).await {
           Ok((client, connection)) => {
             *_client = Some(client);
 
-            let arc = $self._client.clone();
+            let arc = Arc::new(pg.clone());
             tokio::spawn(async move {
               if let Err(e) = connection.await {
                 let err_code = e.code();
@@ -57,7 +66,7 @@ macro_rules! client {
 
                 if is_close(&e, err_code) {
                   // *arc.borrow_mut() = None;
-                  *arc.write() = None;
+                  *arc._client.write() = None;
                   return;
                 }
               }
@@ -77,10 +86,14 @@ macro_rules! client {
 
 impl Pg {
   pub fn new(env: impl Into<String>) -> Self {
-    Self {
-      env: env.into(),
-      _client: RwLock::new(None).into(),
-    }
+    Self(
+      _Pg {
+        env: env.into(),
+        _client: RwLock::new(None),
+        close_hook: Vec::new(),
+      }
+      .into(),
+    )
   }
 
   pub async fn query_one<T>(
