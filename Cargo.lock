@@ -912,7 +912,6 @@ version = "0.1.0"
 dependencies = [
  "async-lazy",
  "ctor",
- "pgw",
  "tokio",
  "tracing",
  "trt 0.1.5",
@@ -1688,11 +1687,10 @@ dependencies = [
 
 [[package]]
 name = "pgw"
-version = "0.1.3"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5f3af704efff9ac905c55385e85b95190966b388abc75bf701d15f7670cd252b"
 dependencies = [
- "anyhow",
- "lazy_static",
- "loginit",
  "parking_lot 0.12.1",
  "tokio",
  "tracing",

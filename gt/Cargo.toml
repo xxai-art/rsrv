@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 tokio-postgres = { package = "xxai-tokio-postgres", version = "0.7.15" }
-pgw = { path = "../pgw" }
 tracing = "0.1.37"
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
 tokio = { version = "1.32.0", features = ["macros", "rt", "rt-multi-thread"] }

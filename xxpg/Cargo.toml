@@ -17,5 +17,5 @@ tokio-postgres = { package = "xxai-tokio-postgres", version = "0.7.15" }
 tracing = "0.1.37"
 trt = "0.1.5"
 xxpg_proc = { path = "./xxpg_proc", version = "0.1.7" }
-pgw = { path = "../pgw" }
 lazy_static = "1.4.0"
+pgw = "0.1.5"
