@@ -4,6 +4,7 @@ use tokio::time;
 use tokio_postgres::types::Oid;
 
 lazy_static! {
+  // get postgres connection uri from environment ( without prefix )
   static ref PG: Pg = Pg::new("PG_URI");
   // prepared sql
   static ref SQL_NSPNAME: Sql = PG.sql("SELECT oid FROM pg_catalog.pg_namespace LIMIT 2");
