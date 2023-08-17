@@ -1,6 +1,5 @@
-use std::fmt::{Debug, Formatter};
-
 use lazy_static::lazy_static;
+use paste::paste;
 use pgw::{Error, IntoStatement, Pg, Row, ToSql, ToStatement};
 // pub use async_lazy;
 // use async_lazy::Lazy;
@@ -75,22 +74,28 @@ use pgw::{Error, IntoStatement, Pg, Row, ToSql, ToStatement};
 //   });
 // }
 
-lazy_static! {
-  static ref PG: Pg = Pg::new_with_env("PG_URI");
-}
-
+#[macro_export]
 macro_rules! q {
-  ($name:ident,$func:ident,$rt:ty) => {
+  ($db:ident, $name:ident) => {
+    paste! {
+      q!($db, $name, query, Vec<Row>);
+      q!($db, [<$name 1>], query_one, Row);
+      q!($db, [<$name 01>], query_opt, Option<Row>);
+    }
+  };
+  ($db:ident,$name:ident,$func:ident,$rt:ty) => {
     #[allow(non_snake_case)]
     pub async fn $name<T: ToStatement>(
       statement: impl IntoStatement<T>,
       params: &[&(dyn ToSql + Sync)],
     ) -> Result<$rt, Error> {
-      PG.$func(statement, params).await
+      $db.$func(statement, params).await
     }
   };
 }
 
-q!(Q, query, Vec<Row>);
-q!(Q1, query_one, Row);
-q!(Q01, query_opt, Option<Row>);
+lazy_static! {
+  static ref PG: Pg = Pg::new_with_env("PG_URI");
+}
+
+q!(PG, Q);
