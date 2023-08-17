@@ -1,3 +1,5 @@
+#![feature(async_fn_in_trait)]
+
 use std::{cell::RefCell, sync::Arc};
 
 use parking_lot::RwLock;
@@ -7,26 +9,32 @@ use tokio_postgres::{
   ToStatementType,
 };
 
-#[derive(Clone)]
 pub struct Sql {
   sql: String,
-  st: Arc<Option<Statement>>,
+  st: Arc<RwLock<Option<Statement>>>,
   pg: Pg,
 }
 
-impl ToStatement for Sql {
-  fn __convert(&self) -> ToStatementType<'_> {
-    if let Some(st) = self.st.as_ref() {
-      return st.__convert();
+pub trait IntoStatement {
+  async fn into(self) -> Result<Statement, Error>;
+}
+
+impl IntoStatement for &Sql {
+  async fn into(self) -> Result<Statement, Error> {
+    loop {
+      if let Some(st) = self.st.read().as_ref() {
+        return Ok(st.clone());
+      }
+
+      let st = self.pg.prepare(&self.sql).await?;
+      *self.st.write() = Some(st);
     }
-    todo!();
-    // let st = self.pg.read()._client.prepare(query).await?).into();
   }
 }
 
 pub struct _Pg {
   pub env: String,
-  pub sql_li: Vec<Sql>,
+  pub sql_li: Vec<Arc<RwLock<Option<Statement>>>>,
   _client: Option<Client>,
 }
 
@@ -84,7 +92,7 @@ macro_rules! client {
                   let mut pg = pg.write();
                   pg._client = None;
                   for i in &mut pg.sql_li {
-                    i.st = None.into();
+                    *i.write() = None;
                   }
                   return;
                 }
@@ -112,14 +120,11 @@ impl Pg {
     })))
   }
 
-  pub async fn query_one<T>(
+  pub async fn query_one(
     &self,
-    statement: &T,
+    statement: &Statement,
     params: &[&(dyn ToSql + Sync)],
-  ) -> Result<Row, Error>
-  where
-    T: ?Sized + ToStatement + Sync + Send,
-  {
+  ) -> Result<Row, Error> {
     macro_rules! query_one {
       ($client:ident) => {
         $client.query_one(statement, params)
@@ -128,49 +133,43 @@ impl Pg {
     client!(self, query_one)
   }
 
-  pub async fn query<T>(
+  pub async fn query(
     &self,
-    statement: &T,
+    statement: impl IntoStatement,
     params: &[&(dyn ToSql + Sync)],
-  ) -> Result<Vec<Row>, Error>
-  where
-    T: ?Sized + ToStatement,
-  {
+  ) -> Result<Vec<Row>, Error> {
+    let statement = statement.into().await?;
     macro_rules! query {
       ($client:ident) => {
-        $client.query(statement, params)
+        $client.query(&statement, params)
       };
     }
     client!(self, query)
   }
 
-  pub async fn query_opt<T>(
+  pub async fn query_opt(
     &self,
-    statement: &T,
+    statement: impl IntoStatement,
     params: &[&(dyn ToSql + Sync)],
-  ) -> Result<Option<Row>, Error>
-  where
-    T: ?Sized + ToStatement + Sync + Send,
-  {
+  ) -> Result<Option<Row>, Error> {
+    let statement = statement.into().await?;
     macro_rules! query_opt {
       ($client:ident) => {
-        $client.query_opt(statement, params)
+        $client.query_opt(&statement, params)
       };
     }
     client!(self, query_opt)
   }
 
-  pub async fn execute<T>(
+  pub async fn execute(
     &self,
-    statement: &T,
+    statement: impl IntoStatement,
     params: &[&(dyn ToSql + Sync)],
-  ) -> Result<u64, Error>
-  where
-    T: ?Sized + ToStatement,
-  {
+  ) -> Result<u64, Error> {
+    let statement = statement.into().await?;
     macro_rules! execute {
       ($client:ident) => {
-        $client.execute(statement, params)
+        $client.execute(&statement, params)
       };
     }
     client!(self, execute)
@@ -192,11 +191,11 @@ impl Pg {
         async {
           let sql = Sql {
             sql: sql.clone(),
-            st: Arc::new(None),
+            st: Arc::new(RwLock::new(None)),
             pg: self.clone(),
           };
           let pg = self.clone();
-          let sql_clone = sql.clone();
+          let sql_clone = sql.st.clone();
           tokio::spawn(async move {
             pg.0.write().sql_li.push(sql_clone);
           });
