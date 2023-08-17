@@ -17,7 +17,6 @@ base-x = "0.2.11"
 base64 = "0.21.2"
 chrono = "0.4.26"
 coarsetime = "0.1.23"
-ctor = "0.2.4"
 ndarray = { version = "0.15.6", optional = true }
 num-traits = { version = "0.2.16", optional = true }
 ordered-varint = "2.0.0"
