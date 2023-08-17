@@ -13,9 +13,8 @@ axum = "0.6.20"
 msgpacker = "0.4.3"
 paste = "1.0.14"
 tokio = { version = "1.32.0", features = ["rt-multi-thread"] }
-tokio-postgres = { package = "xxai-tokio-postgres", version = "0.7.15" }
 tracing = "0.1.37"
 trt = "0.1.5"
 # xxpg_proc = { path = "./xxpg_proc", version = "0.1.7" }
 lazy_static = "1.4.0"
-pgw = "0.1.6"
+pgw = "0.1.7"

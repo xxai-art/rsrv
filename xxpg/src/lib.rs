@@ -1,5 +1,7 @@
 use std::fmt::{Debug, Formatter};
 
+use lazy_static::lazy_static;
+use pgw::{Error, IntoStatement, Pg, Row, ToSql, ToStatement};
 // pub use async_lazy;
 // use async_lazy::Lazy;
 // pub use ctor::ctor;
@@ -72,28 +74,23 @@ use std::fmt::{Debug, Formatter};
 //     PG.into_future().await;
 //   });
 // }
-//
+
+lazy_static! {
+  static ref PG: Pg = Pg::new_with_env("PG_URI");
+}
+
 macro_rules! q {
   ($name:ident,$func:ident,$rt:ty) => {
     #[allow(non_snake_case)]
-    pub async fn $name<T>(statement: &T, params: &[&(dyn ToSql + Sync)]) -> Result<$rt, Error>
-    where
-      T: ?Sized + ToStatement + Debug,
-    {
-      match PG.get().unwrap().$func(statement, params).await {
-        Ok(r) => Ok(r),
-        Err(err) => {
-          if err.is_closed() {
-            error!("{:?}\n{}", statement, err);
-            std::process::exit(1);
-          }
-          Err(err)
-        }
-      }
+    pub async fn $name<T: ToStatement>(
+      statement: impl IntoStatement<T>,
+      params: &[&(dyn ToSql + Sync)],
+    ) -> Result<$rt, Error> {
+      PG.$func(statement, params).await
     }
   };
 }
-//
-// q!(Q, query, Vec<Row>);
-// q!(Q1, query_one, Row);
-// q!(Q01, query_opt, Option<Row>);
+
+q!(Q, query, Vec<Row>);
+q!(Q1, query_one, Row);
+q!(Q01, query_opt, Option<Row>);

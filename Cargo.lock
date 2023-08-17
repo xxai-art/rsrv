@@ -1687,9 +1687,9 @@ dependencies = [
 
 [[package]]
 name = "pgw"
-version = "0.1.6"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61578aa463ecf12107c432e796fb5211f06fe67e23693e2d8014df0e7ecafa73"
+checksum = "84fa45c26c6e82510c4660e18a74bd2fc8db541d3cfb7b133c0737d79c9ed0c8"
 dependencies = [
  "parking_lot 0.12.1",
  "tokio",
@@ -3555,7 +3555,6 @@ dependencies = [
  "tokio",
  "tracing",
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
- "xxai-tokio-postgres",
 ]
 
 [[package]]
