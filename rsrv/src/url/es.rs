@@ -28,7 +28,7 @@ Q! {
 async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
   // let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY ts LIMIT {LIMIT}");
   // TODO fix https://github.com/GreptimeTeam/greptimedb/issues/2026
-  let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>ARROW_CAST({ts},'Timestamp(Millisecond,None)') ORDER BY ts LIMIT 8192");
+  let sql = format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>ARROW_CAST({ts},'Timestamp(Millisecond,None)') ORDER BY ts LIMIT 8192");
   Ok(
     GQ(sql, &[])
       .await?
