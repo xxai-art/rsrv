@@ -46,7 +46,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
                   .join(",");
 
                 for i in GQ(
-                  &format!(
+                  format!(
                     "SELECT rid FROM seen WHERE uid={uid} AND cid={cid} AND rid IN ({rid_in})"
                   ),
                   &[],
@@ -93,7 +93,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
             ts -= 1;
             let to_insert = to_insert.join(",");
             GQ(
-              &format!("INSERT INTO seen (uid,cid,rid,ts) VALUES {to_insert}"),
+              format!("INSERT INTO seen (uid,cid,rid,ts) VALUES {to_insert}"),
               &[],
             )
             .await?;

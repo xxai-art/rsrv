@@ -65,9 +65,11 @@ fn main() -> anyhow::Result<()> {
   // get!( => stat);
   // post!(li => li;fav=>fav);
 
-  post!(test);
+  // post!(test);
   // router = router.route("/es/:li", get(crate::url::es::get));
   // post!(fav, liMeta, q, userFav, seen, log);
+
+  post!(fav, liMeta, userFav, log, q, seen);
 
   let default_port = 8879;
   let port = match std::env::var("RSRV_PORT") {

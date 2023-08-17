@@ -16,9 +16,9 @@ pub fn after_ts_sql(uid: u64, ts: u64) -> String {
   format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY TS")
 }
 
-pub async fn after_ts(sql: impl AsRef<str>) -> Result<Vec<u64>> {
+pub async fn after_ts(sql: impl Into<String>) -> Result<Vec<u64>> {
   let mut r = Vec::new();
-  for i in GQ(sql.as_ref(), &[]).await? {
+  for i in GQ(sql.into(), &[]).await? {
     let ts: i64 = i.get(0);
     r.push(ts as u64);
     let cid: i8 = i.get(1);
