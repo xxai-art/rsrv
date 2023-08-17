@@ -12,7 +12,7 @@ ndarray = ["dep:num-traits", "dep:ndarray"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-anyhow = "1.0.74"
+anyhow = "1.0.75"
 base-x = "0.2.11"
 base64 = "0.21.2"
 chrono = "0.4.26"
@@ -24,7 +24,7 @@ ordered-varint = "2.0.0"
 psl = "2.1.4"
 rand = "0.8.5"
 thiserror = "1.0.46"
-tokio = { version = "1.31.0", features = [
+tokio = { version = "1.32.0", features = [
   "macros",
   "rt",
   "rt-multi-thread",

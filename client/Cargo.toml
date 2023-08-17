@@ -15,6 +15,6 @@ xxai = { path = "../xxai" }
 http = "0.2.9"
 gid = { path = "../gid" }
 cookie = "0.17.0"
-anyhow = "1.0.74"
+anyhow = "1.0.75"
 awp = { path = "../awp" }
 vbyte = "0.1.0"
