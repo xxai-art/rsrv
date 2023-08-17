@@ -1,6 +1,6 @@
 #![feature(async_fn_in_trait)]
 
-use std::sync::Arc;
+use std::{cmp::min, sync::Arc};
 
 use parking_lot::RwLock;
 use tokio::time;
@@ -14,13 +14,20 @@ pub struct _Sql {
   pg: Pg,
 }
 
+fn hidden_password(s: &str) -> String {
+  let at_index = s.rfind('@').unwrap();
+  let password_start = s[..at_index].rfind(':').unwrap() + 1;
+  let password_end = at_index;
+  let mut result = s.to_string();
+  result.replace_range(
+    password_start..password_end,
+    &"*".repeat(min(3, password_end - password_start)),
+  );
+  result
+}
+
 #[derive(Clone)]
 pub struct Sql(Arc<_Sql>);
-
-// pub enum ToStatementType<'a> {
-//   Statement(&'a Statement),
-//   Query(&'a str),
-// }
 
 pub trait IntoStatement<T: ToStatement> {
   async fn into(self) -> Result<T, Error>;
@@ -47,7 +54,7 @@ impl IntoStatement<Statement> for &Sql {
 }
 
 pub struct _Pg {
-  pub env: String,
+  pub uri: String,
   pub sql_li: Vec<Sql>,
   _client: Option<Client>,
 }
@@ -78,15 +85,15 @@ macro_rules! client {
           }
         }
       }
-      let env = { pg.read().env.clone() };
-      let uri = std::env::var(&env).unwrap();
 
+      let mut _pg = pg.write();
+      if _pg._client.is_some() {
+        continue 'outer;
+      }
+      let mut n = 0u64;
+      let uri = _pg.uri.clone();
+      let hidden_password_uri = hidden_password(&uri);
       loop {
-        let mut n = 0u64;
-        let mut _pg = pg.write();
-        if _pg._client.is_some() {
-          continue 'outer;
-        }
         match connect(&format!("postgres://{}", uri), NoTls).await {
           Ok((client, connection)) => {
             _pg._client = Some(client);
@@ -99,7 +106,7 @@ macro_rules! client {
                   Some(code) => code.code(),
                   None => "",
                 };
-                tracing::error!("❌ {env} ERROR CODE {code} : {e}");
+                tracing::error!("❌ {hidden_password_uri} ERROR CODE {code} : {e}");
 
                 if is_close(&e, err_code) {
                   let mut pg = pg.write();
@@ -115,7 +122,7 @@ macro_rules! client {
           }
           Err(err) => {
             n += 1;
-            tracing::error!("❌ RETRY {n} → {env} : {err}");
+            tracing::error!("❌ RETRY {n} → {hidden_password_uri} : {err}");
             time::sleep(std::time::Duration::from_secs(3)).await;
           }
         }
@@ -125,12 +132,17 @@ macro_rules! client {
 }
 
 impl Pg {
-  pub fn new(env: impl Into<String>) -> Self {
+  pub fn new(uri: impl Into<String>) -> Self {
     Self(Arc::new(RwLock::new(_Pg {
-      env: env.into(),
+      uri: uri.into(),
       _client: None,
       sql_li: Vec::new().into(),
     })))
+  }
+
+  pub fn new_with_env(env: impl Into<String>) -> Self {
+    let uri = std::env::var(env.into()).unwrap();
+    Self::new(uri)
   }
 
   pub async fn query_one<T: ToStatement>(
