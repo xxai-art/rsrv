@@ -64,20 +64,12 @@ use pgw::{Error, IntoStatement, Pg, Row, ToSql, ToStatement};
 // }
 //
 // pub static PG: Lazy<Client> = Lazy::const_new(|| Box::pin(async move { conn().await }));
-//
-// #[ctor]
-// fn init() {
-//   TRT.block_on(async move {
-//     use std::future::IntoFuture;
-//     PG.into_future().await;
-//   });
-// }
 
 #[macro_export]
 macro_rules! q {
   ($db:ident, $name:ident) => {
     lazy_static::lazy_static! {
-      static ref $db: Pg = Pg::new_with_env("PG_URI");
+      static ref $db: Pg = Pg::new_with_env(format!("{}_URI",stringify!($db)));
     }
     paste! {
       q!($db, $name, query, Vec<Row>);
