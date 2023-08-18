@@ -57,7 +57,7 @@ return {id,1}"#,
 // }
 
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
-  let mut r = Vec::new();
+  let mut rec = Vec::new();
   if let Some(uid) = client.uid().await? {
     let ts = xxai::time::sec();
     let all: Vec<Vec<String>> =
@@ -97,6 +97,6 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
       });
     }
   }
-  // todo 根据用户的行为，往r中放入新的推荐
-  Ok(r)
+  // todo 根据用户的行为，往rec中放入新的推荐
+  Ok(rec)
 }
