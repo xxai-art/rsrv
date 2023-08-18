@@ -1,4 +1,5 @@
 mod diffli;
+pub mod str;
 pub mod time;
 mod tld;
 mod vbyte_decode;

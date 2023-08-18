@@ -3,11 +3,12 @@ use std::collections::HashSet;
 use anyhow::Result;
 use axum::body::Bytes;
 use client::Client;
-use gt::G;
+use gt::GE;
 use serde_json::Value;
 use tokio::sync::OnceCell;
 use x0::fred::types::Script;
 use xxai::{u64_bin, z85_decode_u64_li};
+use xxpg::ToSql;
 
 use crate::{
   db::seen,
@@ -47,12 +48,33 @@ return {id,1}"#,
   )
 }
 
+fn escape_sql(s: &str) -> String {
+  s.chars()
+    .map(|c| {
+      match c {
+        '\0' => "\\0".to_string(),
+        '\x08' => "\\b".to_string(), // \b
+        '\t' => "\\t".to_string(),
+        '\n' => "\\n".to_string(),
+        '\r' => "\\r".to_string(),
+        '\x1a' => "\\Z".to_string(),
+        '"' => "\\\"".to_string(),
+        '\'' => "\\'".to_string(),
+        '\\' => "\\\\".to_string(),
+        _ => c.to_string(),
+      }
+    })
+    .collect()
+}
+
 fn log(uid: u64, q: String, action: u64, cid: u64, rid: u64) {
   trt::spawn!({
-    let q = q.to_lowercase();
+    let q = xxai::str::low_short(q);
     let (qid, new) = qid(&q).await?;
     if new {
-      // GE("INSERT INTO q (id,q) VALUES ($1,$2)", &[qid, &q]).await?
+      let escape_q = escape_sql(&q);
+      let sql = format!("INSERT INTO q (id,q) VALUES ($1,{escape_q})");
+      GE(sql, &[&qid]).await?;
     }
     dbg!(new, uid, q, qid, action, cid, rid);
   });

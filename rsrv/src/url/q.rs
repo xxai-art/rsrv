@@ -17,15 +17,10 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
     ok!(rec::img_li())
   } else {
     let (txt, z85): (String, String) = serde_json::from_str(&String::from_utf8_lossy(&body))?;
+    let txt = xxai::str::low_short(txt);
     if txt.is_empty() {
       return ok!(rec::li());
     }
-    let txt = if txt.len() > MAX_TXT_LEN {
-      txt[..MAX_TXT_LEN].to_string()
-    } else {
-      txt
-    }
-    .to_lowercase();
     let z85 = xxai::z85_decode_u64_li(z85)?;
     let level = z85[0];
     let duration = z85[1] as u32;
