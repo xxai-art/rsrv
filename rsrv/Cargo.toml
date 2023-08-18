@@ -32,6 +32,7 @@ paste = "1.0.14"
 gt = { path = "../gt" }
 z85 = "3.0.5"
 clip_search_txt_client = "0.1.5"
+sts = "0.0.4"
 
 # quinn = { version = "0.10", default-features = false, features = [
 #   "runtime-tokio",
