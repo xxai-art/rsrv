@@ -1,21 +1,10 @@
-use std::collections::HashSet;
-
 use anyhow::Result;
 use axum::body::Bytes;
 use client::Client;
 use gt::GE;
-use serde_json::Value;
 use tokio::sync::OnceCell;
 use x0::fred::types::Script;
-use xxai::{u64_bin, z85_decode_u64_li};
-use xxpg::ToSql;
-
-use crate::{
-  db::seen,
-  es::{publish_to_user_client, KIND_SYNC_SEEN},
-  kv::sync::{has_more, set_last},
-  K,
-};
+use xxai::z85_decode_u64_li;
 
 const QID: OnceCell<Script> = OnceCell::const_new();
 
@@ -39,7 +28,7 @@ id = redis.call("HINCRBY", idKey, "q", 1)
 redis.call("HSET", qKey, q, id)
 return {id,1}"#,
         );
-        let _ = script.load(kv).await.unwrap();
+        script.load(kv).await.unwrap();
         script
       })
       .await
@@ -48,16 +37,8 @@ return {id,1}"#,
   )
 }
 
-// fn log(uid: u64, q: String, action: u64, cid: u64, rid: u64) {
-//   trt::spawn!({
-//     let q = xxai::str::low_short(q);
-//     GQ(format!("INSERT INTO log (ts,) VALUES"), &[]).await?;
-//     dbg!(new, uid, q, qid, action, cid, rid);
-//   });
-// }
-
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
-  let mut rec = Vec::new();
+  let rec = Vec::new();
   if let Some(uid) = client.uid().await? {
     let ts = xxai::time::sec();
     let all: Vec<Vec<String>> =
@@ -77,7 +58,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
           let cid_rid_li = z85_decode_u64_li(cid_rid_li)?;
           if !cid_rid_li.is_empty() {
             let action = cid_rid_li[0];
-            for cid_rid in (&cid_rid_li[1..]).chunks(2) {
+            for cid_rid in cid_rid_li[1..].chunks(2) {
               let cid = cid_rid[0];
               let rid = cid_rid[1];
               to_insert.push(format!("({uid},{action},{cid},{rid},{qid},{ts})"));
