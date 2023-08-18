@@ -1673,28 +1673,20 @@ dependencies = [
 
 [[package]]
 name = "pgm"
-version = "0.0.3"
+version = "0.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "720d45f145bcb2b9087ae26237d4f3954c24cb169e0bf273721cd0b0979ca34e"
 dependencies = [
  "lazy_static",
  "paste",
- "pgw 0.2.0",
-]
-
-[[package]]
-name = "pgw"
-version = "0.1.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9fc903d5e6f1799ac6abf9ae47446b7423fdaa4913b81b31b2ab6e9fcfed191a"
-dependencies = [
- "parking_lot 0.12.1",
- "tokio",
- "tracing",
- "xxai-tokio-postgres",
+ "pgw",
 ]
 
 [[package]]
 name = "pgw"
 version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c2c293fd614241b8387adf3864db5f923d8521f22d23244cdcd70ccefc289377"
 dependencies = [
  "futures",
  "tokio",
@@ -2197,6 +2189,7 @@ dependencies = [
  "const-str",
  "ctor",
  "futures-util",
+ "gid",
  "gt",
  "lazy_static",
  "paste",
@@ -3567,7 +3560,7 @@ name = "xxpg_proc"
 version = "0.1.7"
 dependencies = [
  "lazy_static",
- "pgw 0.1.9",
+ "pgw",
  "proc-macro2",
  "regex",
  "tokio",

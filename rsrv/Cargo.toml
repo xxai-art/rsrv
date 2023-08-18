@@ -23,6 +23,7 @@ x0 = { path = "../x0" }
 xxai = { path = "../xxai", features = ["ndarray"] }
 awp = { path = "../awp" }
 xxpg = { path = "../xxpg" }
+gid = { path = "../gid" }
 lazy_static = "1.4.0"
 coarsetime = "0.1.23"
 serde_json = "1.0.105"
