@@ -146,7 +146,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
         "\npub async fn {var}{type_li}({arg_li}) -> std::result::Result<{result}, xxpg::Error>"
       );
       let func = &format!("{fn_var} {{\n  {body}\n}}");
-      println!("\n❯ {var} → {result} :\n{sql}");
+      // println!("\n❯ {var} → {result} :\n{sql}");
       f += func;
     }
   }
@@ -155,7 +155,7 @@ fn _q(q: &str, input: TokenStream) -> TokenStream {
   } else {
     "".to_string()
   };
-  println!("\n\n{s}\n\n");
+  // println!("\n\n{s}\n\n");
   s.parse::<proc_macro2::TokenStream>().unwrap().into()
 }
 
