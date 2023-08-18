@@ -6,8 +6,8 @@ use xxai::{bin_u64, nd::norm01, ndarray::prelude::arr1, time::today, u64_bin};
 
 use crate::{cid::CID_IMG, db::img::rec};
 
-const IAA_POWER: f32 = 0.5;
-const MAX_TXT_LEN: usize = 2048;
+const IAA_POWER: f32 = 0.6;
+
 pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   /*
   分级 0 安全 1 不限 2 成人

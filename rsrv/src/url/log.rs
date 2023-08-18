@@ -19,7 +19,7 @@ use crate::{
 
 const QID: OnceCell<Script> = OnceCell::const_new();
 
-pub async fn qid(q: impl AsRef<str>) -> Result<(i64, bool)> {
+pub async fn qid(q: impl AsRef<str>) -> Result<(u64, bool)> {
   let kv = x0::KV.0.get().unwrap();
   Ok(
     QID
@@ -68,11 +68,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
         let q = xxai::str::low_short(&li[0]);
         let (qid, new) = qid(&q).await?;
         if new {
-          GE(
-            "INSERT INTO q (id,q) VALUES ($1,$2)".to_string(),
-            &[&qid, &q],
-          )
-          .await?;
+          GE(format!("INSERT INTO q (id,q) VALUES ({qid},$1)"), &[&q]).await?;
         }
         for cid_rid_li in &li[1..] {
           let cid_rid_li = z85_decode_u64_li(cid_rid_li)?;
