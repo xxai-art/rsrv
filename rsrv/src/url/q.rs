@@ -24,7 +24,8 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
       txt[..MAX_TXT_LEN].to_string()
     } else {
       txt
-    };
+    }
+    .to_lowercase();
     let z85 = xxai::z85_decode_u64_li(z85)?;
     let level = z85[0];
     let duration = z85[1] as u32;
