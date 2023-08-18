@@ -19,7 +19,7 @@ use crate::{
 
 const QID: OnceCell<Script> = OnceCell::const_new();
 
-pub async fn qid(q: impl AsRef<str>) -> Result<(u64, bool)> {
+pub async fn qid(q: impl AsRef<str>) -> Result<(i64, bool)> {
   let kv = x0::KV.0.get().unwrap();
   Ok(
     QID
@@ -48,47 +48,32 @@ return {id,1}"#,
   )
 }
 
-fn escape_sql(s: &str) -> String {
-  s.chars()
-    .map(|c| {
-      match c {
-        '\0' => "\\0".to_string(),
-        '\x08' => "\\b".to_string(), // \b
-        '\t' => "\\t".to_string(),
-        '\n' => "\\n".to_string(),
-        '\r' => "\\r".to_string(),
-        '\x1a' => "\\Z".to_string(),
-        '"' => "\\\"".to_string(),
-        '\'' => "\\'".to_string(),
-        '\\' => "\\\\".to_string(),
-        _ => c.to_string(),
-      }
-    })
-    .collect()
-}
-
-fn log(uid: u64, q: String, action: u64, cid: u64, rid: u64) {
-  trt::spawn!({
-    let q = xxai::str::low_short(q);
-    let (qid, new) = qid(&q).await?;
-    if new {
-      let escape_q = escape_sql(&q);
-      let sql = format!("INSERT INTO q (id,q) VALUES ($1,{escape_q})");
-      GE(sql, &[&qid]).await?;
-    }
-    dbg!(new, uid, q, qid, action, cid, rid);
-  });
-}
+// fn log(uid: u64, q: String, action: u64, cid: u64, rid: u64) {
+//   trt::spawn!({
+//     let q = xxai::str::low_short(q);
+//     GQ(format!("INSERT INTO log (ts,) VALUES"), &[]).await?;
+//     dbg!(new, uid, q, qid, action, cid, rid);
+//   });
+// }
 
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   let mut r = Vec::new();
   if let Some(uid) = client.uid().await? {
+    let ts = xxai::time::ms();
     let all: Vec<Vec<String>> =
       serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
 
     for li in all {
       if !li.is_empty() {
-        let q = &li[0];
+        let q = xxai::str::low_short(&li[0]);
+        let (qid, new) = qid(&q).await?;
+        if new {
+          GE(
+            "INSERT INTO q (id,q) VALUES ($1,$2)".to_string(),
+            &[&qid, &q],
+          )
+          .await?;
+        }
         for cid_rid_li in &li[1..] {
           let cid_rid_li = z85_decode_u64_li(cid_rid_li)?;
           if !cid_rid_li.is_empty() {
@@ -96,7 +81,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
             for cid_rid in (&cid_rid_li[1..]).chunks(2) {
               let cid = cid_rid[0];
               let rid = cid_rid[1];
-              log(uid, q.to_string(), action, cid, rid);
+              // log(uid, q.to_string(), action, cid, rid);
             }
           }
         }
