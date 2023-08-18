@@ -33,6 +33,10 @@ pub fn n_to_year_month(n: i32) -> (i32, u8) {
   (n / 12, (n % 12) as _)
 }
 
+pub fn sec() -> u64 {
+  coarsetime::Clock::now_since_epoch().as_secs()
+}
+
 pub fn ms() -> u64 {
   coarsetime::Clock::now_since_epoch().as_millis()
 }

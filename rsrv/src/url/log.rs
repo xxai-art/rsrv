@@ -59,7 +59,7 @@ return {id,1}"#,
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   let mut r = Vec::new();
   if let Some(uid) = client.uid().await? {
-    let ts = xxai::time::ms();
+    let ts = xxai::time::sec();
     let all: Vec<Vec<String>> =
       serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
 
@@ -77,6 +77,8 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
             for cid_rid in (&cid_rid_li[1..]).chunks(2) {
               let cid = cid_rid[0];
               let rid = cid_rid[1];
+
+              dbg!(uid, action, cid, rid, qid, ts);
               // log(uid, q.to_string(), action, cid, rid);
             }
           }
