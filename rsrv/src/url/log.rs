@@ -1,9 +1,12 @@
 use std::collections::HashSet;
 
+use anyhow::Result;
 use axum::body::Bytes;
 use client::Client;
 use gt::GQ;
 use serde_json::Value;
+use tokio::sync::OnceCell;
+use x0::fred::types::Script;
 use xxai::{u64_bin, z85_decode_u64_li};
 
 use crate::{
@@ -12,6 +15,36 @@ use crate::{
   kv::sync::{has_more, set_last},
   K,
 };
+
+const QID: OnceCell<Script> = OnceCell::const_new();
+
+pub async fn qid(q: impl AsRef<str>) -> Result<u64> {
+  let kv = x0::KV.0.get().unwrap();
+  Ok(
+    QID
+      .get_or_init(|| async {
+        let script = Script::from_lua(
+          r#"local idKey = KEYS[1]
+local qKey = KEYS[2]
+local q = ARGV[1]
+
+local id = redis.call("HGET", qKey, q)
+
+if not id then
+    id = redis.call("HINCRBY", idKey, "q", 1)
+    redis.call("HSET", qKey, q, id)
+end
+
+return id"#,
+        );
+        let _ = script.load(kv).await.unwrap();
+        script
+      })
+      .await
+      .evalsha(kv, vec!["id", "q"], q.as_ref())
+      .await?,
+  )
+}
 
 fn log(uid: u64, q: String, action: u64, cid: u64, rid: u64) {
   trt::spawn!({
