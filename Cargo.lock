@@ -372,7 +372,7 @@ dependencies = [
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "vbyte",
  "x0",
- "xkv 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)",
+ "xkv 0.1.10",
  "xxai",
  "xxhash-rust",
 ]
@@ -1673,9 +1673,9 @@ dependencies = [
 
 [[package]]
 name = "pgm"
-version = "0.0.5"
+version = "0.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7256fd60cca39172d378924868d697c39108afec931a05ea002bfe0c884a8c20"
+checksum = "be8455aa92c1f6918cbb8098f35f4df2f4966672aa8ba0312880d8c50249b63b"
 dependencies = [
  "lazy_static",
  "paste",
@@ -1684,9 +1684,9 @@ dependencies = [
 
 [[package]]
 name = "pgw"
-version = "0.2.0"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2c293fd614241b8387adf3864db5f923d8521f22d23244cdcd70ccefc289377"
+checksum = "2091e3f8688594d7b35323cf595f635e478fbd17c281b71592d508f003f1ca9e"
 dependencies = [
  "futures",
  "tokio",
@@ -3436,21 +3436,7 @@ dependencies = [
 name = "x0"
 version = "0.1.0"
 dependencies = [
- "xkv 0.1.10",
-]
-
-[[package]]
-name = "xkv"
-version = "0.1.10"
-dependencies = [
- "anyhow",
- "async-lazy",
- "ctor",
- "fred",
- "lazy_static",
- "paste",
- "tokio-test",
- "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "xkv 0.1.11",
 ]
 
 [[package]]
@@ -3465,6 +3451,20 @@ dependencies = [
  "fred",
  "lazy_static",
  "paste",
+ "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "xkv"
+version = "0.1.11"
+dependencies = [
+ "anyhow",
+ "async-lazy",
+ "ctor",
+ "fred",
+ "lazy_static",
+ "paste",
+ "tokio-test",
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

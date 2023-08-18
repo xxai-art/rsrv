@@ -14,7 +14,7 @@ paste = "1.0.14"
 tracing = "0.1.37"
 lazy_static = "1.4.0"
 xxpg_proc = { path = "./xxpg_proc", version = "0.1.7" }
-pgm = "0.0.5"
+pgm = "0.0.6"
 
 [dev-dependencies]
 anyhow = "1.0.75"
