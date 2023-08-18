@@ -63,12 +63,15 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
     let all: Vec<Vec<String>> =
       serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
 
+    let mut to_insert = Vec::with_capacity(all.iter().map(|v| v.len()).sum());
     for li in all {
       if !li.is_empty() {
         let q = xxai::str::low_short(&li[0]);
         let (qid, new) = qid(&q).await?;
         if new {
-          GE(format!("INSERT INTO q (id,q) VALUES ({qid},$1)"), &[&q]).await?;
+          trt::spawn!({
+            GE(format!("INSERT INTO q (id,q) VALUES ({qid},$1)"), &[&q]).await?;
+          });
         }
         for cid_rid_li in &li[1..] {
           let cid_rid_li = z85_decode_u64_li(cid_rid_li)?;
@@ -77,13 +80,21 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
             for cid_rid in (&cid_rid_li[1..]).chunks(2) {
               let cid = cid_rid[0];
               let rid = cid_rid[1];
-
-              dbg!(uid, action, cid, rid, qid, ts);
-              // log(uid, q.to_string(), action, cid, rid);
+              to_insert.push(format!("({uid},{action},{cid},{rid},{qid},{ts})"));
             }
           }
         }
       }
+    }
+    if !to_insert.is_empty() {
+      trt::spawn!({
+        let to_insert = to_insert.join(",");
+        GE(
+          format!("INSERT INTO log (uid,aid,cid,rid,q,ts) VALUES {to_insert}"),
+          &[],
+        )
+        .await?;
+      });
     }
   }
   // if li.len() > 2 {
