@@ -3,7 +3,7 @@ use std::collections::HashSet;
 use anyhow::Result;
 use axum::body::Bytes;
 use client::Client;
-use gt::GQ;
+use gt::G;
 use serde_json::Value;
 use tokio::sync::OnceCell;
 use x0::fred::types::Script;
@@ -18,7 +18,7 @@ use crate::{
 
 const QID: OnceCell<Script> = OnceCell::const_new();
 
-pub async fn qid(q: impl AsRef<str>) -> Result<u64> {
+pub async fn qid(q: impl AsRef<str>) -> Result<(u64, bool)> {
   let kv = x0::KV.0.get().unwrap();
   Ok(
     QID
@@ -30,12 +30,13 @@ local q = ARGV[1]
 
 local id = redis.call("HGET", qKey, q)
 
-if not id then
-    id = redis.call("HINCRBY", idKey, "q", 1)
-    redis.call("HSET", qKey, q, id)
+if id then
+  return {id,0}
 end
 
-return id"#,
+id = redis.call("HINCRBY", idKey, "q", 1)
+redis.call("HSET", qKey, q, id)
+return {id,1}"#,
         );
         let _ = script.load(kv).await.unwrap();
         script
@@ -48,7 +49,10 @@ return id"#,
 
 fn log(uid: u64, q: String, action: u64, cid: u64, rid: u64) {
   trt::spawn!({
-    dbg!(uid, q, action, cid, rid);
+    let (qid, new) = qid(&q).await?;
+    if new {
+      dbg!(new, uid, q, qid, action, cid, rid);
+    }
   });
 }
 
@@ -103,7 +107,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   //                 .collect::<Vec<String>>()
   //                 .join(",");
   //
-  //               for i in GQ(
+  //               for i in G(
   //                 &format!(
   //                   "SELECT rid FROM seen WHERE uid={uid} AND cid={cid} AND rid IN ({rid_in})"
   //                 ),
@@ -150,7 +154,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   //         if !to_insert_is_empty {
   //           ts -= 1;
   //           let to_insert = to_insert.join(",");
-  //           GQ(
+  //           G(
   //             &format!("INSERT INTO seen (uid,cid,rid,ts) VALUES {to_insert}"),
   //             &[],
   //           )

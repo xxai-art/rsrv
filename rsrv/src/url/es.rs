@@ -7,7 +7,7 @@ use axum::{
   response::{IntoResponse, Response},
 };
 use client::Client;
-use gt::GQ;
+use gt::G;
 use paste::paste;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::u64_bin;
@@ -30,7 +30,7 @@ async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
   // TODO fix https://github.com/GreptimeTeam/greptimedb/issues/2026
   let sql = format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>ARROW_CAST({ts},'Timestamp(Millisecond,None)') ORDER BY ts LIMIT 8192");
   Ok(
-    GQ(sql, &[])
+    G(sql, &[])
       .await?
       .into_iter()
       .map(|i| (i.get::<_, i64>(0) as u64, i.get(1), i.get(2)))

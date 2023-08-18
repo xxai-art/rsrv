@@ -1,3 +1,3 @@
 use pgm::q;
 
-q!(GT, GQ);
+q!(GT, G);

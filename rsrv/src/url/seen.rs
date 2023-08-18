@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use axum::body::Bytes;
 use client::Client;
-use gt::GQ;
+use gt::{G, GE};
 use serde_json::Value;
 use xxai::{u64_bin, z85_decode_u64_li};
 
@@ -45,7 +45,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
                   .collect::<Vec<String>>()
                   .join(",");
 
-                for i in GQ(
+                for i in G(
                   format!(
                     "SELECT rid FROM seen WHERE uid={uid} AND cid={cid} AND rid IN ({rid_in})"
                   ),
@@ -92,7 +92,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
           if !to_insert_is_empty {
             ts -= 1;
             let to_insert = to_insert.join(",");
-            GQ(
+            GE(
               format!("INSERT INTO seen (uid,cid,rid,ts) VALUES {to_insert}"),
               &[],
             )
