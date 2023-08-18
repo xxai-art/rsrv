@@ -5,4 +5,4 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-pgm = { version = "0.0.3", path = "/Users/z/art/rust/pgm" }
+pgm = { version = "0.0.4" }
