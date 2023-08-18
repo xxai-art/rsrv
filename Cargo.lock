@@ -2556,15 +2556,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sts"
-version = "0.0.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "52dbf62598fd30d0ed2dd825e3c489d93693817a49360942f0216f6d2eeee3e0"
-dependencies = [
- "coarsetime",
-]
-
-[[package]]
 name = "subtle"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3491,7 +3482,6 @@ dependencies = [
  "ordered-varint",
  "psl",
  "rand",
- "sts",
  "thiserror",
  "tokio",
  "trt 0.1.5",

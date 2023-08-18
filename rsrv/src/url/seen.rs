@@ -23,7 +23,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
         if let Some(last_sync_id) = li[1].as_u64() {
           let mut to_insert = Vec::new();
           let mut to_publish = Vec::new();
-          let mut ts = xxai::time::ms();
+          let mut ts = sts::ms();
           let uid_bin = u64_bin(uid);
 
           for i in &li[2..] {

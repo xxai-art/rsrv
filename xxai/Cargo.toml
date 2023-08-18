@@ -22,7 +22,6 @@ num-traits = { version = "0.2.16", optional = true }
 ordered-varint = "2.0.0"
 psl = "2.1.4"
 rand = "0.8.5"
-sts = "0.0.4"
 thiserror = "1.0.47"
 tokio = { version = "1.32.0", features = [
   "macros",
