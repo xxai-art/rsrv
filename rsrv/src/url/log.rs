@@ -6,7 +6,7 @@ use tokio::sync::OnceCell;
 use x0::fred::types::Script;
 use xxai::z85_decode_u64_li;
 
-const QID: OnceCell<Script> = OnceCell::const_new();
+static QID: OnceCell<Script> = OnceCell::const_new();
 
 pub async fn qid(q: impl AsRef<str>) -> Result<(u64, bool)> {
   let kv = x0::KV.0.get().unwrap();
