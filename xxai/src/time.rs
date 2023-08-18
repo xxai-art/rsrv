@@ -1,6 +1,7 @@
 use std::time;
 
 use chrono::{TimeZone, Utc};
+pub use sts::{ms, sec};
 use tokio::time::interval;
 
 // 获取一个月的第一天的毫秒数
@@ -31,14 +32,6 @@ pub fn ym_ms_range(year: i32, month: u8) -> (u64, u64) {
 
 pub fn n_to_year_month(n: i32) -> (i32, u8) {
   (n / 12, (n % 12) as _)
-}
-
-pub fn sec() -> u64 {
-  coarsetime::Clock::now_since_epoch().as_secs()
-}
-
-pub fn ms() -> u64 {
-  coarsetime::Clock::now_since_epoch().as_millis()
 }
 
 pub static mut TODAY: u32 = 0;
