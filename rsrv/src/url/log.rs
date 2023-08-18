@@ -49,10 +49,12 @@ return {id,1}"#,
 
 fn log(uid: u64, q: String, action: u64, cid: u64, rid: u64) {
   trt::spawn!({
+    let q = q.to_lowercase();
     let (qid, new) = qid(&q).await?;
     if new {
-      dbg!(new, uid, q, qid, action, cid, rid);
+      // GE("INSERT INTO q (id,q) VALUES ($1,$2)", &[qid, &q]).await?
     }
+    dbg!(new, uid, q, qid, action, cid, rid);
   });
 }
 
