@@ -3,7 +3,7 @@ use awp::any;
 use axum::body::Bytes;
 use x0::{fred::interfaces::HashesInterface, R};
 use intbin::u64_bin;
-use xxpg::Q;
+use xg::Q;
 
 Q!(
 li_first_page:

@@ -1,7 +1,6 @@
 use anyhow::Result;
 use axum::body::Bytes;
 use client::Client;
-use gt::GE;
 use tokio::sync::OnceCell;
 use x0::fred::types::Script;
 use xxai::z85_decode_u64_li;
@@ -51,7 +50,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
         let (qid, new) = qid(&q).await?;
         if new {
           trt::spawn!({
-            GE(format!("INSERT INTO q (id,q) VALUES ({qid},$1)"), &[&q]).await?;
+            gt::QE(format!("INSERT INTO q (id,q) VALUES ({qid},$1)"), &[&q]).await?;
           });
         }
         for cid_rid_li in &li[1..] {
@@ -70,7 +69,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
     if !to_insert.is_empty() {
       trt::spawn!({
         let to_insert = to_insert.join(",");
-        GE(
+        gt::QE(
           format!("INSERT INTO log (uid,aid,cid,rid,q,ts) VALUES {to_insert}"),
           &[],
         )

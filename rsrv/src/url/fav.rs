@@ -1,6 +1,6 @@
 use axum::body::Bytes;
 use client::Client;
-use xxpg::{Q, Q01};
+use xg::{Q, Q01};
 
 use crate::{
   es::{publish_to_user_client, KIND_SYNC_FAV},

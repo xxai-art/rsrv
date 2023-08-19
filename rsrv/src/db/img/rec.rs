@@ -1,5 +1,5 @@
 use anyhow::Result;
-use xxpg::Q;
+use xg::Q;
 
 use crate::cid::CID_IMG;
 

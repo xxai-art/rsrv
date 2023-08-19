@@ -909,9 +909,30 @@ checksum = "b6c80984affa11d98d1b88b66ac8853f143217b399d3c74116778ff8fdb4ed2e"
 
 [[package]]
 name = "gt"
-version = "0.0.1"
+version = "0.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ed9657daf2d02eda6a3d4b1dfc800aa81f2f6e4a2da8b78fdd674770df215547"
 dependencies = [
+ "axum",
+ "gt_proc",
+ "lazy_static",
+ "paste",
  "pgm",
+ "tracing",
+]
+
+[[package]]
+name = "gt_proc"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "525cdab14afc2b9ecca8dd5bb48f8e46f45ab9da88c6f415df5c323f16b03f63"
+dependencies = [
+ "lazy_static",
+ "pgw",
+ "proc-macro2",
+ "regex",
+ "tokio",
+ "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -2212,9 +2233,9 @@ dependencies = [
  "ub64",
  "vbyte",
  "x0",
+ "xg",
  "xxai",
  "xxhash-rust",
- "xxpg",
  "z85",
 ]
 
@@ -3470,6 +3491,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "xg"
+version = "0.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "66f6f82546c631553f3474de1e4e07212d046c641c64d8927525f22fe865c90c"
+dependencies = [
+ "axum",
+ "lazy_static",
+ "paste",
+ "pgm",
+ "tracing",
+ "xg_proc",
+]
+
+[[package]]
+name = "xg_proc"
+version = "0.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "32cbd992ac2aa728514621e02657292e11687c75f341eaf039e4c448c6d136c7"
+dependencies = [
+ "lazy_static",
+ "pgw",
+ "proc-macro2",
+ "regex",
+ "tokio",
+ "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "xkv"
 version = "0.1.11"
 dependencies = [
@@ -3569,32 +3618,6 @@ name = "xxhash-rust"
 version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "735a71d46c4d68d71d4b24d03fdc2b98e38cea81730595801db779c04fe80d70"
-
-[[package]]
-name = "xxpg"
-version = "0.1.19"
-dependencies = [
- "anyhow",
- "axum",
- "lazy_static",
- "paste",
- "pgm",
- "tokio",
- "tracing",
- "xxpg_proc",
-]
-
-[[package]]
-name = "xxpg_proc"
-version = "0.1.7"
-dependencies = [
- "lazy_static",
- "pgw",
- "proc-macro2",
- "regex",
- "tokio",
- "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "z85"

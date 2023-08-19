@@ -22,19 +22,19 @@ client = { path = "../client" }
 x0 = { path = "../x0" }
 xxai = { path = "../xxai", features = ["ndarray"] }
 awp = { path = "../awp" }
-xxpg = { path = "../xxpg" }
 lazy_static = "1.4.0"
 coarsetime = "0.1.23"
 serde_json = "1.0.105"
 serde = { version = "1.0.183", features = ["derive"] }
 vbyte = "0.1.0"
 paste = "1.0.14"
-gt = { path = "../gt" }
 z85 = "3.0.5"
 clip_search_txt_client = "0.1.5"
 sts = "0.0.4"
 intbin = "0.0.5"
 ub64 = { version = "0.0.10", features = ["u64", "u64li"] }
+xg = "0.0.4"
+gt = "0.0.5"
 
 # quinn = { version = "0.10", default-features = false, features = [
 #   "runtime-tokio",

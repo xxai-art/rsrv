@@ -1,17 +1,5 @@
 [workspace]
-members = [
-  "rsrv",
-  "gt",
-  "init",
-  "trt",
-  "client",
-  "x0",
-  "xxai",
-  "gid",
-  "xkv",
-  "awp",
-  "xxpg"
-]
+members = ["rsrv", "init", "trt", "client", "x0", "xxai", "gid", "xkv", "awp"]
 resolver = "2"
 
 [profile.release]

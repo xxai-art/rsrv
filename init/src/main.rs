@@ -1,5 +1,5 @@
 use anyhow::Error;
-use gt::GE;
+use gt::QE;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -44,7 +44,7 @@ PRIMARY KEY (q)
     if !sql.is_empty() {
       let sql = sql.to_owned() + ";";
       println!("{}", sql);
-      GE(sql, &[]).await?;
+      QE(sql, &[]).await?;
     }
   }
   Ok(())

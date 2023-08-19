@@ -1,5 +1,4 @@
 use anyhow::Result;
-use gt::G;
 
 /*
 CREATE TABLE IF NOT EXISTS seen (
@@ -18,7 +17,7 @@ pub fn after_ts_sql(uid: u64, ts: u64) -> String {
 
 pub async fn after_ts(sql: impl Into<String>) -> Result<Vec<u64>> {
   let mut r = Vec::new();
-  for i in G(sql.into(), &[]).await? {
+  for i in gt::Q(sql.into(), &[]).await? {
     let ts: i64 = i.get(0);
     r.push(ts as u64);
     let cid: i8 = i.get(1);
