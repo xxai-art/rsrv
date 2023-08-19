@@ -73,7 +73,7 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
   let li: Vec<u64> = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
   if li.len() > 2 {
     let uid = li[0];
-    let uid_bin = xxai::u64_bin(uid);
+    let uid_bin = intbin::u64_bin(uid);
 
     if client.is_login(uid).await? {
       let last_sync_id = li[1];

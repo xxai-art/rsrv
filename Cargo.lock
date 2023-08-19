@@ -370,9 +370,10 @@ dependencies = [
  "gid",
  "http",
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ub64",
  "vbyte",
  "x0",
- "xkv 0.1.10",
+ "xkv 0.1.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "xxai",
  "xxhash-rust",
 ]
@@ -1157,6 +1158,12 @@ checksum = "7a5bbe824c507c5da5956355e86a746d82e0e1464f65d862cc5e71da70e94b2c"
 dependencies = [
  "cfg-if",
 ]
+
+[[package]]
+name = "intbin"
+version = "0.0.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7d0cd59142d2aec41e99627d7cf01f99af8599b286b1e02fdce8b926dff655e"
 
 [[package]]
 name = "integer-encoding"
@@ -2190,6 +2197,7 @@ dependencies = [
  "ctor",
  "futures-util",
  "gt",
+ "intbin",
  "lazy_static",
  "paste",
  "reqwest",
@@ -2201,6 +2209,7 @@ dependencies = [
  "tower-http",
  "tracing",
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ub64",
  "vbyte",
  "x0",
  "xxai",
@@ -3013,6 +3022,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "497961ef93d974e23eb6f433eb5fe1b7930b659f06d12dec6fc44a8f554c0bba"
 
 [[package]]
+name = "ub64"
+version = "0.0.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "757212e787e099eb5bfc0f44f946ac7b8e52891765995913762419d6df34344a"
+dependencies = [
+ "base64 0.21.2",
+ "intbin",
+ "vbyte",
+]
+
+[[package]]
 name = "unarray"
 version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3451,21 +3471,6 @@ dependencies = [
 
 [[package]]
 name = "xkv"
-version = "0.1.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f47c0fbe9419eb64b347ff21fbaf430356e56e5bc3f69358c32f1332d7bc760c"
-dependencies = [
- "anyhow",
- "async-lazy",
- "ctor",
- "fred",
- "lazy_static",
- "paste",
- "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "xkv"
 version = "0.1.11"
 dependencies = [
  "anyhow",
@@ -3475,6 +3480,21 @@ dependencies = [
  "lazy_static",
  "paste",
  "tokio-test",
+ "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "xkv"
+version = "0.1.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dc61016ce3f2483f8250bb7db795f4f8985d3bb3d994a94b2081519a0c962541"
+dependencies = [
+ "anyhow",
+ "async-lazy",
+ "ctor",
+ "fred",
+ "lazy_static",
+ "paste",
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

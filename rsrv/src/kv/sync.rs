@@ -1,6 +1,6 @@
 use anyhow::Result;
+use intbin::{bin_u64, u64_bin};
 use x0::{fred::interfaces::HashesInterface, KV};
-use xxai::{bin_u64, u64_bin};
 
 pub fn set_last(key: &'static [u8], uid: u64, id: u64) {
   trt::spawn!({

@@ -33,6 +33,8 @@ gt = { path = "../gt" }
 z85 = "3.0.5"
 clip_search_txt_client = "0.1.5"
 sts = "0.0.4"
+intbin = "0.0.5"
+ub64 = { version = "0.0.10", features = ["u64", "u64li"] }
 
 # quinn = { version = "0.10", default-features = false, features = [
 #   "runtime-tokio",

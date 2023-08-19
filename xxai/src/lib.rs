@@ -7,7 +7,6 @@ mod vbyte_decode;
 #[cfg(feature = "ndarray")]
 pub mod nd;
 use anyhow::Result;
-use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 #[cfg(feature = "ndarray")]
 pub use ndarray;
 pub use tld::tld;
@@ -52,21 +51,6 @@ pub fn z85_encode_u64_li(u64_li: Vec<u64>) -> String {
   z85::encode(vbyte::compress_list(&u64_li))
 }
 
-pub fn b64_decode_u64_li(bin: impl AsRef<[u8]>) -> Vec<u64> {
-  let bin = bin.as_ref();
-  if let Ok(r) = URL_SAFE_NO_PAD.decode(bin) {
-    return bin_u64_li(r);
-  }
-  vec![]
-}
-
-pub fn bin_u64_li(bin: impl AsRef<[u8]>) -> Vec<u64> {
-  match vbyte::decompress_list(bin.as_ref()) {
-    Ok(r) => r,
-    Err(_) => vec![],
-  }
-}
-
 pub fn random_bytes(n: usize) -> Vec<u8> {
   (0..n).map(|_| rand::random::<u8>()).collect::<Vec<u8>>()
 }
@@ -79,39 +63,4 @@ pub fn u64_bin_ordered(n: u64) -> Vec<u8> {
 pub fn ordered_bin_u64(bin: impl AsRef<[u8]>) -> u64 {
   use ordered_varint::Variable;
   u64::decode_variable(bin.as_ref()).unwrap()
-}
-
-pub fn b64_u64(bin: impl AsRef<[u8]>) -> u64 {
-  if let Ok(r) = URL_SAFE_NO_PAD.decode(bin.as_ref()) {
-    return bin_u64(r);
-  }
-  0
-}
-
-pub fn bin_u64(bin: impl AsRef<[u8]>) -> u64 {
-  let bin = bin.as_ref();
-  let mut b = [0u8; 8];
-  b[..bin.len()].copy_from_slice(bin);
-  u64::from_le_bytes(b)
-}
-
-pub fn u64_bin(n: u64) -> Box<[u8]> {
-  let n = n.to_le_bytes();
-  let mut i = 8;
-  while i > 0 {
-    let p = i - 1;
-    if n[p] != 0 {
-      break;
-    }
-    i = p;
-  }
-  Box::from(&n[..i])
-}
-
-pub fn b64(bin: impl AsRef<[u8]>) -> String {
-  URL_SAFE_NO_PAD.encode(bin)
-}
-
-pub fn u64_b64(n: u64) -> String {
-  URL_SAFE_NO_PAD.encode(&u64_bin(n))
 }

@@ -1,8 +1,8 @@
 use anypack::VecAny;
 use awp::anypack::Any;
 use axum::body::Bytes;
+use intbin::u64_bin;
 use x0::{fred::interfaces::HashesInterface, KV, R};
-use xxai::u64_bin;
 
 use crate::cid::CID_IMG;
 // _client: Client,
@@ -11,14 +11,17 @@ pub async fn post(body: Bytes) -> awp::any!() {
   if let Some(first) = body.first() {
     match *first {
       b'"' => {
-        let t = xxai::b64_decode_u64_li(&body[1..body.len() - 1]);
+        let t = ub64::b64_decode_u64_li(&body[1..body.len() - 1]);
         let cid = t[0];
         match cid {
           crate::cid::CID_USER => {
             let result: Vec<Option<String>> = R
               .hmget(
                 "userName",
-                t[1..].iter().map(|i| xxai::u64_bin(*i)).collect::<Vec<_>>(),
+                t[1..]
+                  .iter()
+                  .map(|i| intbin::u64_bin(*i))
+                  .collect::<Vec<_>>(),
               )
               .await?;
             r = result.into();

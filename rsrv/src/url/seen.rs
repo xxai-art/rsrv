@@ -3,8 +3,9 @@ use std::collections::HashSet;
 use axum::body::Bytes;
 use client::Client;
 use gt::{G, GE};
+use intbin::u64_bin;
 use serde_json::Value;
-use xxai::{u64_bin, z85_decode_u64_li};
+use xxai::z85_decode_u64_li;
 
 use crate::{
   db::seen,

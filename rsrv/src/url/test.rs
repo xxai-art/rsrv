@@ -2,7 +2,7 @@ use anypack::{Any, VecAny};
 use awp::any;
 use axum::body::Bytes;
 use x0::{fred::interfaces::HashesInterface, R};
-use xxai::u64_bin;
+use intbin::u64_bin;
 use xxpg::{Pg, Q};
 
 Q!(

@@ -8,9 +8,10 @@ use axum::{
 };
 use client::Client;
 use gt::G;
+use intbin::u64_bin;
 use paste::paste;
+use ub64::b64e;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
-use xxai::u64_bin;
 use xxpg::Q;
 
 use crate::{
@@ -119,12 +120,12 @@ macro_rules! es_sync_li {
 }
 
 pub async fn get(client: Client, Path(li): Path<String>) -> awp::Result<Response> {
-  let li = xxai::b64_decode_u64_li(li);
+  let li = ub64::b64_decode_u64_li(li);
   if li.len() >= 2 {
     let uid = li[0];
     if client.is_login(uid).await? {
       let client_id = u64_bin(client.id);
-      let channel_id = xxai::b64(&client_id[..]);
+      let channel_id = b64e(&client_id[..]);
 
       trt::spawn!({
         KV.zadd(

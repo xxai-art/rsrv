@@ -1,5 +1,5 @@
 use paste::paste;
-use xxai::u64_bin;
+use intbin::u64_bin;
 
 macro_rules! key {
     ($($key:ident),+) => {

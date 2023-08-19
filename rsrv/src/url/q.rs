@@ -1,8 +1,9 @@
 use awp::{any, ok};
 use axum::{body::Bytes, http::header::HeaderMap};
 use clip_search_txt_client::{clip, DayRange, QIn};
+use intbin::{bin_u64, u64_bin};
 use x0::{fred::interfaces::HashesInterface, KV};
-use xxai::{bin_u64, nd::norm01, ndarray::prelude::arr1, time::today, u64_bin};
+use xxai::{nd::norm01, ndarray::prelude::arr1, time::today};
 
 use crate::{cid::CID_IMG, db::img::rec};
 

@@ -1,7 +1,8 @@
 use anyhow::Result;
+use intbin::u64_bin;
 use lazy_static::lazy_static;
+use ub64::b64e;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
-use xxai::{b64, u64_bin};
 
 use crate::K;
 
@@ -41,7 +42,7 @@ pub fn publish_to_user_client(sender_client_id: u64, uid: u64, kind: u16, msg: i
 
     for client_id in client_id_by_uid(uid).await? {
       if &client_id[..] != sender_client_id {
-        let client_id = b64(client_id);
+        let client_id = b64e(client_id);
         publish_b64(client_id, kind, &msg).await?;
       }
     }
