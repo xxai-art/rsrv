@@ -40,7 +40,7 @@ return {id,1}"#,
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   let rec = Vec::new();
   if let Some(uid) = client.uid().await? {
-    let ts = sts::sec();
+    let ts = sts::ms();
     let all: Vec<Vec<String>> =
       serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
 
