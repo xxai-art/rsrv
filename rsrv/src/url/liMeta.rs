@@ -5,6 +5,9 @@ use intbin::u64_bin;
 use x0::{fred::interfaces::HashesInterface, KV, R};
 
 use crate::cid::CID_IMG;
+
+const LI_META: &'static str = "liMeta";
+
 // _client: Client,
 pub async fn post(body: Bytes) -> awp::any!() {
   let r: Any;
@@ -45,10 +48,10 @@ pub async fn post(body: Bytes) -> awp::any!() {
               let key_map: Vec<_> = li.iter().map(|i| u64_bin(*i)).collect();
 
               if key_map.len() == 1 {
-                let v: Option<Vec<u8>> = KV.hmget("liMeta", key_map).await?;
+                let v: Option<Vec<u8>> = KV.hmget(LI_META, key_map).await?;
                 tli.push(v);
               } else {
-                let vli: Vec<Option<Vec<u8>>> = KV.hmget("liMeta", key_map).await?;
+                let vli: Vec<Option<Vec<u8>>> = KV.hmget(LI_META, key_map).await?;
                 for v in vli {
                   tli.push(v)
                 }
