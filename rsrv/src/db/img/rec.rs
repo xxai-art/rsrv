@@ -12,7 +12,7 @@ use crate::K;
 pub async fn li() -> Result<Vec<(u8, u64)>> {
   let key = K::REC0;
   let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, 0, 1000, false).await?;
-  let li: Vec<(u8, u64)> = bin_li
+  let li = bin_li
     .iter()
     .map(|i| match vb::d(i) {
       Ok(i) => Ok((i[0] as u8, i[1])),
@@ -20,6 +20,7 @@ pub async fn li() -> Result<Vec<(u8, u64)>> {
     })
     .filter_map(Result::ok)
     .collect();
+  // let li = vec![];
   // let nsfw_li: Vec<bool> = KV
   //   .smismember(
   //     K::NSFW,
