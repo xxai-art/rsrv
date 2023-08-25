@@ -12,7 +12,7 @@ use crate::K;
 pub async fn li() -> Result<Vec<u64>> {
   let key = K::REC0;
   let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, 0, 1000, false).await?;
-  let li = bin_li
+  let li: Vec<u64> = bin_li
     .iter()
     .map(|i| match vb::d(i) {
       Ok(i) => Ok([i[0] as u64, i[1]]),
