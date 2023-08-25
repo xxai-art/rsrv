@@ -17,7 +17,7 @@ use crate::{cid::CID_IMG, K};
 // );
 
 pub async fn li() -> Result<Vec<u64>> {
-  let key = K::REC;
+  let key = K::REC0;
   let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, 0, 1000, false).await?;
   let li: Vec<u64> = bin_li.iter().map(|i| bin_u64(i)).collect();
   // let nsfw_li: Vec<bool> = KV
