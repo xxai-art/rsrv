@@ -6,7 +6,7 @@ use x0::{fred::interfaces::HashesInterface, KV, R};
 
 use crate::cid::CID_IMG;
 
-const LI_META: &'static str = "liMeta";
+const LI_META: &str = "liMeta";
 
 // _client: Client,
 pub async fn post(body: Bytes) -> awp::any!() {

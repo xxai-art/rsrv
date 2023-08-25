@@ -40,7 +40,7 @@ q STRING NOT NULL,
 TIME INDEX (id),
 PRIMARY KEY (q)
 );"#;
-  for sql in sql_li.split(";") {
+  for sql in sql_li.split(';') {
     if !sql.is_empty() {
       let sql = sql.to_owned() + ";";
       println!("{}", sql);

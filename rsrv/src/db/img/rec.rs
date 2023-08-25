@@ -1,12 +1,6 @@
 use anyhow::Result;
 use intbin::bin_u64;
-use x0::{
-  fred::{
-    interfaces::{SetsInterface, SortedSetsInterface},
-    types::RedisValue,
-  },
-  KV,
-};
+use x0::{fred::interfaces::SortedSetsInterface, KV};
 
 // use xg::Q;
 use crate::{cid::CID_IMG, K};
@@ -19,7 +13,7 @@ use crate::{cid::CID_IMG, K};
 pub async fn li() -> Result<Vec<u64>> {
   let key = K::REC0;
   let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, 0, 1000, false).await?;
-  let li: Vec<u64> = bin_li.iter().map(|i| bin_u64(i)).collect();
+  let li: Vec<u64> = bin_li.iter().map(bin_u64).collect();
   // let nsfw_li: Vec<bool> = KV
   //   .smismember(
   //     K::NSFW,
