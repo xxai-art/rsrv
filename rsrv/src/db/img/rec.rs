@@ -17,27 +17,28 @@ use crate::{cid::CID_IMG, K};
 // );
 
 pub async fn li() -> Result<Vec<u64>> {
-  let bin_li: Vec<Vec<u8>> = KV.zrevrange(K::REC, 0, 1000, false).await?;
+  let key = K::REC;
+  let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, 0, 1000, false).await?;
   let li: Vec<u64> = bin_li.iter().map(|i| bin_u64(i)).collect();
-  let nsfw_li: Vec<bool> = KV
-    .smismember(
-      K::NSFW,
-      bin_li
-        .into_iter()
-        .map(|i| {
-          let i: RedisValue = (&i[..]).into();
-          i
-        })
-        .collect::<Vec<_>>(),
-    )
-    .await?;
-  let mut r = Vec::with_capacity(li.len());
-  for (id, nsfw) in li.into_iter().zip(nsfw_li) {
-    if !nsfw {
-      r.push(id);
-    }
-  }
-  Ok(r)
+  // let nsfw_li: Vec<bool> = KV
+  //   .smismember(
+  //     K::NSFW,
+  //     bin_li
+  //       .into_iter()
+  //       .map(|i| {
+  //         let i: RedisValue = (&i[..]).into();
+  //         i
+  //       })
+  //       .collect::<Vec<_>>(),
+  //   )
+  //   .await?;
+  // let mut r = Vec::with_capacity(li.len());
+  // for (id, nsfw) in li.into_iter().zip(nsfw_li) {
+  //   if !nsfw {
+  //     r.push(id);
+  //   }
+  // }
+  Ok(li)
 }
 
 pub async fn img_li() -> Result<Vec<u64>> {
