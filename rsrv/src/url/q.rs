@@ -8,7 +8,7 @@ use x0::{
 };
 use xxai::{nd::norm01, ndarray::prelude::arr1, time::today};
 
-use crate::{cid::CID_IMG, db::img::rec};
+use crate::{cid::CID_IMG, db::img::rec, K};
 
 const IAA_POWER: f32 = 0.6;
 
@@ -71,7 +71,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
 
     let score_li = norm01(&arr1(&score_li));
 
-    let iaa_li: Vec<Option<f32>> = KV.zmscore("rec", bin_li).await?;
+    let iaa_li: Vec<Option<f32>> = KV.zmscore(K::REC, bin_li).await?;
     let iaa_li: Vec<_> = iaa_li
       .into_iter()
       .map(|i| match i {

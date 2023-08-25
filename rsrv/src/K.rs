@@ -1,5 +1,5 @@
-use paste::paste;
 use intbin::u64_bin;
+use paste::paste;
 
 macro_rules! key {
     ($($key:ident),+) => {
@@ -11,7 +11,7 @@ macro_rules! key {
     };
 }
 
-key!(favLast, seenLast);
+key!(favLast, seenLast, rec);
 
 pub fn nchan(uid: u64) -> Vec<u8> {
   [&b"nchan:"[..], &u64_bin(uid)].concat()
