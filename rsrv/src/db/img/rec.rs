@@ -1,4 +1,5 @@
 use anyhow::Result;
+use intbin::bin_u64;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 
 // use xg::Q;
@@ -10,7 +11,8 @@ use crate::{cid::CID_IMG, K};
 // );
 
 pub async fn li() -> Result<Vec<u64>> {
-  Ok(KV.zrevrange(K::REC, 0, 1000, false).await?)
+  let li: Vec<Vec<u8>> = KV.zrevrange(K::REC, 0, 1000, false).await?;
+  Ok(li.into_iter().map(|i| bin_u64(i)).collect())
 }
 
 pub async fn img_li() -> Result<Vec<u64>> {
