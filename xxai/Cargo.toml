@@ -30,5 +30,5 @@ tokio = { version = "1.32.0", features = [
   "time"
 ] }
 trt = { version = "0.1.5", path = "../trt" }
-vbyte = "0.1.0"
+vb = "0.0.7"
 z85 = "3.0.5"

@@ -15,7 +15,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   */
 
   if body.is_empty() {
-    ok!(rec::img_li())
+    ok!(rec::li())
   } else {
     let (txt, z85): (String, String) = serde_json::from_str(&String::from_utf8_lossy(&body))?;
     let txt = xxai::str::low_short(txt);

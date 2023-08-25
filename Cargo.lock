@@ -2231,6 +2231,7 @@ dependencies = [
  "tracing",
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "ub64",
+ "vb",
  "vbyte",
  "x0",
  "xg",
@@ -3122,6 +3123,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "830b7e5d4d90034032940e4ace0d9a9a057e7a45cd94e6c007832e39edb82f6d"
 
 [[package]]
+name = "vb"
+version = "0.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f6b6f031aa1588d937a906a11628c95f2fddb86cf7adde28a53f0a4fe8c0f53"
+dependencies = [
+ "thiserror",
+ "vbyte",
+]
+
+[[package]]
 name = "vbyte"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3564,7 +3575,7 @@ dependencies = [
  "thiserror",
  "tokio",
  "trt 0.1.5",
- "vbyte",
+ "vb",
  "z85",
 ]
 

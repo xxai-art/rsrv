@@ -10,10 +10,17 @@ use crate::{cid::CID_IMG, K};
 // SELECT task.id FROM bot.task,bot.civitai_img WHERE hash IS NOT NULL AND bot.task.rid=bot.civitai_img.id AND task.adult=0 AND cid=1 ORDER BY star DESC LIMIT 512
 // );
 
-pub async fn li() -> Result<Vec<u64>> {
+pub async fn li() -> Result<Vec<(u8, u64)>> {
   let key = K::REC0;
   let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, 0, 1000, false).await?;
-  let li: Vec<u64> = bin_li.iter().map(bin_u64).collect();
+  let li: Vec<(u8, u64)> = bin_li
+    .iter()
+    .map(|i| match vb::d(i) {
+      Ok(i) => Ok((i[0] as u8, i[1])),
+      Err(err) => Err(err),
+    })
+    .filter_map(Result::ok)
+    .collect();
   // let nsfw_li: Vec<bool> = KV
   //   .smismember(
   //     K::NSFW,
@@ -33,13 +40,4 @@ pub async fn li() -> Result<Vec<u64>> {
   //   }
   // }
   Ok(li)
-}
-
-pub async fn img_li() -> Result<Vec<u64>> {
-  let mut r = Vec::new();
-  for i in li().await? {
-    r.push(CID_IMG);
-    r.push(i);
-  }
-  Ok(r)
 }
