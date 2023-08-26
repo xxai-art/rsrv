@@ -15,12 +15,12 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   */
 
   if body.is_empty() {
-    ok!(rec::li())
+    ok!(rec::li(K::REC0))
   } else {
     let (txt, z85): (String, String) = serde_json::from_str(&String::from_utf8_lossy(&body))?;
     let txt = xxai::str::low_short(txt);
     if txt.is_empty() {
-      return ok!(rec::li());
+      return ok!(rec::li(K::REC0));
     }
     let z85 = xxai::z85_decode_u64_li(z85)?;
     let level = z85[0];

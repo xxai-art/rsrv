@@ -1,16 +1,15 @@
 use anyhow::Result;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 
-// use xg::Q;
 use crate::K;
 
+// use xg::Q;
 // Q!(
 // li:
 // SELECT task.id FROM bot.task,bot.civitai_img WHERE hash IS NOT NULL AND bot.task.rid=bot.civitai_img.id AND task.adult=0 AND cid=1 ORDER BY star DESC LIMIT 512
 // );
 
-pub async fn li() -> Result<Vec<u64>> {
-  let key = K::REC0;
+pub async fn li(key: &[u8]) -> Result<Vec<u64>> {
   let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, 0, 1000, false).await?;
   let li: Vec<u64> = bin_li
     .iter()
