@@ -71,10 +71,10 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
 
     let key = if level == 2 {
       K::REC1
-    } else if level == 0 {
-      K::REC0
-    } else {
+    } else if level == 1 {
       K::REC
+    } else {
+      K::REC0
     };
     let iaa_li: Vec<Option<f32>> = KV.zmscore(key, bin_li).await?;
     let iaa_li: Vec<_> = iaa_li.into_iter().map(|i| i.unwrap_or(20000.0)).collect();
