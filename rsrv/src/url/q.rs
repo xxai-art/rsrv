@@ -45,6 +45,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
 
     let offset_limit = None; // TODO
 
+    // level 2 成人 1 不限 0 安全
     let req = QIn {
       w: w as u32,
       h: h as u32,
@@ -68,7 +69,14 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
 
     let score_li = norm01(&arr1(&score_li));
 
-    let iaa_li: Vec<Option<f32>> = KV.zmscore(K::REC, bin_li).await?;
+    let key = if level == 2 {
+      K::REC1
+    } else if level == 0 {
+      K::REC0
+    } else {
+      K::REC
+    };
+    let iaa_li: Vec<Option<f32>> = KV.zmscore(key, bin_li).await?;
     let iaa_li: Vec<_> = iaa_li.into_iter().map(|i| i.unwrap_or(20000.0)).collect();
     let iaa_li = norm01(&arr1(&iaa_li));
 
