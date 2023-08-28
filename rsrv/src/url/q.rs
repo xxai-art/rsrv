@@ -77,7 +77,9 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
       K::REC0
     };
     let iaa_li: Vec<Option<f32>> = KV.zmscore(key, bin_li).await?;
+    dbg!(&iaa_li);
     let iaa_li: Vec<_> = iaa_li.into_iter().map(|i| i.unwrap_or(20000.0)).collect();
+    dbg!(&score_li);
     let iaa_li = norm01(&arr1(&iaa_li));
 
     let rank_li = &iaa_li * IAA_POWER + &score_li;
