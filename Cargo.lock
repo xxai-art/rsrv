@@ -2211,6 +2211,7 @@ dependencies = [
  "async-lazy",
  "awp",
  "axum",
+ "bytes",
  "client",
  "clip_search_txt_client",
  "coarsetime",

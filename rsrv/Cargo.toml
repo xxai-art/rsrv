@@ -36,6 +36,7 @@ ub64 = { version = "0.0.10", features = ["u64", "u64li"] }
 xg = "0.0.4"
 gt = "0.0.6"
 vb = "0.0.7"
+bytes = "1.4.0"
 
 # quinn = { version = "0.10", default-features = false, features = [
 #   "runtime-tokio",

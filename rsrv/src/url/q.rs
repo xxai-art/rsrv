@@ -1,7 +1,6 @@
 use awp::{any, ok};
 use axum::{body::Bytes, http::header::HeaderMap};
 use clip_search_txt_client::{clip, DayRange, QIn};
-use intbin::u64_bin;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::{nd::norm01, ndarray::prelude::arr1, time::today};
 
@@ -63,7 +62,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
     let mut score_li = Vec::with_capacity(len);
     for i in li {
       id_li.push(i.id);
-      bin_li.push(u64_bin(i.id));
+      bin_li.push(bytes::Bytes::from(vb::e(&[CID_IMG, i.id])));
       score_li.push(i.score);
     }
 
@@ -77,9 +76,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
       K::REC0
     };
     let iaa_li: Vec<Option<f32>> = KV.zmscore(key, bin_li).await?;
-    dbg!(&iaa_li);
     let iaa_li: Vec<_> = iaa_li.into_iter().map(|i| i.unwrap_or(20000.0)).collect();
-    dbg!(&score_li);
     let iaa_li = norm01(&arr1(&iaa_li));
 
     let rank_li = &iaa_li * IAA_POWER + &score_li;
