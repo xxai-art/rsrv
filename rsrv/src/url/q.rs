@@ -18,11 +18,22 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   } else {
     let (txt, z85): (String, String) = serde_json::from_str(&String::from_utf8_lossy(&body))?;
     let txt = xxai::str::low_short(txt);
-    if txt.is_empty() {
-      return ok!(rec::li(K::REC0));
-    }
     let z85 = xxai::z85_decode_u64_li(z85)?;
     let level = z85[0];
+    let key = if level == 2 {
+      // 成人
+      K::REC1
+    } else if level == 1 {
+      // 不限
+      K::REC
+    } else {
+      // 安全
+      K::REC0
+    };
+    if txt.is_empty() {
+      dbg!(level);
+      return ok!(rec::li(key));
+    }
     let duration = z85[1] as u32;
     let end = z85[2] as u32;
     let w = z85[3];
@@ -68,13 +79,6 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
 
     let score_li = norm01(&arr1(&score_li));
 
-    let key = if level == 2 {
-      K::REC1
-    } else if level == 1 {
-      K::REC
-    } else {
-      K::REC0
-    };
     let iaa_li: Vec<Option<f32>> = KV.zmscore(key, bin_li).await?;
     let iaa_li: Vec<_> = iaa_li.into_iter().map(|i| i.unwrap_or(20000.0)).collect();
     let iaa_li = norm01(&arr1(&iaa_li));
