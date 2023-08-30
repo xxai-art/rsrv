@@ -20,20 +20,29 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
     let txt = xxai::str::low_short(txt);
     let z85 = xxai::z85_decode_u64_li(z85)?;
     let level = z85[0];
-    let key = if level == 2 {
-      // 成人
-      K::REC1
-    } else if level == 1 {
-      // 不限
-      K::REC
-    } else {
-      // 安全
-      K::REC0
-    };
     if txt.is_empty() {
-      dbg!(level);
+      let key = if level == 2 {
+        // 成人
+        K::REC1
+      } else if level == 1 {
+        // 不限
+        K::REC
+      } else {
+        // 安全
+        K::REC0
+      };
       return ok!(rec::li(key));
     }
+    let key = if level == 2 {
+      // 成人
+      K::IMG1
+    } else if level == 1 {
+      // 不限
+      K::IMG
+    } else {
+      // 安全
+      K::IMG0
+    };
     let duration = z85[1] as u32;
     let end = z85[2] as u32;
     let w = z85[3];
@@ -73,7 +82,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
     let mut score_li = Vec::with_capacity(len);
     for i in li {
       id_li.push(i.id);
-      bin_li.push(bytes::Bytes::from(vb::e(&[CID_IMG, i.id])));
+      bin_li.push(bytes::Bytes::from(xxai::u64_bin(i.id)));
       score_li.push(i.score);
     }
 
