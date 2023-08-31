@@ -15,25 +15,15 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   */
 
   if body.is_empty() {
-    ok!(rec::li(K::REC0))
+    ok!(rec::li(K::REC0)) // 首页默认背景
   } else {
     let (txt, z85): (String, String) = serde_json::from_str(&String::from_utf8_lossy(&body))?;
     let txt = xxai::str::low_short(txt);
     let z85 = xxai::z85_decode_u64_li(z85)?;
-    let level = z85[0];
     if txt.is_empty() {
-      let key = if level == 2 {
-        // 成人
-        K::REC1
-      } else if level == 1 {
-        // 不限
-        K::REC
-      } else {
-        // 安全
-        K::REC0
-      };
-      return ok!(rec::li(key));
+      return ok!(rec::rec(&z85));
     }
+    let level = z85[0];
     let key = if level == 2 {
       // 成人
       K::IMG1

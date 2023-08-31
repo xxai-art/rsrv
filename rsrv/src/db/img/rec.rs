@@ -1,6 +1,8 @@
 use anyhow::Result;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 
+use crate::K;
+
 // use crate::K;
 
 // use xg::Q;
@@ -8,6 +10,21 @@ use x0::{fred::interfaces::SortedSetsInterface, KV};
 // li:
 // SELECT task.id FROM bot.task,bot.civitai_img WHERE hash IS NOT NULL AND bot.task.rid=bot.civitai_img.id AND task.adult=0 AND cid=1 ORDER BY star DESC LIMIT 512
 // );
+
+pub async fn rec(z85: &Vec<u64>) -> Result<Vec<u64>> {
+  let level = z85[0];
+  let key = if level == 2 {
+    // 成人
+    K::REC1
+  } else if level == 1 {
+    // 不限
+    K::REC
+  } else {
+    // 安全
+    K::REC0
+  };
+  Ok(li(key).await?)
+}
 
 pub async fn li(key: &[u8]) -> Result<Vec<u64>> {
   let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, 0, 1000, false).await?;
