@@ -28,7 +28,8 @@ pub async fn rec(z85: &Vec<u64>) -> Result<Vec<u64>> {
 }
 
 pub async fn li(key: &[u8], offset: u64) -> Result<Vec<u64>> {
-  let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, offset as _, 1024, false).await?;
+  let offset = offset as i64;
+  let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, offset, offset + 128, false).await?;
   let li: Vec<u64> = bin_li
     .iter()
     .map(|i| match vb::d(i) {
