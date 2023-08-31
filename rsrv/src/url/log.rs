@@ -43,7 +43,12 @@ return {id,1}"#,
 }
 
 pub async fn rec_by_action(cid_rid_action: HashMap<(u8, u64), u8>) -> Result<Vec<u64>> {
-  Ok(vec![])
+  if cid_rid_action.is_empty() {
+    return Ok(vec![]);
+  }
+  dbg!("TODO rec_by_action", cid_rid_action);
+  let rec = Vec::with_capacity(64);
+  Ok(rec)
 }
 
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
