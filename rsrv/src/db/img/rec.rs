@@ -13,6 +13,7 @@ use crate::K;
 
 pub async fn rec(z85: &Vec<u64>) -> Result<Vec<u64>> {
   let level = z85[0];
+  let offset = z85[1];
   let key = if level == 2 {
     // 成人
     K::REC1
@@ -23,11 +24,11 @@ pub async fn rec(z85: &Vec<u64>) -> Result<Vec<u64>> {
     // 安全
     K::REC0
   };
-  Ok(li(key, 0).await?)
+  Ok(li(key, offset).await?)
 }
 
-pub async fn li(key: &[u8], offset: i64) -> Result<Vec<u64>> {
-  let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, offset, 1024, false).await?;
+pub async fn li(key: &[u8], offset: u64) -> Result<Vec<u64>> {
+  let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, offset as _, 1024, false).await?;
   let li: Vec<u64> = bin_li
     .iter()
     .map(|i| match vb::d(i) {
