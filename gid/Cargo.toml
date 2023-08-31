@@ -7,8 +7,8 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.75"
 coarsetime = "0.1.23"
-dashmap = "5.5.0"
+dashmap = "5.5.3"
 x0 = { path = "../x0" }
 
 [dev-dependencies]
-tokio-test = "0.4.2"
+tokio-test = "0.4.3"
