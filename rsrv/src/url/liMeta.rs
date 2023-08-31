@@ -4,7 +4,7 @@ use axum::body::Bytes;
 use intbin::u64_bin;
 use x0::{fred::interfaces::HashesInterface, KV, R};
 
-use crate::cid::CID_IMG;
+use crate::C::cid::{CID_IMG, CID_USER};
 
 const LI_META: &str = "liMeta";
 
@@ -17,7 +17,7 @@ pub async fn post(body: Bytes) -> awp::any!() {
         let t = ub64::b64_decode_u64_li(&body[1..body.len() - 1]);
         let cid = t[0];
         match cid {
-          crate::cid::CID_USER => {
+          CID_USER => {
             let result: Vec<Option<String>> = R
               .hmget(
                 "userName",

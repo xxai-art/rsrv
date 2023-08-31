@@ -5,7 +5,7 @@ use intbin::u64_bin;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::{nd::norm01, ndarray::prelude::arr1, time::today};
 
-use crate::{cid::CID_IMG, db::img::rec, K};
+use crate::{db::img::rec, C::cid::CID_IMG, K};
 
 const IAA_POWER: f32 = 0.6;
 

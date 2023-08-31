@@ -15,7 +15,7 @@ use client::client;
 use trt::TRT;
 use xxai::time::update_today;
 
-pub mod cid;
+pub mod C;
 mod db;
 mod es;
 mod kv;
