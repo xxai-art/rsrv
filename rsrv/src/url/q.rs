@@ -1,6 +1,7 @@
 use awp::{any, ok};
 use axum::{body::Bytes, http::header::HeaderMap};
 use clip_search_txt_client::{clip, DayRange, QIn};
+use intbin::u64_bin;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xxai::{nd::norm01, ndarray::prelude::arr1, time::today};
 
@@ -82,7 +83,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
     let mut score_li = Vec::with_capacity(len);
     for i in li {
       id_li.push(i.id);
-      bin_li.push(bytes::Bytes::from(xxai::u64_bin(i.id)));
+      bin_li.push(bytes::Bytes::from(u64_bin(i.id)));
       score_li.push(i.score);
     }
 
