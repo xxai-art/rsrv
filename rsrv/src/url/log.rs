@@ -63,7 +63,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
       .map(|i| {
         if let Some(li) = i.as_array() {
           li.into_iter()
-            .map(|v| v.as_str().unwrap().to_owned())
+            .map(|v| v.as_str().unwrap_or("").to_owned())
             .collect()
         } else {
           vec![]
