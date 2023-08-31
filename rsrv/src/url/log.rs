@@ -1,9 +1,15 @@
+use std::collections::HashMap;
+
 use anyhow::Result;
 use axum::body::Bytes;
 use client::Client;
 use tokio::sync::OnceCell;
 use x0::fred::types::Script;
 use xxai::z85_decode_u64_li;
+
+use crate::C::action::{CLICK, FAV, FAV_RM};
+
+static REC_ACTION: [u8; 3] = [CLICK, FAV, FAV_RM];
 
 static QID: OnceCell<Script> = OnceCell::const_new();
 
@@ -36,8 +42,12 @@ return {id,1}"#,
   )
 }
 
+pub async fn rec_by_action(cid_rid_action: HashMap<(u8, u64), u8>) -> Result<Vec<u64>> {
+  Ok(vec![])
+}
+
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
-  let rec = Vec::new();
+  let mut rec_action = HashMap::default();
   if let Some(uid) = client.uid().await? {
     let ts = sts::ms();
     let all: Vec<Vec<String>> =
@@ -60,6 +70,11 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
             for cid_rid in cid_rid_li[1..].chunks(2) {
               let cid = cid_rid[0];
               let rid = cid_rid[1];
+              let action = action as u8;
+              let cid = cid as u8;
+              if REC_ACTION.contains(&action) {
+                rec_action.insert((cid, rid), action);
+              }
               to_insert.push(format!("({uid},{action},{cid},{rid},{qid},{ts})"));
             }
           }
@@ -77,6 +92,5 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
       });
     }
   }
-  // todo 根据用户的行为，往rec中放入新的推荐
-  Ok(rec)
+  Ok(rec_by_action(rec_action).await?)
 }
