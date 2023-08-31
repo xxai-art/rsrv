@@ -12,4 +12,4 @@ cargo v patch -y
 git add -u
 git commit -m. || true
 git push
-cargo publish
+cargo publish --registry crates-io
