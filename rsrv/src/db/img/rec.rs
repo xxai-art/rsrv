@@ -23,11 +23,11 @@ pub async fn rec(z85: &Vec<u64>) -> Result<Vec<u64>> {
     // 安全
     K::REC0
   };
-  Ok(li(key).await?)
+  Ok(li(key, 0).await?)
 }
 
-pub async fn li(key: &[u8]) -> Result<Vec<u64>> {
-  let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, 0, 1000, false).await?;
+pub async fn li(key: &[u8], offset: i64) -> Result<Vec<u64>> {
+  let bin_li: Vec<Vec<u8>> = KV.zrevrange(key, offset, 1024, false).await?;
   let li: Vec<u64> = bin_li
     .iter()
     .map(|i| match vb::d(i) {

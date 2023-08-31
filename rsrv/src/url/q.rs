@@ -15,7 +15,7 @@ pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   */
 
   if body.is_empty() {
-    ok!(rec::li(K::REC0)) // 首页默认背景
+    ok!(rec::li(K::REC0, 0)) // 首页默认背景
   } else {
     let (txt, z85): (String, String) = serde_json::from_str(&String::from_utf8_lossy(&body))?;
     let txt = xxai::str::low_short(txt);
