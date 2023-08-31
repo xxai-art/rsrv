@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use anyhow::Result;
 use axum::body::Bytes;
 use client::Client;
+use serde_json::Value;
 use tokio::sync::OnceCell;
 use x0::fred::types::Script;
 use xxai::z85_decode_u64_li;
@@ -51,19 +52,26 @@ pub async fn rec_by_action(cid_rid_action: HashMap<(u8, u64), u8>) -> Result<Vec
   Ok(rec)
 }
 
-#[derive(Debug, serde::Deserialize)]
-struct Req {
-  level: u8,
-  all: Vec<Vec<String>>,
-}
-
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   let mut rec_action = HashMap::default();
   if let Some(uid) = client.uid().await? {
     let ts = sts::ms();
-    let req: Req = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
-    dbg!(req.level);
-    let all = req.all;
+    let req: Vec<Value> = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
+    let level = req[0].as_u64().unwrap_or(0);
+    let all: Vec<Vec<String>> = req[1..]
+      .into_iter()
+      .map(|i| {
+        if let Some(li) = i.as_array() {
+          li.into_iter()
+            .map(|v| v.as_str().unwrap().to_owned())
+            .collect()
+        } else {
+          vec![]
+        }
+      })
+      .collect();
+    dbg!(level);
+
     let mut to_insert = Vec::with_capacity(all.iter().map(|v| v.len()).sum());
     for li in all {
       if !li.is_empty() {
