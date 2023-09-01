@@ -137,16 +137,25 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
         }
       }
     }
-    if !to_insert.is_empty() {
-      trt::spawn!({
-        let to_insert = to_insert.join(",");
-        gt::QE(
-          format!("INSERT INTO log (uid,aid,cid,rid,q,ts) VALUES {to_insert}"),
-          &[],
-        )
-        .await?;
-      });
+
+    macro_rules! insert {
+      ($li:ident,$sql:expr) => {
+        if !$li.is_empty() {
+          trt::spawn!({
+            let li = $li.join(",");
+            gt::QE($sql + &li, &[]).await?;
+          });
+        }
+      };
     }
+    insert!(
+      to_insert,
+      "INSERT INTO log (uid,aid,cid,rid,q,ts) VALUES ".to_owned()
+    );
+    insert!(
+      rec_chain,
+      "INSERT INTO rec_chain (uid,aid,cid,rid,rcid,rrid,ts) VALUES ".to_owned()
+    );
   }
   Ok(rec_by_action(rec_action).await?)
 }
