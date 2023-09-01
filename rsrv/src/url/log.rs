@@ -114,8 +114,9 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
                 let cid_rid = crl[0];
                 let cid = cid_rid[0] as u8;
                 let rid = cid_rid[1];
+                let key = CidRid { cid, rid };
                 if action == FAV_RM {
-                  rec_action.remove(&CidRid { cid, rid });
+                  rec_action.remove(&key);
                 } else {
                   to_insert!(cid_rid);
 
@@ -131,7 +132,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
                       rid: rrid,
                     });
                   });
-                  rec_action.insert(CidRid { cid, rid }, RecChina { action, chain });
+                  rec_action.insert(key, RecChina { action, chain });
                 }
               }
             } else {
