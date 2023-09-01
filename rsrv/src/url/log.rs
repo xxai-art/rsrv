@@ -43,7 +43,9 @@ return {id,1}"#,
   )
 }
 
-pub async fn rec_by_action(cid_rid_action: HashMap<(u8, u64), u8>) -> Result<Vec<u64>> {
+pub async fn rec_by_action(
+  cid_rid_action: HashMap<(u8, u64), (u8, Vec<(u8, u64)>)>,
+) -> Result<Vec<u64>> {
   if cid_rid_action.is_empty() {
     return Ok(vec![]);
   }
@@ -57,7 +59,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   if let Some(uid) = client.uid().await? {
     let ts = sts::ms();
     let req: Vec<Value> = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
-    let level = req[0].as_u64().unwrap_or(0);
+    let level = req[0].as_u64().unwrap_or(0); // 内容分级
     let all: Vec<Vec<String>> = req[1..]
       .into_iter()
       .map(|i| {
@@ -70,9 +72,10 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
         }
       })
       .collect();
-    dbg!(level);
 
     let mut to_insert = Vec::with_capacity(all.iter().map(|v| v.len()).sum());
+    let mut rec_chain = Vec::new();
+
     for li in all {
       if !li.is_empty() {
         let q = xxai::str::low_short(&li[0]);
@@ -85,16 +88,50 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
         for cid_rid_li in &li[1..] {
           let cid_rid_li = z85_decode_u64_li(cid_rid_li)?;
           if !cid_rid_li.is_empty() {
-            let action = cid_rid_li[0];
-            for cid_rid in cid_rid_li[1..].chunks(2) {
-              let cid = cid_rid[0];
-              let rid = cid_rid[1];
-              let action = action as u8;
-              let cid = cid as u8;
-              if REC_ACTION.contains(&action) {
-                rec_action.insert((cid, rid), action);
+            let action = cid_rid_li[0] as u8;
+            macro_rules! to_insert {
+              ($cid_rid:expr) => {{
+                let cid_rid = $cid_rid;
+                let cid = cid_rid[0];
+                let rid = cid_rid[1];
+                to_insert.push(format!("({uid},{action},{cid},{rid},{qid},{ts})"));
+              }};
+            }
+            if REC_ACTION.contains(&action) {
+              let crl: Vec<_> = cid_rid_li[1..].chunks(2).collect();
+              let len = crl.len();
+              if len > 1 {
+                let cid_rid = crl[0];
+                let cid = cid_rid[0] as u8;
+                let rid = cid_rid[1];
+                to_insert!(cid_rid);
+
+                let mut chain = Vec::with_capacity(len);
+
+                crl[1..].into_iter().for_each(|cid_rid| {
+                  let rcid = cid_rid[0] as u8;
+                  let rrid = cid_rid[1];
+                  rec_chain.push(format!("({uid},{action},{cid},{rid},{rcid},{rrid},{ts})"));
+                  chain.push((rcid, rrid));
+                });
+                rec_action.insert((cid, rid), (action, chain));
               }
-              to_insert.push(format!("({uid},{action},{cid},{rid},{qid},{ts})"));
+              // for (pos, cid_rid) in {
+              //   let cid = cid_rid[0];
+              //   let rid = cid_rid[1];
+              //   let action = action as u8;
+              //   let cid = cid as u8;
+              //   if REC_ACTION.contains(&action) {
+              //     rec_action.insert((cid, rid), action);
+              //     if pos > 0 {
+              //       // 推荐的其他数据都是前置推荐序列，不插入log表
+              //       continue;
+              //     }
+              //   }
+              //   to_insert.push(format!("({uid},{action},{cid},{rid},{qid},{ts})"));
+              // }
+            } else {
+              cid_rid_li[1..].chunks(2).for_each(|i| to_insert!(i));
             }
           }
         }
