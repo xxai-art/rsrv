@@ -147,6 +147,6 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
     );
     ok!(rec_by_action(level, rec_action))
   } else {
-    Ok(None::<u8>.into())
+    Ok(().into())
   }
 }

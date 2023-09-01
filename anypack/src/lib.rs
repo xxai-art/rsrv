@@ -44,8 +44,8 @@ macro_rules! any {
                 paste! {
                     match self {
                         Any::Null => {
-    vec.extend(iter::once(0xc0u8));
-    1
+                            vec.extend(iter::once(0xc0u8));
+                            1
 
                         },
                         $(Any::[< $cls:camel>](t)=>Packable::pack(&t, vec)),+
@@ -62,6 +62,12 @@ impl<T: Into<Any>> From<Option<T>> for Any {
       Some(t) => t.into(),
       None => Any::Null,
     }
+  }
+}
+
+impl From<()> for Any {
+  fn from(_: ()) -> Self {
+    Any::Null
   }
 }
 
