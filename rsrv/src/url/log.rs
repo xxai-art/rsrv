@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use awp::ok;
 use axum::body::Bytes;
 use client::Client;
 use serde_json::Value;
@@ -8,7 +9,10 @@ use tokio::sync::OnceCell;
 use x0::fred::types::Script;
 use xxai::z85_decode_u64_li;
 
-use crate::C::action::{CLICK, FAV, FAV_RM};
+use crate::{
+  db::rec::{rec_by_action, CidRid, RecChina},
+  C::action::{CLICK, FAV, FAV_RM},
+};
 
 static REC_ACTION: [u8; 3] = [CLICK, FAV, FAV_RM];
 
@@ -43,30 +47,9 @@ return {id,1}"#,
   )
 }
 
-#[derive(Debug, Hash, Eq, PartialEq)]
-pub struct CidRid {
-  cid: u8,
-  rid: u64,
-}
-
-#[derive(Debug)]
-pub struct RecChina {
-  action: u8,
-  chain: Vec<CidRid>,
-}
-
-pub async fn rec_by_action(cid_rid_action: HashMap<CidRid, RecChina>) -> Result<Vec<u64>> {
-  if cid_rid_action.is_empty() {
-    return Ok(vec![]);
-  }
-  dbg!("TODO rec_by_action", cid_rid_action);
-  let rec = Vec::with_capacity(64);
-  Ok(rec)
-}
-
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
-  let mut rec_action = HashMap::default();
   if let Some(uid) = client.uid().await? {
+    let mut rec_action = HashMap::default();
     let ts = sts::ms();
     let req: Vec<Value> = serde_json::from_str(unsafe { std::str::from_utf8_unchecked(&body) })?;
     let level = req[0].as_u64().unwrap_or(0); // 内容分级
@@ -153,6 +136,7 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
         }
       };
     }
+
     insert!(
       to_insert,
       "INSERT INTO log (uid,aid,cid,rid,q,ts) VALUES ".to_owned()
@@ -161,6 +145,8 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
       rec_chain,
       "INSERT INTO rec_chain (uid,aid,cid,rid,rcid,rrid,ts) VALUES ".to_owned()
     );
+    ok!(rec_by_action(level, rec_action))
+  } else {
+    Ok(None::<u8>.into())
   }
-  Ok(rec_by_action(rec_action).await?)
 }
