@@ -1,6 +1,6 @@
 [package]
 name = "awp"
-version = "0.1.8"
+version = "0.1.9"
 edition = "2021"
 license = "SSPL-1.0"
 homepage = "https://github.com/xxai-art/rsrv"
@@ -18,7 +18,7 @@ tower = { version = "0.4.13", features = ["timeout"] }
 tracing = "0.1.37"
 tracing-stackdriver = { version = "0.7.2", optional = true }
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
-anypack = { version = "0.1.16", path = "../anypack" }
+anypack = { version = "0.1.17", path = "../anypack" }
 loginit = "0.1.2"
 
 [features]
