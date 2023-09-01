@@ -114,21 +114,25 @@ pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
                 let cid_rid = crl[0];
                 let cid = cid_rid[0] as u8;
                 let rid = cid_rid[1];
-                to_insert!(cid_rid);
+                if action == FAV_RM {
+                  rec_action.remove(&CidRid { cid, rid });
+                } else {
+                  to_insert!(cid_rid);
 
-                let mut chain = Vec::with_capacity(len);
+                  let mut chain = Vec::with_capacity(len);
 
-                crl[1..].into_iter().for_each(|cid_rid| {
-                  let rcid = cid_rid[0] as u8;
-                  let rrid = cid_rid[1];
-                  // 推荐的其他数据都是前置推荐序列，不插入log表
-                  rec_chain.push(format!("({uid},{action},{cid},{rid},{rcid},{rrid},{ts})"));
-                  chain.push(CidRid {
-                    cid: rcid,
-                    rid: rrid,
+                  crl[1..].into_iter().for_each(|cid_rid| {
+                    let rcid = cid_rid[0] as u8;
+                    let rrid = cid_rid[1];
+                    // 推荐的其他数据都是前置推荐序列，不插入log表
+                    rec_chain.push(format!("({uid},{action},{cid},{rid},{rcid},{rrid},{ts})"));
+                    chain.push(CidRid {
+                      cid: rcid,
+                      rid: rrid,
+                    });
                   });
-                });
-                rec_action.insert(CidRid { cid, rid }, RecChina { action, chain });
+                  rec_action.insert(CidRid { cid, rid }, RecChina { action, chain });
+                }
               }
             } else {
               cid_rid_li[1..].chunks(2).for_each(|i| to_insert!(i));
