@@ -19,8 +19,9 @@ if [ -f "$pre" ]; then
   sudo mv $pre /tmp
 fi
 
+cd $DIR
 sudo mkdir -p /opt/bin
-sudo mv target/$RUST_TARGET/release/server /opt/bin/$name
+sudo mv target/$RUST_TARGET/release/$name /opt/bin/$name
 
 case $(uname -s) in
 Linux*)
