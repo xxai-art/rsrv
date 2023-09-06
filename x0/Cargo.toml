@@ -1,0 +1,11 @@
+[package]
+name = "x0"
+version = "0.1.0"
+edition = "2021"
+homepage = "https://github.com/xxai-art/rsrv"
+repository = "https://github.com/xxai-art/rsrv.git"
+description = "shortcut for xxai.art"
+license = "SSPL-1.0"
+
+[dependencies]
+xkv = { version = "0.1.10", path = "../xkv" }

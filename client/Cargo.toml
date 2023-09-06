@@ -1,0 +1,21 @@
+[package]
+name = "client"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+axum = "0.6.20"
+ctor = "0.2.4"
+trt = "0.1.5"
+xkv = "0.1.11"
+xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
+x0 = { path = "../x0" }
+xxai = { path = "../xxai" }
+http = "0.2.9"
+gid = { path = "../gid" }
+cookie = "0.17.0"
+anyhow = "1.0.75"
+awp = { path = "../awp" }
+vbyte = "0.1.0"
+ub64 = { version = "0.0.10", features = ["u64li"] }
