@@ -17,8 +17,8 @@ pub static SFW: &str = "sfw";
 
 // 为了防止攻击，一次最多32个推荐序列, 每个序列最多32个点
 const MAX: usize = 32;
-const LIMIT: usize = 512;
-const TOP_K: usize = 64;
+const LIMIT: usize = 1024;
+const TOP_K: usize = 128;
 
 fn to_points(iter: impl Iterator<Item = u64>) -> Vec<PointId> {
   iter.map(PointId::from).collect()
