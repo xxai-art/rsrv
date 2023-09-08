@@ -123,7 +123,7 @@ pub async fn get(client: Client, Path(li): Path<String>) -> awp::Result<Response
     let uid = li[0];
     let client_id = u64_bin(client.id);
     let channel_id = b64e(&client_id[..]);
-    let url = format!("/nchan/{}", channel_id);
+    let url = format!("/nchan/{}", &channel_id);
 
     if client.is_login(uid).await? {
       trt::spawn!({
@@ -136,13 +136,13 @@ pub async fn get(client: Client, Path(li): Path<String>) -> awp::Result<Response
           (xxai::now() as f64, &client_id[..]),
         )
         .await?;
-        ws::send(&channel_id, C::WS::未登录, uid).await?;
+        // ws::send(&channel_id, C::WS::未登录, uid).await?;
       });
 
       // es_sync_li!(uid, channel_id, &li[1..]);
     } else {
       trt::spawn!({
-        ws::send(&channel_id, C::WS::未登录, uid).await?;
+        ws::send(channel_id, C::WS::未登录, uid).await?;
       });
     }
     return Ok(

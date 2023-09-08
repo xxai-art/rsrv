@@ -15,10 +15,12 @@ lazy_static! {
 pub const KIND_SYNC_FAV: u16 = 1;
 pub const KIND_SYNC_SEEN: u16 = 2;
 
+// let client_id = u64_bin(client_id);
+// let channel_id = b64e(&client_id[..]);
 pub async fn send(client_id: impl AsRef<str>, kind: WS, msg: impl Into<Any>) -> Result<()> {
-  let client_id = client_id.as_ref();
   let msg = msg.into();
-  let nchan_url = format!("{}{client_id}", &*NCHAN_URL);
+  let channel_id = client_id.as_ref();
+  let nchan_url = format!("{}{channel_id}", &*NCHAN_URL);
   let mut li = VecAny::new();
   li.push(kind as u8);
   li.push(msg);
