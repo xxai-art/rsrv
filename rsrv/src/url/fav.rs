@@ -3,7 +3,7 @@ use client::Client;
 use xg::{Q, Q01};
 
 use crate::{
-  ws::{publish_to_user_client, KIND_SYNC_FAV},
+  ws::{send_user, KIND_SYNC_FAV},
   kv::sync::{has_more, set_last},
   K,
 };
@@ -32,7 +32,7 @@ pub fn publish_fav_sync(
   json: impl AsRef<str>,
 ) {
   let json = json.as_ref();
-  publish_to_user_client(
+  send_user(
     client_id,
     uid,
     KIND_SYNC_FAV,
