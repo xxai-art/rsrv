@@ -2329,6 +2329,7 @@ dependencies = [
  "x0",
  "xg",
  "xxai",
+ "xxai-msgpacker",
  "xxhash-rust",
  "z85",
 ]
