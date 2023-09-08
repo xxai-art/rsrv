@@ -1,7 +1,7 @@
 pub mod action;
 pub mod cid;
 mod ws;
-pub use ws::WS;
+pub use ws::{WR, WS};
 
 pub const CLIP: &str = "clip";
 

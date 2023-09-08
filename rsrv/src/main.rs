@@ -68,6 +68,7 @@ fn main() -> anyhow::Result<()> {
 
   // post!(test);
   router = router.route("/ws/:li", get(crate::url::ws::get));
+  router = router.route("/ws/:li", post(crate::url::ws::post));
   post!(fav, hr, q, userFav, seen, log);
 
   let default_port = 8879;
