@@ -4,6 +4,7 @@ use crate::C::WR;
 
 mod 同步 {
   use anyhow::Result;
+  use anypack::{Any, Pack, VecAny};
   use msgpacker::prelude::*;
   use x0::{fred::interfaces::SortedSetsInterface, KV};
   use xg::Q;
@@ -15,8 +16,6 @@ mod 同步 {
   }
 
   async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
-    // let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY ts LIMIT {LIMIT}");
-    // TODO fix https://github.com/GreptimeTeam/greptimedb/issues/2026
     let sql = format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>ARROW_CAST({ts},'Timestamp(Millisecond,None)') ORDER BY ts LIMIT 8192");
     Ok(
       gt::Q(sql, &[])
@@ -33,7 +32,11 @@ mod 同步 {
   }
 
   pub async fn run(uid: u64, channel_id: String, body: &[u8]) -> Result<()> {
-    dbg!(&body);
+    let li = vb::d(body)?;
+    let fav_id = li[0];
+    let seen_id = li[1];
+    let r = VecAny::with_capacity(2);
+    r.push(fav_li(uid, id).await?);
     // let id_li = IdLi::unpack(&body)?.1.id_li;
     // dbg!(id_li);
     Ok(())

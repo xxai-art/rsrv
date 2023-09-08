@@ -166,7 +166,7 @@ impl VecAny {
   pub fn push(&mut self, val: impl Into<Any>) {
     self.0.push(val.into())
   }
-  pub fn with_capacity(&mut self, capacity: usize) -> Self {
+  pub fn with_capacity(capacity: usize) -> Self {
     Self(Vec::with_capacity(capacity))
   }
   pub fn new() -> Self {
