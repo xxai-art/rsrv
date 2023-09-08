@@ -9,6 +9,8 @@ mod 同步 {
   use x0::{fred::interfaces::SortedSetsInterface, KV};
   use xg::Q;
 
+  use crate::C::WS;
+
   const LIMIT: usize = 8192;
 
   Q! {
@@ -33,12 +35,10 @@ mod 同步 {
 
   pub async fn run(uid: u64, channel_id: String, body: &[u8]) -> Result<()> {
     let li = vb::d(body)?;
-    let fav_id = li[0];
-    let seen_id = li[1];
-    let r = VecAny::with_capacity(2);
-    r.push(fav_li(uid, id).await?);
-    // let id_li = IdLi::unpack(&body)?.1.id_li;
-    // dbg!(id_li);
+    let mut r = VecAny::with_capacity(2);
+    r.push(fav_li(uid, li[0]).await?);
+    r.push(seen_li(uid, li[1]).await?);
+    crate::ws::send(channel_id, WS::同步, r).await?;
     Ok(())
   }
 }

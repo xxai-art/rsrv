@@ -4,8 +4,9 @@ use int_enum::IntEnum;
 #[derive(Clone, Copy, Debug, Eq, PartialEq, IntEnum)]
 pub enum WS {
   未登录 = 0,
-  浏览 = 1,
-  收藏 = 2,
+  同步 = 1,
+  浏览 = 2,
+  收藏 = 3,
 }
 
 #[repr(u8)]
