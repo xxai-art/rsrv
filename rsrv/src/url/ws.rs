@@ -9,7 +9,7 @@ use axum::{
 use client::Client;
 use intbin::u64_bin;
 use paste::paste;
-use ub64::b64e;
+use ub64::{b64d, b64e};
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xg::Q;
 
@@ -117,46 +117,41 @@ async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
 //     }}
 // }
 
-pub async fn get(client: Client, Path(li): Path<String>) -> awp::Result<Response> {
-  let li = ub64::b64_decode_u64_li(li);
-  if li.len() >= 2 {
-    let uid = li[0];
-    let client_id = u64_bin(client.id);
-    let channel_id = b64e(&client_id[..]);
-    let url = format!("/nchan/{}", &channel_id);
+pub async fn get(client: Client, Path(uid): Path<String>) -> awp::Result<Response> {
+  let uid = ub64::b64_u64(uid);
+  let client_id = u64_bin(client.id);
+  let channel_id = b64e(&client_id[..]);
+  let url = format!("/nchan/{}", &channel_id);
 
-    if client.is_login(uid).await? {
-      trt::spawn!({
-        KV.zadd(
-          &*K::nchan(uid),
-          None,
-          None,
-          false,
-          false,
-          (xxai::now() as f64, &client_id[..]),
-        )
-        .await?;
-        // ws::send(&channel_id, C::WS::未登录, uid).await?;
-      });
-
-      // es_sync_li!(uid, channel_id, &li[1..]);
-    } else {
-      trt::spawn!({
-        ws::send(channel_id, C::WS::未登录, uid).await?;
-      });
-    }
-    return Ok(
-      (
-        StatusCode::OK,
-        [
-          ("X-Accel-Redirect", url.as_str()),
-          ("X-Accel-Buffering", "no"),
-        ],
-        "",
+  if client.is_login(uid).await? {
+    trt::spawn!({
+      KV.zadd(
+        &*K::nchan(uid),
+        None,
+        None,
+        false,
+        false,
+        (xxai::now() as f64, &client_id[..]),
       )
-        .into_response(),
-    );
-  }
+      .await?;
+      // ws::send(&channel_id, C::WS::未登录, uid).await?;
+    });
 
-  Ok((StatusCode::UNAUTHORIZED, "").into_response())
+    // es_sync_li!(uid, channel_id, &li[1..]);
+  } else {
+    trt::spawn!({
+      ws::send(channel_id, C::WS::未登录, uid).await?;
+    });
+  }
+  return Ok(
+    (
+      StatusCode::OK,
+      [
+        ("X-Accel-Redirect", url.as_str()),
+        ("X-Accel-Buffering", "no"),
+      ],
+      "",
+    )
+      .into_response(),
+  );
 }
