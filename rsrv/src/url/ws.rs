@@ -15,7 +15,7 @@ use xg::Q;
 
 use crate::{
   kv::sync::{has_more, set_last},
-  ws, K,
+  ws, C, K,
 };
 
 const LIMIT: usize = 8192;
@@ -136,13 +136,13 @@ pub async fn get(client: Client, Path(li): Path<String>) -> awp::Result<Response
           (xxai::now() as f64, &client_id[..]),
         )
         .await?;
-        ws::send(&channel_id, ws::KIND_SYNC_FAV, "123").await?;
+        ws::send(&channel_id, C::WS::未登录, uid).await?;
       });
 
       // es_sync_li!(uid, channel_id, &li[1..]);
     } else {
       trt::spawn!({
-        ws::send(&channel_id, ws::KIND_SYNC_FAV, "123").await?;
+        ws::send(&channel_id, C::WS::未登录, uid).await?;
       });
     }
     return Ok(

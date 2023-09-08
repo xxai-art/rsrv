@@ -6,7 +6,7 @@ use reqwest::header;
 use ub64::b64e;
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 
-use crate::K;
+use crate::{C::WS, K};
 
 lazy_static! {
   static ref NCHAN_URL: String = std::env::var("NCHAN").unwrap();
@@ -15,12 +15,12 @@ lazy_static! {
 pub const KIND_SYNC_FAV: u16 = 1;
 pub const KIND_SYNC_SEEN: u16 = 2;
 
-pub async fn send(client_id: impl AsRef<str>, kind: u16, msg: impl Into<Any>) -> Result<()> {
+pub async fn send(client_id: impl AsRef<str>, kind: WS, msg: impl Into<Any>) -> Result<()> {
   let client_id = client_id.as_ref();
   let msg = msg.into();
   let nchan_url = format!("{}{client_id}", &*NCHAN_URL);
   let mut li = VecAny::new();
-  li.push(kind);
+  li.push(kind as u8);
   li.push(msg);
   reqwest::Client::new()
     .post(&nchan_url)
