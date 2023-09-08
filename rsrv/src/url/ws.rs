@@ -143,9 +143,9 @@ pub async fn post(
       let uid = uid_client_id[0];
       // let client_id = uid_client_id[1];
 
-      if is_login(&client, uid, channel_id).await? {
-        let action = C::WR::from_int(body[0]);
-        dbg!(action);
+      if is_login(&client, uid, channel_id.clone()).await? {
+        let action = C::WR::from_int(body[0])?;
+        crate::db::ws(action, uid, channel_id, &body[1..]).await?;
       }
     }
   }
