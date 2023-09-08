@@ -139,12 +139,9 @@ pub async fn get(client: Client, Path(uid): Path<String>) -> awp::Result<Respons
         (xxai::now() as f64, u64_bin(client.id)),
       )
       .await?;
-      dbg!("logined!");
-      // ws::send(channel_id, C::WS::未登录, uid).await?;
     });
   } else {
     trt::spawn!({
-      dbg!("not logined!");
       ws::send(channel_id, C::WS::未登录, uid).await?;
     });
   }
