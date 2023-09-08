@@ -28,17 +28,50 @@ mod 同步 {
     )
   }
 
-  #[derive(MsgPacker)]
-  pub struct IdLi {
-    pub id_li: Vec<u64>,
-  }
-
   pub async fn run(uid: u64, channel_id: String, body: &[u8]) -> Result<()> {
     let li = vb::d(body)?;
-    let mut r = VecAny::with_capacity(2);
-    r.push(fav_li(uid, li[0]).await?);
-    r.push(seen_li(uid, li[1]).await?);
-    crate::ws::send(channel_id, WS::同步, r).await?;
+    let mut seen_ts = li[0];
+    let mut fav_id = li[1];
+    let _channel_id = channel_id.clone();
+    trt::spawn!({
+      loop {
+        let li = seen_li(uid, seen_ts).await?;
+        let len = li.len();
+        if len == 0 {
+          break;
+        }
+        let mut r = VecAny::with_capacity(len * 3 + 1);
+        let last_ts = li.last().unwrap().0;
+        for (ts, cid, rid) in li {
+          r.push(ts);
+          r.push(cid);
+          r.push(rid);
+        }
+        r.push(seen_ts);
+        crate::ws::send(&_channel_id, WS::浏览, r).await?;
+        seen_ts = last_ts;
+      }
+    });
+    trt::spawn!({
+      loop {
+        let li = fav_li(uid, fav_id).await?;
+        let len = li.len();
+        if len == 0 {
+          break;
+        }
+        let mut r = VecAny::with_capacity(len * 4 + 1);
+        let id = li.last().unwrap().0;
+        for (_, cid, rid, ts, aid) in li {
+          r.push(cid);
+          r.push(rid);
+          r.push(ts);
+          r.push(aid);
+        }
+        r.push(fav_id);
+        crate::ws::send(&channel_id, WS::收藏, r).await?;
+        fav_id = id;
+      }
+    });
     Ok(())
   }
 }
