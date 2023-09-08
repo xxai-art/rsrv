@@ -8,8 +8,9 @@ use xxai::z85_decode_u64_li;
 
 use crate::{
   db::seen,
-  ws::{send_user, KIND_SYNC_SEEN},
   kv::sync::{has_more, set_last},
+  ws::send_user,
+  C::WS::浏览,
   K,
 };
 
@@ -101,9 +102,9 @@ pub async fn post(client: Client, body: Bytes) -> awp::any!() {
             let to_publish = to_publish.join(",");
             let diff = ts - has_more.id;
             send_user(
-              client.id,
               uid,
-              KIND_SYNC_SEEN,
+              client.id,
+              浏览,
               format!("{prev_id},{diff},{to_publish}"),
             );
             r.push(ts);

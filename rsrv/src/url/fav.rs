@@ -3,8 +3,9 @@ use client::Client;
 use xg::{Q, Q01};
 
 use crate::{
-  ws::{send_user, KIND_SYNC_FAV},
   kv::sync::{has_more, set_last},
+  ws::send_user,
+  C::WS,
   K,
 };
 
@@ -33,9 +34,9 @@ pub fn publish_fav_sync(
 ) {
   let json = json.as_ref();
   send_user(
-    client_id,
     uid,
-    KIND_SYNC_FAV,
+    client_id,
+    WS::收藏,
     format!("{prev_id},{now_id}{json}"),
   );
 }
