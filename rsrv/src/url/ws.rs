@@ -13,8 +13,6 @@ use int_enum::IntEnum;
 use intbin::u64_bin;
 use paste::paste;
 use ub64::{b64d, b64e};
-use x0::{fred::interfaces::SortedSetsInterface, KV};
-use xg::Q;
 
 use crate::{
   kv::sync::{has_more, set_last},
@@ -22,25 +20,6 @@ use crate::{
   C::{self, WR},
   K,
 };
-
-const LIMIT: usize = 8192;
-
-Q! {
-    fav_li:SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 8192;
-}
-
-async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
-  // let sql = &format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>{ts} ORDER BY ts LIMIT {LIMIT}");
-  // TODO fix https://github.com/GreptimeTeam/greptimedb/issues/2026
-  let sql = format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>ARROW_CAST({ts},'Timestamp(Millisecond,None)') ORDER BY ts LIMIT 8192");
-  Ok(
-    gt::Q(sql, &[])
-      .await?
-      .into_iter()
-      .map(|i| (i.get::<_, i64>(0) as u64, i.get(1), i.get(2)))
-      .collect(),
-  )
-}
 
 // macro_rules! json {
 //   (fav, $prev_id:ident,$last_id:ident,$str:ident, $li:expr) => {{
@@ -122,10 +101,15 @@ async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
 //     }}
 // }
 
-async fn is_login(client: &Client, uid: u64, channel_id: String) -> anyhow::Result<bool> {
+async fn is_login(
+  client: &Client,
+  uid: u64,
+  channel_id: impl Into<String>,
+) -> anyhow::Result<bool> {
   if client.is_login(uid).await? {
     return Ok(true);
   }
+  let channel_id = channel_id.into();
   trt::spawn!({
     ws::send(channel_id, C::WS::未登录, uid).await?;
   });
@@ -143,7 +127,7 @@ pub async fn post(
       let uid = uid_client_id[0];
       // let client_id = uid_client_id[1];
 
-      if is_login(&client, uid, channel_id.clone()).await? {
+      if is_login(&client, uid, &channel_id).await? {
         let action = C::WR::from_int(body[0])?;
         crate::db::ws(action, uid, channel_id, &body[1..]).await?;
       }
