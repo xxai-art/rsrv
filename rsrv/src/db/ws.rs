@@ -29,7 +29,7 @@ mod 同步 {
 
   #[derive(MsgPacker)]
   pub struct IdLi {
-    pub id_li: Vec<i64>,
+    pub id_li: Vec<u64>,
   }
 
   pub async fn run(uid: u64, channel_id: String, body: &[u8]) -> Result<()> {
