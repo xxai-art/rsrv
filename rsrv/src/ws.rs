@@ -24,6 +24,7 @@ pub async fn send(client_id: impl AsRef<str>, kind: WS, msg: impl Into<Any>) -> 
   let mut li = VecAny::new();
   li.push(kind as u8);
   li.push(msg);
+  dbg!(&nchan_url);
   reqwest::Client::new()
     .post(&nchan_url)
     .header(header::CONTENT_TYPE, "application/octet-stream")

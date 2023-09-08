@@ -119,7 +119,7 @@ async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
 
 pub async fn get(client: Client, Path(uid): Path<String>) -> awp::Result<Response> {
   let uid = ub64::b64_u64(uid);
-  let client_id = u64_bin(client.id);
+  let client_id = vb::e(&[uid, client.id]);
   let channel_id = b64e(&client_id[..]);
   let url = format!("/nchan/{}", &channel_id);
 
@@ -131,7 +131,7 @@ pub async fn get(client: Client, Path(uid): Path<String>) -> awp::Result<Respons
         None,
         false,
         false,
-        (xxai::now() as f64, &client_id[..]),
+        (xxai::now() as f64, u64_bin(client.id)),
       )
       .await?;
       // ws::send(&channel_id, C::WS::未登录, uid).await?;
@@ -140,9 +140,11 @@ pub async fn get(client: Client, Path(uid): Path<String>) -> awp::Result<Respons
     // es_sync_li!(uid, channel_id, &li[1..]);
   } else {
     trt::spawn!({
+      dbg!(&channel_id);
       ws::send(channel_id, C::WS::未登录, uid).await?;
     });
   }
+  dbg!(&url);
   return Ok(
     (
       StatusCode::OK,
