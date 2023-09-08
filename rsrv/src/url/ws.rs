@@ -13,6 +13,7 @@ use int_enum::IntEnum;
 use intbin::u64_bin;
 use paste::paste;
 use ub64::{b64d, b64e};
+use x0::{fred::interfaces::SortedSetsInterface, KV};
 
 use crate::{
   kv::sync::{has_more, set_last},
