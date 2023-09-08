@@ -1,6 +1,6 @@
 pub mod action;
 pub mod cid;
-
+pub mod ws;
 pub const CLIP: &str = "clip";
 
 pub mod 分级 {
