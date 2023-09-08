@@ -3,7 +3,7 @@ use client::Client;
 use xg::{Q, Q01};
 
 use crate::{
-  es::{publish_to_user_client, KIND_SYNC_FAV},
+  ws::{publish_to_user_client, KIND_SYNC_FAV},
   kv::sync::{has_more, set_last},
   K,
 };

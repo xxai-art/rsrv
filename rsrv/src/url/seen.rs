@@ -8,7 +8,7 @@ use xxai::z85_decode_u64_li;
 
 use crate::{
   db::seen,
-  es::{publish_to_user_client, KIND_SYNC_SEEN},
+  ws::{publish_to_user_client, KIND_SYNC_SEEN},
   kv::sync::{has_more, set_last},
   K,
 };

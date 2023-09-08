@@ -14,9 +14,8 @@ use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xg::Q;
 
 use crate::{
-  es,
   kv::sync::{has_more, set_last},
-  K,
+  ws, K,
 };
 
 const LIMIT: usize = 8192;
@@ -86,9 +85,9 @@ async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
 //                       let mut json = String::new();
 //                       let last_id = li.last().unwrap().0;
 //                       json!($key,id,last_id,json,&li);
-//                       es::send(
+//                       ws::send(
 //                           &channel_id,
-//                           es::[<KIND_SYNC_ $key:upper>],
+//                           ws::[<KIND_SYNC_ $key:upper>],
 //                           format!("{uid}{json}"),
 //                       ).await?;
 //                       id = last_id;
@@ -137,13 +136,13 @@ pub async fn get(client: Client, Path(li): Path<String>) -> awp::Result<Response
           (xxai::now() as f64, &client_id[..]),
         )
         .await?;
-        es::send(&channel_id, es::KIND_SYNC_FAV, "123").await?;
+        ws::send(&channel_id, ws::KIND_SYNC_FAV, "123").await?;
       });
 
       // es_sync_li!(uid, channel_id, &li[1..]);
     } else {
       trt::spawn!({
-        es::send(&channel_id, es::KIND_SYNC_FAV, "123").await?;
+        ws::send(&channel_id, ws::KIND_SYNC_FAV, "123").await?;
       });
     }
     return Ok(
