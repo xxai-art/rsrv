@@ -2,6 +2,8 @@
 #![feature(type_alias_impl_trait)]
 #![feature(impl_trait_in_assoc_type)]
 
+use axum::{http::StatusCode, response::IntoResponse, Extension};
+
 pub mod anypack;
 mod env;
 mod err;
@@ -15,5 +17,9 @@ pub use srv::srv;
 
 pub type Response = Result<axum::response::Response>;
 
-use axum::Extension;
 pub type E<T> = Extension<T>;
+
+pub fn ok() -> Response {
+  let r = (StatusCode::OK, "").into_response();
+  Ok(r)
+}

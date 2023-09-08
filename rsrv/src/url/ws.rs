@@ -1,12 +1,15 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use awp::ok;
 use axum::{
+  body::Bytes,
   extract::Path,
-  http::StatusCode,
+  http::{header::HeaderMap, StatusCode},
   response::{IntoResponse, Response},
 };
 use client::Client;
+use int_enum::IntEnum;
 use intbin::u64_bin;
 use paste::paste;
 use ub64::{b64d, b64e};
@@ -15,7 +18,9 @@ use xg::Q;
 
 use crate::{
   kv::sync::{has_more, set_last},
-  ws, C, K,
+  ws,
+  C::{self, WR},
+  K,
 };
 
 const LIMIT: usize = 8192;
@@ -117,9 +122,34 @@ async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
 //     }}
 // }
 
-pub async fn post(client: Client, Path(uid): Path<String>) -> awp::Result<Response> {
-  dbg!(uid);
-  return Ok((StatusCode::OK, "").into_response());
+async fn is_login(client: &Client, uid: u64, channel_id: String) -> anyhow::Result<bool> {
+  if client.is_login(uid).await? {
+    return Ok(true);
+  }
+  trt::spawn!({
+    ws::send(channel_id, C::WS::未登录, uid).await?;
+  });
+  Ok(false)
+}
+
+pub async fn post(
+  client: Client,
+  Path(channel_id): Path<String>,
+  body: Bytes,
+) -> awp::Result<Response> {
+  if !body.is_empty() {
+    let uid_client_id = vb::d(b64d(&channel_id)?)?;
+    if uid_client_id.len() == 2 {
+      let uid = uid_client_id[0];
+      // let client_id = uid_client_id[1];
+
+      if is_login(&client, uid, channel_id).await? {
+        let action = C::WR::from_int(body[0]);
+        dbg!(action);
+      }
+    }
+  }
+  ok()
 }
 
 pub async fn get(client: Client, Path(uid): Path<String>) -> awp::Result<Response> {
@@ -128,7 +158,7 @@ pub async fn get(client: Client, Path(uid): Path<String>) -> awp::Result<Respons
   let channel_id = b64e(&client_id[..]);
   let url = format!("/nchan/{}", &channel_id);
 
-  if client.is_login(uid).await? {
+  if is_login(&client, uid, channel_id).await? {
     trt::spawn!({
       KV.zadd(
         &*K::nchan(uid),
@@ -139,10 +169,6 @@ pub async fn get(client: Client, Path(uid): Path<String>) -> awp::Result<Respons
         (xxai::now() as f64, u64_bin(client.id)),
       )
       .await?;
-    });
-  } else {
-    trt::spawn!({
-      ws::send(channel_id, C::WS::未登录, uid).await?;
     });
   }
   return Ok(
