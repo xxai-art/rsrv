@@ -3,8 +3,8 @@ use std::net::SocketAddr;
 use anyhow::Result;
 use bytes::BytesMut;
 use ratchet_rs::{
-  deflate::DeflateExtProvider, Error, Message, PayloadType, ProtocolRegistry, UpgradedServer,
-  WebSocketConfig,
+  deflate::DeflateExtProvider, Error, HeaderMap, Message, PayloadType, ProtocolRegistry,
+  UpgradedServer, WebSocketConfig, WebSocketResponse,
 };
 use tokio::net::{TcpListener, TcpStream};
 use tokio_stream::{wrappers::TcpListenerStream, StreamExt};
@@ -56,7 +56,12 @@ async fn accpet(socket: TcpStream) -> Result<()> {
     return Ok(());
   }
 
-  let UpgradedServer { websocket, .. } = upgrader.upgrade().await?;
+  let mut headers = HeaderMap::new();
+  headers.insert("xxx", "abc".parse()?);
+
+  // let response = WebSocketResponse::with_headers(200, headers);
+  let UpgradedServer { websocket, .. } = upgrader.upgrade_with(headers).await?;
+  // let UpgradedServer { websocket, .. } = upgrader.upgrade().await?;
   let mut buf = BytesMut::new();
 
   let (mut sender, mut receiver) = websocket.split()?;
@@ -65,12 +70,12 @@ async fn accpet(socket: TcpStream) -> Result<()> {
     match receiver.read(&mut buf).await? {
       Message::Text => {
         dbg!("txt", &buf);
-        sender.write(&mut buf, PayloadType::Text).await?;
+        // sender.write(&mut buf, PayloadType::Text).await?;
         buf.clear();
       }
       Message::Binary => {
         dbg!("bin", &buf);
-        sender.write(&mut buf, PayloadType::Binary).await?;
+        // sender.write(&mut buf, PayloadType::Binary).await?;
         buf.clear();
       }
       Message::Ping(_) | Message::Pong(_) => {
