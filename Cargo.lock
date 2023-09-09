@@ -3714,6 +3714,11 @@ dependencies = [
 [[package]]
 name = "xws"
 version = "0.1.0"
+dependencies = [
+ "axum",
+ "loginit",
+ "tracing",
+]
 
 [[package]]
 name = "xxai"

@@ -7,7 +7,7 @@ name=${1:-xws}
 # name=$(dasel package.name -f Cargo.toml)
 # name=${name//\'/}
 
-exe=./target/debug/$name
+exe=../target/debug/$name
 rm -rf $exe
 
 cargo build -p $name
