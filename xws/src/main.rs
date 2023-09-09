@@ -45,7 +45,7 @@ async fn handle_socket(mut socket: WebSocket) {
 #[tokio::main]
 async fn main() {
   loginit::init();
-  let app = Router::new().route("/", get(ws_handler)).layer(
+  let app = Router::new().route("/-:uid", get(ws_handler)).layer(
     TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::default().include_headers(true)),
   );
 
