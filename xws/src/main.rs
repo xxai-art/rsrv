@@ -18,7 +18,7 @@ const CODE_UNAUTH: u16 = 4401;
 
 lazy_static! {
   static ref CLOSE_UNAUTH: CloseReason =
-    ratchet_rs::CloseReason::new(ratchet_rs::CloseCode::Application(4401), None);
+    ratchet_rs::CloseReason::new(ratchet_rs::CloseCode::Application(CODE_UNAUTH), None);
 }
 
 // sender
@@ -60,12 +60,6 @@ async fn accpet(socket: TcpStream) -> Result<()> {
   if !client_user.is_login(uid).await? {
     return close_unauth(websocket).await;
   }
-
-  dbg!(uid);
-  // if websocket.is_none() {
-  //   return Ok(());
-  // }
-  // let websocket = websocket.unwrap();
 
   let mut buf = BytesMut::new();
 
