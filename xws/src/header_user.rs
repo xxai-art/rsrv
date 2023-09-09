@@ -26,6 +26,7 @@ pub async fn header_user<T: Extension + Debug>(
       }
     }
   };
+
   if cookie_i.is_empty() {
     return Ok(None);
   }
