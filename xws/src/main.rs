@@ -42,7 +42,8 @@ async fn handle_socket(mut socket: WebSocket) {
   }
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
   loginit::init();
   let app = Router::new().route("/", get(ws_handler)).layer(
     TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::default().include_headers(true)),
@@ -50,4 +51,8 @@ fn main() {
   tracing::info!("Hello, world!");
 
   let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+  axum::Server::bind(&addr)
+    .serve(app.into_make_service())
+    .await
+    .unwrap();
 }
