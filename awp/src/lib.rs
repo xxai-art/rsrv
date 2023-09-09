@@ -5,7 +5,6 @@
 use axum::{http::StatusCode, response::IntoResponse, Extension};
 
 pub mod anypack;
-mod env;
 mod err;
 mod log;
 mod srv;
