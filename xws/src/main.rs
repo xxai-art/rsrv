@@ -27,14 +27,14 @@ async fn handle_socket(mut socket: WebSocket) {
     if let Ok(msg) = msg {
       println!("Client says: {:?}", msg);
       //客户端发什么，服务端就回什么（只是演示而已）
-      if socket
-        .send(Message::Text(format!("{:?}", msg)))
-        .await
-        .is_err()
-      {
-        println!("client disconnected");
-        return;
-      }
+      // if socket
+      //   .send(Message::Text(format!("{:?}", msg)))
+      //   .await
+      //   .is_err()
+      // {
+      //   println!("client disconnected");
+      //   return;
+      // }
     } else {
       println!("client disconnected");
       return;
@@ -48,9 +48,11 @@ async fn main() {
   let app = Router::new().route("/", get(ws_handler)).layer(
     TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::default().include_headers(true)),
   );
-  tracing::info!("Hello, world!");
 
-  let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+  let addr = SocketAddr::from(([0, 0, 0, 0], envport::get("PORT", 8132)));
+
+  tracing::info!("ws://{}", addr);
+
   axum::Server::bind(&addr)
     .serve(app.into_make_service())
     .await
