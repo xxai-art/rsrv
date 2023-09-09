@@ -1,14 +1,81 @@
-pub fn add(left: usize, right: usize) -> usize {
-  left + right
+use trt::TRT;
+use ub64::bin_u64_li;
+use x0::{fred::interfaces::HashesInterface, R};
+use xxhash_rust::xxh3::xxh3_64;
+
+static mut SK: [u8; 32] = [0; 32];
+
+pub const MAX_INTERVAL: u64 = 41;
+pub const TOKEN_LEN: usize = 8;
+
+/*
+   cookie 中的 day 每10天为一个周期，超过41个周期没访问就认为无效, BASE是为了防止数字过大
+   https://chromestatus.com/feature/4887741241229312
+   When cookies are set with an explicit Expires/Max-Age attribute the value will now be capped to no more than 400 day10s
+
+*/
+const BASE: u64 = 4096;
+
+fn day10() -> u64 {
+  (xxai::now() / (86400 * 10)) % BASE
 }
 
-#[cfg(test)]
-mod tests {
-  use super::*;
+#[ctor::ctor]
+fn init() {
+  TRT.block_on(async move {
+    let redis = R.0.force().await;
+    let conf = &b"conf"[..];
+    let key = &b"SK"[..];
+    let sk: Option<Vec<u8>> = redis.hget(conf, key).await.unwrap();
+    let len = unsafe { SK.len() };
+    if let Some(sk) = sk {
+      if sk.len() == len {
+        unsafe { SK = sk.try_into().unwrap() };
+        return;
+      }
+    }
+    use xxai::random_bytes;
+    let sk = &random_bytes(len)[..];
+    redis.hset::<(), _, _>(conf, vec![(key, sk)]).await.unwrap();
+    unsafe { SK = sk.try_into().unwrap() };
+  })
+}
 
-  #[test]
-  fn it_works() {
-    let result = add(2, 2);
-    assert_eq!(result, 4);
+#[derive(Debug)]
+pub enum ClientState {
+  Ok(u64),
+  Renew(u64),
+  None,
+}
+
+fn client_by_cookie(token: &str) -> ClientState {
+  if let Ok(c) = xxai::cookie_decode(token) {
+    if c.len() >= TOKEN_LEN {
+      let client = &c[TOKEN_LEN..];
+      if xxh3_64(&[unsafe { &SK }, client].concat())
+        == u64::from_le_bytes(c[..TOKEN_LEN].try_into().unwrap())
+      {
+        let li = bin_u64_li(client);
+        if li.len() == 2 {
+          let [pre_day10, client]: [u64; 2] = li.try_into().unwrap();
+
+          let now = day10();
+          if pre_day10 != now {
+            // 因为都是无符号类型，要避免减法出现负数
+            if pre_day10 > now {
+              if pre_day10 < BASE && (now + BASE - pre_day10) < MAX_INTERVAL {
+                return ClientState::Renew(client);
+              }
+            } else if (now - pre_day10) < MAX_INTERVAL {
+              // renew
+              return ClientState::Renew(client);
+            }
+          } else {
+            return ClientState::Ok(client);
+          }
+        }
+      }
+    }
   }
+  ClientState::None
 }
