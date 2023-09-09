@@ -25,8 +25,13 @@ async fn accpet(socket: TcpStream) -> Result<()> {
   // Or you could opt to reject the connection with headers
   // websocket.reject(WebSocketResponse::with_headers(404, headers)?).await;
 
-  let (client_user, websocket) = header_user(upgrader).await?;
+  let (mut uri, client_user, websocket) = header_user(upgrader).await?;
 
+  if let Some(p) = uri.rfind('/') {
+    uri = uri[p + 1..].to_string()
+  };
+  let uid = ub64::b64_u64(uri);
+  dbg!(uid);
   // if websocket.is_none() {
   //   return Ok(());
   // }
