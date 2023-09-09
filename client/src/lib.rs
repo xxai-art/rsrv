@@ -33,6 +33,7 @@ pub async fn client<B>(req: Request<B>, next: Next<B>) -> Result<Response, Statu
 pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
   let mut client = 0;
   let cookie = header_get(&req, http::header::COOKIE);
+  let host = header_get(&req, http::header::HOST).unwrap();
 
   match xuser::client_by_cookie(cookie) {
     ClientState::Renew(id) => {
@@ -45,7 +46,6 @@ pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, 
     _ => {}
   }
 
-  let host = xxai::tld(header_get(&req, http::header::HOST).unwrap());
   let _uid = if client == 0 {
     client = gid!(client);
     Some(0)
@@ -58,6 +58,7 @@ pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, 
   let t = &vbyte::compress_list(&[day10(), client])[..];
   let cookie =
     xxai::cookie_encode([&xxh3_64(&[unsafe { &SK }, t].concat()).to_le_bytes()[..], t].concat());
+  let host = xxai::tld(host);
   r.headers_mut().insert(
     http::header::SET_COOKIE,
     format!("I={cookie};max-age=99999999;domain={host};path=/;HttpOnly;SameSite=None;Secure")
