@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "rsrv",
+  "xuser",
   "envport",
   "init",
   "trt",
