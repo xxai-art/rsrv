@@ -4,9 +4,7 @@ use std::net::SocketAddr;
 use anyhow::Result;
 use bytes::BytesMut;
 use header_user::header_user;
-use ratchet_rs::{
-  deflate::DeflateExtProvider, Message, ProtocolRegistry, WebSocketConfig,
-};
+use ratchet_rs::{deflate::DeflateExtProvider, Message, ProtocolRegistry, WebSocketConfig};
 use tokio::net::{TcpListener, TcpStream};
 use tokio_stream::{wrappers::TcpListenerStream, StreamExt};
 use tracing::info;
@@ -21,16 +19,18 @@ async fn accpet(socket: TcpStream) -> Result<()> {
   .await?;
 
   // You could opt to reject the connection
+  // let response = WebSocketResponse::with_headers(200, headers);
   // websocket.reject(WebSocketResponse::new(404)?).await?;
 
   // Or you could opt to reject the connection with headers
   // websocket.reject(WebSocketResponse::with_headers(404, headers)?).await;
 
-  let websocket = header_user(upgrader).await?;
-  if websocket.is_none() {
-    return Ok(());
-  }
-  let websocket = websocket.unwrap();
+  let (client_user, websocket) = header_user(upgrader).await?;
+
+  // if websocket.is_none() {
+  //   return Ok(());
+  // }
+  // let websocket = websocket.unwrap();
 
   let mut buf = BytesMut::new();
 

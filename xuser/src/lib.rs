@@ -52,9 +52,9 @@ pub enum ClientState {
   None,
 }
 
-fn client_by_cookie(cookie: Option<&str>) -> ClientState {
+fn client_by_cookie(cookie: Option<impl AsRef<str>>) -> ClientState {
   if let Some(cookie) = cookie {
-    for cookie in Cookie::split_parse(cookie).flatten() {
+    for cookie in Cookie::split_parse(cookie.as_ref()).flatten() {
       if cookie.name() == "I" {
         return client_by_token(cookie.value());
       }
@@ -96,8 +96,8 @@ fn client_by_token(token: &str) -> ClientState {
 }
 
 pub async fn client_user_cookie(
-  host: &str,
-  cookie: Option<&str>,
+  host: impl AsRef<str>,
+  cookie: Option<impl AsRef<str>>,
 ) -> (
   ClientUser,
   Option<String>, // cookie
