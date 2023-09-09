@@ -361,14 +361,9 @@ dependencies = [
 name = "client"
 version = "0.1.0"
 dependencies = [
- "anyhow",
- "awp",
  "axum",
  "http",
- "x0",
- "xkv 0.1.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "xuser",
- "xxai",
 ]
 
 [[package]]
@@ -3803,7 +3798,7 @@ dependencies = [
 name = "x0"
 version = "0.1.0"
 dependencies = [
- "xkv 0.1.11",
+ "xkv",
 ]
 
 [[package]]
@@ -3845,21 +3840,6 @@ dependencies = [
  "lazy_static",
  "paste",
  "tokio-test",
- "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "xkv"
-version = "0.1.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc61016ce3f2483f8250bb7db795f4f8985d3bb3d994a94b2081519a0c962541"
-dependencies = [
- "anyhow",
- "async-lazy",
- "ctor",
- "fred",
- "lazy_static",
- "paste",
  "trt 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
