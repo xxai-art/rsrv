@@ -3875,13 +3875,16 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bytes",
+ "cookie",
  "envport",
+ "http",
  "loginit",
  "ratchet_rs",
  "tokio",
  "tokio-stream",
  "tracing",
  "trt 0.1.5",
+ "ub64",
 ]
 
 [[package]]

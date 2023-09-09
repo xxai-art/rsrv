@@ -2,6 +2,7 @@ use std::net::SocketAddr;
 
 use anyhow::Result;
 use bytes::BytesMut;
+use cookie::Cookie;
 use ratchet_rs::{
   deflate::DeflateExtProvider, Error, Message, PayloadType, ProtocolRegistry, UpgradedServer,
   WebSocketConfig,
@@ -9,6 +10,33 @@ use ratchet_rs::{
 use tokio::net::{TcpListener, TcpStream};
 use tokio_stream::{wrappers::TcpListenerStream, StreamExt};
 use tracing::info;
+use ub64::b64_u64;
+
+async fn verify(req: &http::request::Request<()>) -> Result<bool> {
+  let uri = {
+    let uri = req.uri().to_string();
+    if let Some(p) = uri.rfind('/') {
+      uri[p + 1..].to_string()
+    } else {
+      return Ok(false);
+    }
+  };
+
+  let mut cookie_i = String::new();
+  if let Some(cookie) = req.headers().get("cookie") {
+    for i in cookie.to_str()?.split(';') {
+      if i.starts_with("I=") {
+        cookie_i = i[2..].to_string();
+      }
+    }
+  };
+  if cookie_i.is_empty() {
+    return Ok(false);
+  }
+
+  let uid = b64_u64(uri);
+  Ok(true)
+}
 
 async fn accpet(socket: TcpStream) -> Result<()> {
   let upgrader = ratchet_rs::accept_with(
@@ -25,21 +53,9 @@ async fn accpet(socket: TcpStream) -> Result<()> {
   // Or you could opt to reject the connection with headers
   // websocket.reject(WebSocketResponse::with_headers(404, headers)?).await;
 
-  let req = &upgrader.request();
-  let uri = {
-    let uri = req.uri().to_string();
-    if let Some(p) = uri.rfind('/') {
-      uri[p + 1..].to_string()
-    } else {
-      return Ok(());
-    }
-  };
-
-  if let Some(cookie) = req.headers().get("cookie") {
-    dbg!(cookie);
+  if !verify(upgrader.request()).await? {
+    return Ok(());
   }
-
-  dbg!(uri);
 
   let UpgradedServer { websocket, .. } = upgrader.upgrade().await?;
   let mut buf = BytesMut::new();
