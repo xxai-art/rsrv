@@ -9,6 +9,7 @@ description = "xws : websocket gateway for xxai.art"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
+xuser = { path = "../xuser" }
 anyhow = "1.0.75"
 bytes = "1.5.0"
 envport = { version = "0.1.0", path = "../envport" }

@@ -95,9 +95,9 @@ fn client_by_token(token: &str) -> ClientState {
   ClientState::None
 }
 
-pub async fn has_user_client_id_cookie(
-  cookie: Option<&str>,
+pub async fn client_user_cookie(
   host: &str,
+  cookie: Option<&str>,
 ) -> (
   ClientUser,
   Option<String>, // cookie

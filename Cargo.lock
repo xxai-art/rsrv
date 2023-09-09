@@ -361,6 +361,7 @@ dependencies = [
 name = "client"
 version = "0.1.0"
 dependencies = [
+ "awp",
  "axum",
  "http",
  "xuser",
@@ -3874,6 +3875,7 @@ dependencies = [
  "tracing",
  "trt 0.1.5",
  "ub64",
+ "xuser",
 ]
 
 [[package]]

@@ -18,20 +18,14 @@ pub async fn header_user<T: Extension + Debug>(
     }
   };
 
-  let mut cookie_i = String::new();
-  if let Some(cookie) = req.headers().get("cookie") {
-    for i in cookie.to_str()?.split(';') {
-      if let Some(stripped) = i.strip_prefix("I=") {
-        cookie_i = stripped.trim().to_string();
-      }
-    }
+  let headers = req.headers();
+  let cookie = if let Some(cookie) = headers.get("cookie") {
+    Some(cookie.to_str())
+  } else {
+    None
   };
 
-  if cookie_i.is_empty() {
-    return Ok(None);
-  }
-
-  let _uid = b64_u64(uri);
+  let (client_user, cookie) = xuser::client_user_cookie(headers.get("host").unwrap(), cookie).await;
 
   let mut headers = HeaderMap::new();
   headers.insert("xxx", "abc".parse()?);

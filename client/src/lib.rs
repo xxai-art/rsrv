@@ -25,7 +25,7 @@ pub async fn client<B>(req: Request<B>, next: Next<B>) -> Result<Response, Statu
 pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
   let cookie = header_get(&req, http::header::COOKIE);
   let host = header_get(&req, http::header::HOST).unwrap();
-  let (client_user, cookie) = xuser::has_user_client_id_cookie(cookie, host).await;
+  let (client_user, cookie) = xuser::client_user_cookie(host, cookie).await;
   req.extensions_mut().insert(_Client(client_user));
 
   Ok(match cookie {
