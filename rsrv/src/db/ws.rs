@@ -38,6 +38,7 @@ mod 同步 {
         }
         let mut r = VecAny::with_capacity(len * 4 + 1);
         let id = li.last().unwrap().0;
+        dbg!(id);
         for (_, cid, rid, ts, aid) in li {
           r.push(cid);
           r.push(rid);
