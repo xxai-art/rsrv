@@ -4,12 +4,10 @@ use axum::{error_handling::HandleErrorLayer, http::StatusCode, BoxError, Router}
 use coarsetime::Duration;
 use tower::ServiceBuilder;
 
-use crate::env::env_default;
-
 const TIMEOUT: u64 = 600;
 
 pub async fn srv(router: Router, default_port: u16) -> u16 {
-  let port = env_default("PORT", default_port);
+  let port = envport("PORT", default_port);
   let addr = SocketAddr::from(([0, 0, 0, 0], port));
   tracing::info!("http://{addr}");
 
