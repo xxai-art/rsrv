@@ -16,11 +16,6 @@ use tracing::info;
 // https://github.com/Luka967/websocket-close-codes 4000 - 4999   可用于应用
 const CODE_UNAUTH: u16 = 4401;
 
-lazy_static! {
-  static ref CLOSE_UNAUTH: CloseReason =
-    ratchet_rs::CloseReason::new(ratchet_rs::CloseCode::Application(CODE_UNAUTH), None);
-}
-
 // sender
 //   .close(ratchet_rs::CloseReason::new(
 //     ratchet_rs::CloseCode::Application(4401),
@@ -28,8 +23,15 @@ lazy_static! {
 //   ))
 //   .await?;
 
-async fn close_unauth<T: Extension + Debug>(mut websocket: WebSocket<TcpStream, T>) -> Result<()> {
-  websocket.close(CLOSE_UNAUTH.clone()).await?;
+async fn close_unauth<T: Extension + Debug>(
+  mut websocket: WebSocket<TcpStream, T>,
+  uid: u64,
+) -> Result<()> {
+  let close_unauth = ratchet_rs::CloseReason::new(
+    ratchet_rs::CloseCode::Application(CODE_UNAUTH),
+    Some(ub64::u64_b64(uid)),
+  );
+  websocket.close(close_unauth).await?;
   return Ok(());
 }
 
@@ -41,24 +43,18 @@ async fn accpet(socket: TcpStream) -> Result<()> {
     ProtocolRegistry::default(),
   )
   .await?;
-  // You could opt to reject the connection
-  // let response = WebSocketResponse::with_headers(200, headers);
-  // websocket.reject(WebSocketResponse::new(404)?).await?;
-
-  // Or you could opt to reject the connection with headers
-  // websocket.reject(WebSocketResponse::with_headers(404, headers)?).await;
 
   let (mut uri, client_user, mut websocket) = header_user(upgrader).await?;
 
   if let Some(p) = uri.rfind('/') {
     uri = uri[p + 1..].to_string()
   } else {
-    return close_unauth(websocket).await;
+    return close_unauth(websocket, 0).await;
   };
 
   let uid = ub64::b64_u64(uri);
   if !client_user.is_login(uid).await? {
-    return close_unauth(websocket).await;
+    return close_unauth(websocket, uid).await;
   }
 
   let mut buf = BytesMut::new();
