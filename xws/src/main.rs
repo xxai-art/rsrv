@@ -7,8 +7,9 @@ use axum::{
   },
   response::IntoResponse,
   routing::get,
-  Router,
+  Router, TypedHeader,
 };
+use tower_http::trace::{DefaultMakeSpan, TraceLayer};
 
 async fn ws_handler(
   ws: WebSocketUpgrade,
@@ -43,7 +44,9 @@ async fn handle_socket(mut socket: WebSocket) {
 
 fn main() {
   loginit::init();
-  let app = Router::new().route("/", get(ws_handler));
+  let app = Router::new().route("/", get(ws_handler)).layer(
+    TraceLayer::new_for_http().make_span_with(DefaultMakeSpan::default().include_headers(true)),
+  );
   tracing::info!("Hello, world!");
 
   let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
