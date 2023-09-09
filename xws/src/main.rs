@@ -2,7 +2,6 @@ use std::net::SocketAddr;
 
 use anyhow::Result;
 use bytes::BytesMut;
-use cookie::Cookie;
 use ratchet_rs::{
   deflate::DeflateExtProvider, Error, Message, PayloadType, ProtocolRegistry, UpgradedServer,
   WebSocketConfig,
@@ -26,7 +25,7 @@ async fn verify(req: &http::request::Request<()>) -> Result<bool> {
   if let Some(cookie) = req.headers().get("cookie") {
     for i in cookie.to_str()?.split(';') {
       if i.starts_with("I=") {
-        cookie_i = i[2..].to_string();
+        cookie_i = i[2..].trim().to_string();
       }
     }
   };

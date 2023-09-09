@@ -11,7 +11,6 @@ description = "xws : websocket gateway for xxai.art"
 [dependencies]
 anyhow = "1.0.75"
 bytes = "1.5.0"
-cookie = "0.17.0"
 envport = { version = "0.1.0", path = "../envport" }
 http = "0.2.9"
 loginit = "0.1.3"
