@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "rsrv",
+  "envport",
   "init",
   "trt",
   "client",
