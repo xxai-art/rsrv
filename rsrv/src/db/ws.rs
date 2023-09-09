@@ -11,14 +11,14 @@ mod 同步 {
 
   use crate::C::WS;
 
-  const LIMIT: usize = 8192;
+  const LIMIT: usize = 512;
 
   Q! {
-      fav_li:SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 8192;
+      fav_li:SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 512;
   }
 
   async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
-    let sql = format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>ARROW_CAST({ts},'Timestamp(Millisecond,None)') ORDER BY ts LIMIT 8192");
+    let sql = format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>ARROW_CAST({ts},'Timestamp(Millisecond,None)') ORDER BY ts LIMIT 512");
     Ok(
       gt::Q(sql, &[])
         .await?
@@ -28,34 +28,12 @@ mod 同步 {
     )
   }
 
-  pub async fn run(uid: u64, channel_id: String, body: &[u8]) -> Result<()> {
-    let li = vb::d(body)?;
-    let mut seen_ts = li[0];
-    let mut fav_id = li[1];
-    let _channel_id = channel_id.clone();
+  pub fn 收藏(uid: u64, channel_id: String, mut pre_id: u64) {
     trt::spawn!({
       loop {
-        let li = seen_li(uid, seen_ts).await?;
+        let li = fav_li(uid, pre_id).await?;
         let len = li.len();
-        if len == 0 {
-          break;
-        }
-        let mut r = VecAny::with_capacity(len * 3 + 1);
-        let last_ts = li.last().unwrap().0;
-        for (ts, cid, rid) in li {
-          r.push(ts);
-          r.push(cid);
-          r.push(rid);
-        }
-        r.push(seen_ts);
-        crate::ws::send(&_channel_id, WS::浏览, r).await?;
-        seen_ts = last_ts;
-      }
-    });
-    trt::spawn!({
-      loop {
-        let li = fav_li(uid, fav_id).await?;
-        let len = li.len();
+        dbg!("fav", &len);
         if len == 0 {
           break;
         }
@@ -67,18 +45,60 @@ mod 同步 {
           r.push(ts);
           r.push(aid);
         }
-        r.push(fav_id);
+        r.push(pre_id);
         crate::ws::send(&channel_id, WS::收藏, r).await?;
-        fav_id = id;
+        pre_id = id;
+        if len < LIMIT {
+          break;
+        }
       }
     });
-    Ok(())
+  }
+
+  pub fn 浏览(uid: u64, channel_id: String, mut pre_id: u64) {
+    trt::spawn!({
+      loop {
+        let li = seen_li(uid, pre_id).await?;
+        let len = li.len();
+        dbg!("seen", &len);
+        if len == 0 {
+          break;
+        }
+        let mut r = VecAny::with_capacity(len * 3 + 1);
+        let last_ts = li.last().unwrap().0;
+        for (ts, cid, rid) in li {
+          r.push(ts);
+          r.push(cid);
+          r.push(rid);
+        }
+        r.push(pre_id);
+        crate::ws::send(&channel_id, WS::浏览, r).await?;
+        pre_id = last_ts;
+        if len < LIMIT {
+          break;
+        }
+      }
+    });
   }
 }
 
 pub async fn ws(action: WR, uid: u64, channel_id: String, body: &[u8]) -> Result<()> {
   match action {
-    WR::同步 => 同步::run(uid, channel_id, body).await?,
+    WR::同步 => {
+      let body = vb::d(body)?;
+      let mut to_sync = [
+        0, // 收藏
+        0, // 浏览
+      ];
+      for i in body.chunks(2) {
+        let p = i[0] as usize;
+        if p < to_sync.len() {
+          to_sync[p] = i[1];
+        }
+      }
+      同步::收藏(uid, channel_id.clone(), to_sync[0]);
+      同步::浏览(uid, channel_id, to_sync[1]);
+    }
   }
   Ok(())
 }
