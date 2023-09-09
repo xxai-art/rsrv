@@ -368,6 +368,7 @@ dependencies = [
  "x0",
  "xkv 0.1.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "xuser",
+ "xxai",
 ]
 
 [[package]]

@@ -1,8 +1,9 @@
-use anyhow::Result;
+mod user;
 use cookie::Cookie;
 use gid::gid;
 use trt::TRT;
 use ub64::bin_u64_li;
+pub use user::ClientUser;
 use x0::{fred::interfaces::HashesInterface, R};
 use xxhash_rust::xxh3::xxh3_64;
 
@@ -98,8 +99,7 @@ pub async fn has_user_client_id_cookie(
   cookie: Option<&str>,
   host: &str,
 ) -> (
-  bool,           // 是否有用户
-  u64,            // 浏览器 id
+  ClientUser,
   Option<String>, // cookie
 ) {
   let mut client = 0;
@@ -109,34 +109,24 @@ pub async fn has_user_client_id_cookie(
       client = id;
     }
     ClientState::Ok(id) => {
-      // req.extensions_mut().insert(_Client { id, _uid: Some(0) });
-      return (true, id, None);
+      return (ClientUser { id, _uid: Some(0) }, None);
     }
     _ => {}
   }
 
-  let has_user = if client == 0 {
+  let _uid = if client == 0 {
     client = gid!(client);
-    true
+    Some(0)
   } else {
-    false
+    None
   };
-  // req.extensions_mut().insert(_Client { id: client, _uid });
-  // let mut r = next.run(req).await;
 
   let t = &vbyte::compress_list(&[day10(), client])[..];
   let cookie =
     xxai::cookie_encode([&xxh3_64(&[unsafe { &SK }, t].concat()).to_le_bytes()[..], t].concat());
   let host = xxai::tld(host);
-  // r.headers_mut().insert(
-  //   http::header::SET_COOKIE,
-  //   format!("I={cookie};max-age=99999999;domain={host};path=/;HttpOnly;SameSite=None;Secure")
-  //     .parse()
-  //     .unwrap(),
-  // );
   (
-    has_user,
-    client,
+    ClientUser { id: client, _uid },
     Some(format!(
       "I={cookie};max-age=99999999;domain={host};path=/;HttpOnly;SameSite=None;Secure"
     )),
