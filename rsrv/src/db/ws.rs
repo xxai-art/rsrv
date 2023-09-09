@@ -45,6 +45,7 @@ mod 同步 {
           r.push(aid);
         }
         r.push(pre_id);
+        r.push(id);
         crate::ws::send(&channel_id, WS::收藏, r).await?;
         pre_id = id;
         if len < LIMIT {
