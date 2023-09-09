@@ -5,8 +5,7 @@ use anyhow::Result;
 use bytes::BytesMut;
 use header_user::header_user;
 use ratchet_rs::{
-  deflate::DeflateExtProvider, Error, HeaderMap, Message, PayloadType, ProtocolRegistry,
-  UpgradedServer, WebSocket, WebSocketConfig, WebSocketResponse,
+  deflate::DeflateExtProvider, Message, ProtocolRegistry, WebSocketConfig,
 };
 use tokio::net::{TcpListener, TcpStream};
 use tokio_stream::{wrappers::TcpListenerStream, StreamExt};
@@ -35,7 +34,7 @@ async fn accpet(socket: TcpStream) -> Result<()> {
 
   let mut buf = BytesMut::new();
 
-  let (mut sender, mut receiver) = websocket.split()?;
+  let (_sender, mut receiver) = websocket.split()?;
 
   loop {
     match receiver.read(&mut buf).await? {

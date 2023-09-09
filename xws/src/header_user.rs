@@ -1,9 +1,7 @@
 use std::fmt::Debug;
 
 use anyhow::Result;
-use ratchet_rs::{
-  deflate::Deflate, Extension, HeaderMap, UpgradedServer, WebSocket, WebSocketUpgrader,
-};
+use ratchet_rs::{Extension, HeaderMap, UpgradedServer, WebSocket, WebSocketUpgrader};
 use tokio::net::TcpStream;
 use ub64::b64_u64;
 
@@ -23,8 +21,8 @@ pub async fn header_user<T: Extension + Debug>(
   let mut cookie_i = String::new();
   if let Some(cookie) = req.headers().get("cookie") {
     for i in cookie.to_str()?.split(';') {
-      if i.starts_with("I=") {
-        cookie_i = i[2..].trim().to_string();
+      if let Some(stripped) = i.strip_prefix("I=") {
+        cookie_i = stripped.trim().to_string();
       }
     }
   };
@@ -32,7 +30,7 @@ pub async fn header_user<T: Extension + Debug>(
     return Ok(None);
   }
 
-  let uid = b64_u64(uri);
+  let _uid = b64_u64(uri);
 
   let mut headers = HeaderMap::new();
   headers.insert("xxx", "abc".parse()?);
