@@ -1,15 +1,37 @@
 mod header_user;
-use std::net::SocketAddr;
+use std::{fmt::Debug, net::SocketAddr};
 
 use anyhow::Result;
 use bytes::BytesMut;
 use header_user::header_user;
+use lazy_static::lazy_static;
 use ratchet_rs::{
-  deflate::DeflateExtProvider, Message, ProtocolRegistry, WebSocketConfig, WebSocketResponse,
+  deflate::DeflateExtProvider, CloseReason, Extension, Message, ProtocolRegistry, WebSocket,
+  WebSocketConfig, WebSocketResponse,
 };
 use tokio::net::{TcpListener, TcpStream};
 use tokio_stream::{wrappers::TcpListenerStream, StreamExt};
 use tracing::info;
+
+// https://github.com/Luka967/websocket-close-codes 4000 - 4999   可用于应用
+const CODE_UNAUTH: u16 = 4401;
+
+lazy_static! {
+  static ref CLOSE_UNAUTH: CloseReason =
+    ratchet_rs::CloseReason::new(ratchet_rs::CloseCode::Application(4401), None);
+}
+
+// sender
+//   .close(ratchet_rs::CloseReason::new(
+//     ratchet_rs::CloseCode::Application(4401),
+//     Some("".to_string()),
+//   ))
+//   .await?;
+
+async fn close_unauth<T: Extension + Debug>(mut websocket: WebSocket<TcpStream, T>) -> Result<()> {
+  websocket.close(CLOSE_UNAUTH.clone()).await?;
+  return Ok(());
+}
 
 async fn accpet(socket: TcpStream) -> Result<()> {
   let upgrader = ratchet_rs::accept_with(
@@ -26,12 +48,19 @@ async fn accpet(socket: TcpStream) -> Result<()> {
   // Or you could opt to reject the connection with headers
   // websocket.reject(WebSocketResponse::with_headers(404, headers)?).await;
 
-  let (mut uri, client_user, websocket) = header_user(upgrader).await?;
+  let (mut uri, client_user, mut websocket) = header_user(upgrader).await?;
 
   if let Some(p) = uri.rfind('/') {
     uri = uri[p + 1..].to_string()
+  } else {
+    return close_unauth(websocket).await;
   };
+
   let uid = ub64::b64_u64(uri);
+  if !client_user.is_login(uid).await? {
+    return close_unauth(websocket).await;
+  }
+
   dbg!(uid);
   // if websocket.is_none() {
   //   return Ok(());
@@ -41,14 +70,6 @@ async fn accpet(socket: TcpStream) -> Result<()> {
   let mut buf = BytesMut::new();
 
   let (mut sender, mut receiver) = websocket.split()?;
-
-  // https://github.com/Luka967/websocket-close-codes 4000 - 4999   可用于应用
-  // sender
-  //   .close(ratchet_rs::CloseReason::new(
-  //     ratchet_rs::CloseCode::Application(4401),
-  //     Some("".to_string()),
-  //   ))
-  //   .await?;
 
   loop {
     match receiver.read(&mut buf).await? {

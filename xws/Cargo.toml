@@ -24,6 +24,7 @@ tokio-stream = { version = "0.1.14", features = ["net"] }
 tracing = "0.1.37"
 trt = { version = "0.1.5", path = "../trt" }
 ub64 = { version = "0.0.10", features = ["u64"] }
+lazy_static = "1.4.0"
 
 [dependencies.tokio]
 version = "1.32.0"
