@@ -4,7 +4,9 @@ use std::net::SocketAddr;
 use anyhow::Result;
 use bytes::BytesMut;
 use header_user::header_user;
-use ratchet_rs::{deflate::DeflateExtProvider, Message, ProtocolRegistry, WebSocketConfig};
+use ratchet_rs::{
+  deflate::DeflateExtProvider, Message, ProtocolRegistry, WebSocketConfig, WebSocketResponse,
+};
 use tokio::net::{TcpListener, TcpStream};
 use tokio_stream::{wrappers::TcpListenerStream, StreamExt};
 use tracing::info;
@@ -17,7 +19,6 @@ async fn accpet(socket: TcpStream) -> Result<()> {
     ProtocolRegistry::default(),
   )
   .await?;
-
   // You could opt to reject the connection
   // let response = WebSocketResponse::with_headers(200, headers);
   // websocket.reject(WebSocketResponse::new(404)?).await?;
@@ -39,7 +40,15 @@ async fn accpet(socket: TcpStream) -> Result<()> {
 
   let mut buf = BytesMut::new();
 
-  let (_sender, mut receiver) = websocket.split()?;
+  let (mut sender, mut receiver) = websocket.split()?;
+
+  // https://github.com/Luka967/websocket-close-codes 4000 - 4999   可用于应用
+  // sender
+  //   .close(ratchet_rs::CloseReason::new(
+  //     ratchet_rs::CloseCode::Application(4401),
+  //     Some("".to_string()),
+  //   ))
+  //   .await?;
 
   loop {
     match receiver.read(&mut buf).await? {
