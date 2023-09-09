@@ -1,3 +1,4 @@
+use cookie::Cookie;
 use trt::TRT;
 use ub64::bin_u64_li;
 use x0::{fred::interfaces::HashesInterface, R};
@@ -48,7 +49,18 @@ pub enum ClientState {
   None,
 }
 
-fn client_by_cookie(token: &str) -> ClientState {
+pub fn client_by_cookie(cookie: Option<&str>) -> ClientState {
+  if let Some(cookie) = cookie {
+    for cookie in Cookie::split_parse(cookie).flatten() {
+      if cookie.name() == "I" {
+        return client_by_token(cookie.value());
+      }
+    }
+  }
+  ClientState::None
+}
+
+fn client_by_token(token: &str) -> ClientState {
   if let Ok(c) = xxai::cookie_decode(token) {
     if c.len() >= TOKEN_LEN {
       let client = &c[TOKEN_LEN..];

@@ -364,7 +364,6 @@ dependencies = [
  "anyhow",
  "awp",
  "axum",
- "cookie",
  "gid",
  "http",
  "ub64",
@@ -3872,6 +3871,7 @@ dependencies = [
 name = "xuser"
 version = "0.1.0"
 dependencies = [
+ "cookie",
  "ctor",
  "trt 0.1.5",
  "ub64",

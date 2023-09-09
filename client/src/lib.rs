@@ -8,7 +8,6 @@ use axum::{
   response::Response,
   Extension,
 };
-use cookie::Cookie;
 use gid::gid;
 use xxhash_rust::xxh3::xxh3_64;
 
@@ -33,23 +32,17 @@ pub async fn client<B>(req: Request<B>, next: Next<B>) -> Result<Response, Statu
 
 pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, StatusCode> {
   let mut client = 0;
+  let cookie = header_get(&req, http::header::COOKIE);
 
-  if let Some(cookie) = header_get(&req, http::header::COOKIE) {
-    for cookie in Cookie::split_parse(cookie).flatten() {
-      if cookie.name() == "I" {
-        match client_by_cookie(cookie.value()) {
-          ClientState::Renew(id) => {
-            client = id;
-          }
-          ClientState::Ok(id) => {
-            req.extensions_mut().insert(_Client { id, _uid: Some(0) });
-            return Ok(next.run(req).await);
-          }
-          _ => {}
-        }
-        break;
-      }
+  match xuser::client_by_cookie(cookie) {
+    ClientState::Renew(id) => {
+      client = id;
     }
+    ClientState::Ok(id) => {
+      req.extensions_mut().insert(_Client { id, _uid: Some(0) });
+      return Ok(next.run(req).await);
+    }
+    _ => {}
   }
 
   let host = xxai::tld(header_get(&req, http::header::HOST).unwrap());
@@ -60,7 +53,6 @@ pub async fn _client<B>(mut req: Request<B>, next: Next<B>) -> Result<Response, 
     None
   };
   req.extensions_mut().insert(_Client { id: client, _uid });
-
   let mut r = next.run(req).await;
 
   let t = &vbyte::compress_list(&[day10(), client])[..];
