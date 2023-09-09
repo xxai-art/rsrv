@@ -7,13 +7,9 @@ edition = "2021"
 [dependencies]
 axum = "0.6.20"
 xkv = "0.1.11"
-xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
 x0 = { path = "../x0" }
 xxai = { path = "../xxai" }
 http = "0.2.9"
-gid = { path = "../gid" }
 xuser = { path = "../xuser" }
 anyhow = "1.0.75"
 awp = { path = "../awp" }
-vbyte = "0.1.0"
-ub64 = { version = "0.0.10", features = ["u64li"] }

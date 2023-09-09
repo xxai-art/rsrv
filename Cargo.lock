@@ -364,15 +364,10 @@ dependencies = [
  "anyhow",
  "awp",
  "axum",
- "gid",
  "http",
- "ub64",
- "vbyte",
  "x0",
  "xkv 0.1.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "xuser",
- "xxai",
- "xxhash-rust",
 ]
 
 [[package]]
@@ -3871,10 +3866,13 @@ dependencies = [
 name = "xuser"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "cookie",
  "ctor",
+ "gid",
  "trt 0.1.5",
  "ub64",
+ "vbyte",
  "x0",
  "xxai",
  "xxhash-rust",
