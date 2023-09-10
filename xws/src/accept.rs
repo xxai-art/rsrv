@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fmt::Debug, sync::Arc};
+use std::{fmt::Debug, sync::Arc};
 
 use anyhow::Result;
 use bytes::BytesMut;
@@ -9,7 +9,7 @@ use ratchet_rs::{
 };
 use tokio::{net::TcpStream, sync::Mutex};
 
-use crate::header_user::header_user;
+use crate::{header_user::header_user, user_ws::UserWs};
 
 // https://github.com/Luka967/websocket-close-codes 4000 - 4999   可用于应用
 const CODE_UNAUTH: u16 = 4401;
@@ -28,10 +28,7 @@ async fn close_unauth<T: Extension + Debug>(mut websocket: WebSocket<TcpStream, 
   Ok(())
 }
 
-pub async fn accept(
-  user_ws: Arc<DashMap<u64, DashMap<u64, Arc<Mutex<Sender<TcpStream, DeflateEncoder>>>>>>,
-  socket: TcpStream,
-) -> Result<()> {
+pub async fn accept(user_ws: Arc<DashMap<u64, UserWs>>, socket: TcpStream) -> Result<()> {
   let upgrader = ratchet_rs::accept_with(
     socket,
     WebSocketConfig::default(),
@@ -62,7 +59,7 @@ pub async fn accept(
 
   user_ws
     .entry(uid)
-    .or_insert(DashMap::new())
+    .or_default()
     .insert(client_id, sender.clone());
 
   loop {
