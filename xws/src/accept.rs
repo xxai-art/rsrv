@@ -1,13 +1,13 @@
-use std::{fmt::Debug, sync::Arc};
+use std::{collections::HashSet, fmt::Debug, sync::Arc};
 
 use anyhow::Result;
 use bytes::BytesMut;
 use dashmap::DashMap;
 use ratchet_rs::{
   deflate::{DeflateEncoder, DeflateExtProvider},
-  Extension, Message, ProtocolRegistry, Sender, WebSocket, WebSocketConfig,
+  Extension, Message, PayloadType, ProtocolRegistry, Sender, WebSocket, WebSocketConfig,
 };
-use tokio::net::TcpStream;
+use tokio::{net::TcpStream, sync::Mutex};
 
 use crate::header_user::header_user;
 
@@ -29,7 +29,7 @@ async fn close_unauth<T: Extension + Debug>(mut websocket: WebSocket<TcpStream, 
 }
 
 pub async fn accept(
-  user_ws: Arc<DashMap<u64, Sender<TcpStream, DeflateEncoder>>>,
+  user_ws: Arc<DashMap<u64, DashMap<u64, Arc<Mutex<Sender<TcpStream, DeflateEncoder>>>>>>,
   socket: TcpStream,
 ) -> Result<()> {
   let upgrader = ratchet_rs::accept_with(
@@ -53,11 +53,18 @@ pub async fn accept(
     return close_unauth(websocket).await;
   }
 
+  let client_id = client_user.id;
   let mut buf = BytesMut::new();
 
   let (sender, mut receiver) = websocket.split()?;
 
-  user_ws.insert(uid, sender);
+  let sender = Arc::new(Mutex::new(sender));
+
+  user_ws
+    .entry(uid)
+    .or_insert(DashMap::new())
+    .insert(client_id, sender.clone());
+
   loop {
     match receiver.read(&mut buf).await? {
       Message::Text => {
@@ -66,8 +73,11 @@ pub async fn accept(
         //buf.clear();
       }
       Message::Binary => {
-        dbg!("bin", &buf);
-        // sender.write(&mut buf, PayloadType::Binary).await?;
+        sender
+          .lock()
+          .await
+          .write(&mut buf, PayloadType::Binary)
+          .await?;
         buf.clear();
       }
       Message::Ping(_) | Message::Pong(_) => {
@@ -76,5 +86,12 @@ pub async fn accept(
       Message::Close(_) => break,
     }
   }
+  if let Some(map) = user_ws.get(&uid) {
+    if map.len() == 1 {
+      user_ws.remove(&uid);
+    } else {
+      map.remove(&client_id);
+    }
+  };
   Ok(())
 }
