@@ -34,7 +34,6 @@ async fn close_unauth<T: Extension + Debug>(
 }
 
 async fn accpet(socket: TcpStream) -> Result<()> {
-  dbg!(">>>>>");
   let upgrader = ratchet_rs::accept_with(
     socket,
     WebSocketConfig::default(),
@@ -63,9 +62,9 @@ async fn accpet(socket: TcpStream) -> Result<()> {
   loop {
     match receiver.read(&mut buf).await? {
       Message::Text => {
-        dbg!("txt", &buf);
+        //dbg!("txt", &buf);
         // sender.write(&mut buf, PayloadType::Text).await?;
-        buf.clear();
+        //buf.clear();
       }
       Message::Binary => {
         dbg!("bin", &buf);
@@ -73,7 +72,7 @@ async fn accpet(socket: TcpStream) -> Result<()> {
         buf.clear();
       }
       Message::Ping(_) | Message::Pong(_) => {
-        dbg!("ping pong");
+        //dbg!("ping pong");
       }
       Message::Close(_) => break,
     }
