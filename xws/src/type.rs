@@ -36,6 +36,18 @@ impl AllWs {
     Ok(())
   }
 
+  pub async fn to_other(&self, uid: u64, client_id: u64, kind: SEND, payload: &[u8]) -> Result<()> {
+    let msg = msg_payload(kind, payload);
+    if let Some(map) = self.0.get(&uid) {
+      for sender in map.iter() {
+        if *sender.key() != client_id {
+          send(&sender, &msg).await?;
+        }
+      }
+    }
+    Ok(())
+  }
+
   pub async fn to_client(
     &self,
     uid: u64,

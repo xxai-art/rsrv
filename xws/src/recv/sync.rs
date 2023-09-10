@@ -12,7 +12,7 @@ use crate::{AllWs, C::SEND};
 const LIMIT: usize = 4096;
 
 Q! {
-    fav_li:SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 4096;
+  fav_li:SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 4096;
 }
 
 async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
@@ -95,8 +95,6 @@ pub async fn sync(msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result
       to_sync[p] = i[1];
     }
   }
-  dbg!(to_sync);
-
   let (sx, mut rx) = channel::<()>(2);
   收藏(sx.clone(), uid, client_id, to_sync[0], all_ws.clone());
   浏览(sx, uid, client_id, to_sync[1], all_ws.clone());
