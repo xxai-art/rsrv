@@ -11,8 +11,7 @@ members = [
   "gid",
   "xkv",
   "awp",
-  "xws",
-  "xwsrpc"
+  "xws"
 ]
 resolver = "2"
 
