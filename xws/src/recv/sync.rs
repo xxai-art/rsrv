@@ -1,6 +1,9 @@
 use anyhow::Result;
 use anypack::{Any, Pack, VecAny};
-use tokio::sync::mpsc::{channel, Sender};
+use tokio::{
+  sync::mpsc::{channel, Sender},
+  time::{timeout, Duration},
+};
 use x0::{fred::interfaces::SortedSetsInterface, KV};
 use xg::Q;
 
@@ -95,7 +98,7 @@ pub async fn sync(msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result
   浏览(sx, uid, client_id, to_sync[1]);
 
   let mut n = 0;
-  while let Some(i) = rx.recv().await {
+  while let _ = timeout(Duration::from_secs(300), rx.recv()).await {
     n += 1;
     if n == to_sync.len() {
       break;
