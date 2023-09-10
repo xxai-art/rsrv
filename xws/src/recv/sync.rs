@@ -26,7 +26,7 @@ async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
   )
 }
 
-pub fn 收藏(sender: Sender<()>, uid: u64, channel_id: u64, mut pre_id: u64) {
+pub fn 收藏(sender: Sender<()>, uid: u64, client_id: u64, mut pre_id: u64, all_ws: AllWs) {
   trt::spawn!({
     while let Ok(li) = fav_li(uid, pre_id).await {
       let len = li.len();
@@ -44,7 +44,9 @@ pub fn 收藏(sender: Sender<()>, uid: u64, channel_id: u64, mut pre_id: u64) {
       }
       r.push(pre_id);
       r.push(id);
-      // crate::ws::send(&channel_id, WS::收藏, r).await?;
+      all_ws
+        .to_client(uid, client_id, SEND::收藏, &r.pack())
+        .await?;
       pre_id = id;
       if len < LIMIT {
         break;
@@ -54,7 +56,7 @@ pub fn 收藏(sender: Sender<()>, uid: u64, channel_id: u64, mut pre_id: u64) {
   });
 }
 
-pub fn 浏览(sender: Sender<()>, uid: u64, channel_id: u64, mut pre_id: u64) {
+pub fn 浏览(sender: Sender<()>, uid: u64, client_id: u64, mut pre_id: u64, all_ws: AllWs) {
   trt::spawn!({
     while let Ok(li) = seen_li(uid, pre_id).await {
       let len = li.len();
@@ -69,7 +71,9 @@ pub fn 浏览(sender: Sender<()>, uid: u64, channel_id: u64, mut pre_id: u64) {
         r.push(rid);
       }
       r.push(pre_id);
-      // crate::ws::send(&channel_id, WS::浏览, r).await?;
+      all_ws
+        .to_client(uid, client_id, SEND::浏览, &r.pack())
+        .await?;
       pre_id = last_ts;
       if len < LIMIT {
         break;
@@ -94,11 +98,11 @@ pub async fn sync(msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result
   dbg!(to_sync);
 
   let (sx, mut rx) = channel::<()>(2);
-  收藏(sx.clone(), uid, client_id, to_sync[0]);
-  浏览(sx, uid, client_id, to_sync[1]);
+  收藏(sx.clone(), uid, client_id, to_sync[0], all_ws.clone());
+  浏览(sx, uid, client_id, to_sync[1], all_ws.clone());
 
   let mut n = 0;
-  while let _ = timeout(Duration::from_secs(6), rx.recv()).await {
+  while let _ = timeout(Duration::from_secs(3), rx.recv()).await {
     n += 1;
     if n == to_sync.len() {
       break;
