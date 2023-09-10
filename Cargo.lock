@@ -3878,6 +3878,7 @@ dependencies = [
  "tracing",
  "trt 0.1.5",
  "ub64",
+ "vb",
  "xuser",
 ]
 
