@@ -16,7 +16,7 @@ use crate::r#type::AllWs;
 #[tokio::main]
 async fn main() -> Result<()> {
   loginit::init();
-  let addr = SocketAddr::from(([0, 0, 0, 0], envport::get("PORT", 8132)));
+  let addr = SocketAddr::from(([0, 0, 0, 0], envport::get("PORT", 8133)));
   info!("ws://{}", addr);
 
   let listener = TcpListener::bind(addr).await?;
