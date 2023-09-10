@@ -1,18 +1,11 @@
 mod header_user;
-use std::{fmt::Debug, net::SocketAddr, sync::Arc};
+use std::{net::SocketAddr, sync::Arc};
 
 mod accept;
 use accept::accept;
 use anyhow::Result;
-use bytes::BytesMut;
 use dashmap::DashMap;
-use lazy_static::lazy_static;
-use ratchet_rs::{
-  deflate::{DeflateEncoder, DeflateExtProvider},
-  CloseReason, Extension, Message, PayloadType, ProtocolRegistry, Sender, WebSocket,
-  WebSocketConfig, WebSocketResponse,
-};
-use tokio::net::{TcpListener, TcpStream};
+use tokio::net::TcpListener;
 use tokio_stream::{wrappers::TcpListenerStream, StreamExt};
 use tracing::info;
 

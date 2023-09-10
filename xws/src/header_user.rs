@@ -1,9 +1,7 @@
 use std::fmt::Debug;
 
 use anyhow::Result;
-use ratchet_rs::{
-  Extension, HeaderMap, UpgradedServer, WebSocket, WebSocketResponse, WebSocketUpgrader,
-};
+use ratchet_rs::{Extension, HeaderMap, UpgradedServer, WebSocket, WebSocketUpgrader};
 use tokio::net::TcpStream;
 use xuser::ClientUser;
 

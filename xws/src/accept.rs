@@ -1,17 +1,13 @@
-use std::{fmt::Debug, net::SocketAddr, sync::Arc};
+use std::{fmt::Debug, sync::Arc};
 
 use anyhow::Result;
 use bytes::BytesMut;
 use dashmap::DashMap;
-use lazy_static::lazy_static;
 use ratchet_rs::{
   deflate::{DeflateEncoder, DeflateExtProvider},
-  CloseReason, Extension, Message, PayloadType, ProtocolRegistry, Sender, WebSocket,
-  WebSocketConfig, WebSocketResponse,
+  Extension, Message, ProtocolRegistry, Sender, WebSocket, WebSocketConfig,
 };
-use tokio::net::{TcpListener, TcpStream};
-use tokio_stream::{wrappers::TcpListenerStream, StreamExt};
-use tracing::info;
+use tokio::net::TcpStream;
 
 use crate::header_user::header_user;
 
@@ -27,12 +23,12 @@ const CODE_UNAUTH: u16 = 4401;
 
 async fn close_unauth<T: Extension + Debug>(
   mut websocket: WebSocket<TcpStream, T>,
-  uid: u64,
+  _uid: u64,
 ) -> Result<()> {
   let close_unauth =
     ratchet_rs::CloseReason::new(ratchet_rs::CloseCode::Application(CODE_UNAUTH), None);
   websocket.close(close_unauth).await?;
-  return Ok(());
+  Ok(())
 }
 
 pub async fn accept(
@@ -47,7 +43,7 @@ pub async fn accept(
   )
   .await?;
 
-  let (mut uri, client_user, mut websocket) = header_user(upgrader).await?;
+  let (mut uri, client_user, websocket) = header_user(upgrader).await?;
 
   if let Some(p) = uri.rfind('/') {
     uri = uri[p + 1..].to_string()
@@ -62,7 +58,7 @@ pub async fn accept(
 
   let mut buf = BytesMut::new();
 
-  let (mut sender, mut receiver) = websocket.split()?;
+  let (sender, mut receiver) = websocket.split()?;
 
   user_ws.insert(uid, sender);
   loop {
