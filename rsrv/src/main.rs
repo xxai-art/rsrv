@@ -20,7 +20,6 @@ pub mod C;
 mod db;
 mod kv;
 mod url;
-mod ws;
 
 #[allow(non_snake_case)]
 mod K;
@@ -67,8 +66,8 @@ fn main() -> anyhow::Result<()> {
   // post!(li => li;fav=>fav);
 
   // post!(test);
-  router = router.route("/ws/:li", get(crate::url::ws::get));
-  router = router.route("/ws/:li", post(crate::url::ws::post));
+  // router = router.route("/ws/:li", get(crate::url::ws::get));
+  // router = router.route("/ws/:li", post(crate::url::ws::post));
   post!(fav, hr, q, userFav, seen, log);
 
   let default_port = 8879;
