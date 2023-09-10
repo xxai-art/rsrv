@@ -14,7 +14,3 @@ macro_rules! key {
 key!(favLast, seenLast, r, r0, r1, hr2);
 
 pub const REC: &[&[u8]; 3] = &[R0, R1, R];
-
-pub fn nchan(uid: u64) -> Vec<u8> {
-  [&b"nchan:"[..], &u64_bin(uid)].concat()
-}
