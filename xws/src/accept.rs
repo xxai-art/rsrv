@@ -22,7 +22,7 @@ async fn close_unauth<T: Extension + Debug>(mut websocket: WebSocket<TcpStream, 
   Ok(())
 }
 
-pub async fn accept(user_ws: AllWs, socket: TcpStream) -> Result<()> {
+pub async fn accept(all_ws: AllWs, socket: TcpStream) -> Result<()> {
   let upgrader = ratchet_rs::accept_with(
     socket,
     WebSocketConfig::default(),
@@ -50,10 +50,7 @@ pub async fn accept(user_ws: AllWs, socket: TcpStream) -> Result<()> {
 
   let sender = Arc::new(Mutex::new(sender));
 
-  user_ws
-    .entry(uid)
-    .or_default()
-    .insert(client_id, sender.clone());
+  all_ws.insert(uid, client_id, sender.clone());
 
   let mut buf = BytesMut::new();
 
@@ -67,16 +64,13 @@ pub async fn accept(user_ws: AllWs, socket: TcpStream) -> Result<()> {
       Message::Binary => {
         if !buf.is_empty() {
           if let Ok(kind) = RECV::from_int(buf[0]) {
-            match recv(kind, &buf[1..], || user_ws.clone()).await {
-              Ok(bin) => {
-                if let Some(bin) = bin {
-                  sender.lock().await.write(&bin, PayloadType::Binary).await?;
-                }
-              }
-              Err(err) => {
+            let all_ws = all_ws.clone();
+            let msg = Box::from(&buf[1..]);
+            trt::spawn!({
+              if let Err(err) = recv(kind, &msg, uid, client_id, all_ws).await {
                 tracing::error!("{} {}", uid, err)
               }
-            }
+            });
           }
         }
       }
@@ -90,12 +84,6 @@ pub async fn accept(user_ws: AllWs, socket: TcpStream) -> Result<()> {
     }
     buf.clear();
   }
-  if let Some(map) = user_ws.get(&uid) {
-    if map.len() == 1 {
-      user_ws.remove(&uid);
-    } else {
-      map.remove(&client_id);
-    }
-  };
+  all_ws.remove(uid, client_id);
   Ok(())
 }

@@ -12,6 +12,8 @@ use tokio::net::TcpListener;
 use tokio_stream::{wrappers::TcpListenerStream, StreamExt};
 use tracing::info;
 
+use crate::r#type::AllWs;
+
 #[tokio::main]
 async fn main() -> Result<()> {
   loginit::init();
@@ -21,11 +23,11 @@ async fn main() -> Result<()> {
   let listener = TcpListener::bind(addr).await?;
   let mut incoming = TcpListenerStream::new(listener);
 
-  let user_ws = Arc::new(DashMap::new());
+  let all_ws = AllWs::default();
   while let Some(Ok(socket)) = incoming.next().await {
-    let user_ws = user_ws.clone();
+    let all_ws = all_ws.clone();
     trt::spawn!({
-      accept(user_ws, socket).await?;
+      accept(all_ws, socket).await?;
     });
   }
 
