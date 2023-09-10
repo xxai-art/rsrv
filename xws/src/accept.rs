@@ -21,10 +21,7 @@ const CODE_UNAUTH: u16 = 4401;
 //   ))
 //   .await?;
 
-async fn close_unauth<T: Extension + Debug>(
-  mut websocket: WebSocket<TcpStream, T>,
-  _uid: u64,
-) -> Result<()> {
+async fn close_unauth<T: Extension + Debug>(mut websocket: WebSocket<TcpStream, T>) -> Result<()> {
   let close_unauth =
     ratchet_rs::CloseReason::new(ratchet_rs::CloseCode::Application(CODE_UNAUTH), None);
   websocket.close(close_unauth).await?;
@@ -48,12 +45,12 @@ pub async fn accept(
   if let Some(p) = uri.rfind('/') {
     uri = uri[p + 1..].to_string()
   } else {
-    return close_unauth(websocket, 0).await;
+    return close_unauth(websocket).await;
   };
 
   let uid = ub64::b64_u64(uri);
   if !client_user.is_login(uid).await? {
-    return close_unauth(websocket, uid).await;
+    return close_unauth(websocket).await;
   }
 
   let mut buf = BytesMut::new();
