@@ -2,12 +2,11 @@
 mod C;
 mod header_user;
 mod recv;
-use std::{net::SocketAddr, sync::Arc};
+use std::net::SocketAddr;
 mod accept;
 mod r#type;
 use accept::accept;
 use anyhow::Result;
-use dashmap::DashMap;
 use tokio::net::TcpListener;
 use tokio_stream::{wrappers::TcpListenerStream, StreamExt};
 use tracing::info;

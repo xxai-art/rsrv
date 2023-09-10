@@ -2,7 +2,6 @@ use std::{fmt::Debug, sync::Arc};
 
 use anyhow::Result;
 use bytes::BytesMut;
-use dashmap::DashMap;
 use int_enum::IntEnum;
 use ratchet_rs::{
   deflate::DeflateExtProvider, Extension, Message, PayloadType, ProtocolRegistry, WebSocket,
