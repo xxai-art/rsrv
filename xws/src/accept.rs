@@ -63,16 +63,20 @@ pub async fn accept(user_ws: Arc<DashMap<u64, UserWs>>, socket: TcpStream) -> Re
         // sender.write(&mut buf, PayloadType::Text).await?;
         //buf.clear();
       }
-      Message::Binary => match recv(&buf).await {
-        Ok(bin) => {
-          if let Some(bin) = bin {
-            sender.lock().await.write(&bin, PayloadType::Binary).await?;
+      Message::Binary => {
+        if !buf.is_empty() {
+          match recv(buf[0], &buf[1..]).await {
+            Ok(bin) => {
+              if let Some(bin) = bin {
+                sender.lock().await.write(&bin, PayloadType::Binary).await?;
+              }
+            }
+            Err(err) => {
+              tracing::error!("{} {}", uid, err)
+            }
           }
         }
-        Err(err) => {
-          tracing::error!("{} {}", uid, err)
-        }
-      },
+      }
       Message::Ping(_) => {
         sender.lock().await.write(&[], PayloadType::Pong).await?;
       }
