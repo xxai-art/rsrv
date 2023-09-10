@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
+use anyhow::Result;
 use dashmap::DashMap;
-use ratchet_rs::deflate::DeflateEncoder;
+use ratchet_rs::{deflate::DeflateEncoder, PayloadType};
 use tokio::{net::TcpStream, sync::Mutex};
 
 pub type Sender = Arc<Mutex<ratchet_rs::Sender<TcpStream, DeflateEncoder>>>;
@@ -11,9 +12,29 @@ pub type UserWs = DashMap<u64, Sender>;
 #[derive(Clone, Default)]
 pub struct AllWs(Arc<DashMap<u64, UserWs>>);
 
+pub async fn send(sender: &Sender, msg: &[u8]) -> Result<()> {
+  sender.lock().await.write(msg, PayloadType::Binary).await?;
+  Ok(())
+}
+
 impl AllWs {
-  pub fn to_user() {}
-  pub fn to_user_client_id() {}
+  pub async fn to_user(&self, uid: u64, msg: &[u8]) -> Result<()> {
+    if let Some(map) = self.0.get(&uid) {
+      for sender in map.iter() {
+        send(&sender, msg).await?;
+      }
+    }
+    Ok(())
+  }
+
+  pub async fn to_user_client_id(&self, uid: u64, client_id: u64, msg: &[u8]) -> Result<()> {
+    if let Some(map) = self.0.get(&uid) {
+      if let Some(sender) = map.get(&client_id) {
+        return send(&sender, msg).await;
+      }
+    }
+    Ok(())
+  }
 
   pub fn insert(&self, uid: u64, client_id: u64, sender: Sender) {
     self
@@ -25,13 +46,16 @@ impl AllWs {
 
   pub fn remove(&self, uid: u64, client_id: u64) {
     let d = &self.0;
+    let is_empty;
     if let Some(map) = d.get(&uid) {
-      if map.len() > 1 {
-        map.remove(&client_id);
-        return;
-      }
-    };
-
-    d.remove(&uid);
+      map.remove(&client_id);
+      is_empty = map.is_empty();
+    } else {
+      return;
+    }
+    // 不能在get中remove，不然会死锁
+    if is_empty {
+      d.remove_if(&uid, |_, v| v.is_empty());
+    }
   }
 }
