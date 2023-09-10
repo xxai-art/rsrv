@@ -25,6 +25,7 @@ tracing = "0.1.37"
 trt = { version = "0.1.5", path = "../trt" }
 ub64 = { version = "0.0.10", features = ["u64"] }
 lazy_static = "1.4.0"
+dashmap = "5.5.3"
 
 [dependencies.tokio]
 version = "1.32.0"
