@@ -14,13 +14,6 @@ use crate::{header_user::header_user, recv::recv, user_ws::UserWs};
 // https://github.com/Luka967/websocket-close-codes 4000 - 4999   可用于应用
 const CODE_UNAUTH: u16 = 4401;
 
-// sender
-//   .close(ratchet_rs::CloseReason::new(
-//     ratchet_rs::CloseCode::Application(4401),
-//     Some("".to_string()),
-//   ))
-//   .await?;
-
 async fn close_unauth<T: Extension + Debug>(mut websocket: WebSocket<TcpStream, T>) -> Result<()> {
   let close_unauth =
     ratchet_rs::CloseReason::new(ratchet_rs::CloseCode::Application(CODE_UNAUTH), None);
@@ -70,24 +63,25 @@ pub async fn accept(user_ws: Arc<DashMap<u64, UserWs>>, socket: TcpStream) -> Re
         // sender.write(&mut buf, PayloadType::Text).await?;
         //buf.clear();
       }
-      Message::Binary => {
-        match recv(&buf).await {
-          Ok(bin) => {
-            if let Some(bin) = bin {
-              sender.lock().await.write(&bin, PayloadType::Binary).await?;
-            }
-          }
-          Err(err) => {
-            tracing::error!("{} {}", uid, err)
+      Message::Binary => match recv(&buf).await {
+        Ok(bin) => {
+          if let Some(bin) = bin {
+            sender.lock().await.write(&bin, PayloadType::Binary).await?;
           }
         }
-        buf.clear();
+        Err(err) => {
+          tracing::error!("{} {}", uid, err)
+        }
+      },
+      Message::Ping(_) => {
+        sender.lock().await.write(&[], PayloadType::Pong).await?;
       }
-      Message::Ping(_) | Message::Pong(_) => {
-        //dbg!("ping pong");
+      Message::Pong(_) => {
+        // todo 超时断开
       }
       Message::Close(_) => break,
     }
+    buf.clear();
   }
   if let Some(map) = user_ws.get(&uid) {
     if map.len() == 1 {
