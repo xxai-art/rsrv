@@ -27,15 +27,14 @@ async fn close_unauth<T: Extension + Debug>(
   mut websocket: WebSocket<TcpStream, T>,
   uid: u64,
 ) -> Result<()> {
-  let close_unauth = ratchet_rs::CloseReason::new(
-    ratchet_rs::CloseCode::Application(CODE_UNAUTH),
-    Some(ub64::u64_b64(uid)),
-  );
+  let close_unauth =
+    ratchet_rs::CloseReason::new(ratchet_rs::CloseCode::Application(CODE_UNAUTH), None);
   websocket.close(close_unauth).await?;
   return Ok(());
 }
 
 async fn accpet(socket: TcpStream) -> Result<()> {
+  dbg!(">>>>>");
   let upgrader = ratchet_rs::accept_with(
     socket,
     WebSocketConfig::default(),
