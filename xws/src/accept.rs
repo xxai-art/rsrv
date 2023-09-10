@@ -4,12 +4,12 @@ use anyhow::Result;
 use bytes::BytesMut;
 use dashmap::DashMap;
 use ratchet_rs::{
-  deflate::{DeflateEncoder, DeflateExtProvider},
-  Extension, Message, PayloadType, ProtocolRegistry, Sender, WebSocket, WebSocketConfig,
+  deflate::DeflateExtProvider, Extension, Message, PayloadType, ProtocolRegistry, WebSocket,
+  WebSocketConfig,
 };
 use tokio::{net::TcpStream, sync::Mutex};
 
-use crate::{header_user::header_user, user_ws::UserWs};
+use crate::{header_user::header_user, recv::recv, user_ws::UserWs};
 
 // https://github.com/Luka967/websocket-close-codes 4000 - 4999   可用于应用
 const CODE_UNAUTH: u16 = 4401;
@@ -51,7 +51,6 @@ pub async fn accept(user_ws: Arc<DashMap<u64, UserWs>>, socket: TcpStream) -> Re
   }
 
   let client_id = client_user.id;
-  let mut buf = BytesMut::new();
 
   let (sender, mut receiver) = websocket.split()?;
 
@@ -62,6 +61,8 @@ pub async fn accept(user_ws: Arc<DashMap<u64, UserWs>>, socket: TcpStream) -> Re
     .or_default()
     .insert(client_id, sender.clone());
 
+  let mut buf = BytesMut::new();
+
   loop {
     match receiver.read(&mut buf).await? {
       Message::Text => {
@@ -70,11 +71,16 @@ pub async fn accept(user_ws: Arc<DashMap<u64, UserWs>>, socket: TcpStream) -> Re
         //buf.clear();
       }
       Message::Binary => {
-        sender
-          .lock()
-          .await
-          .write(&mut buf, PayloadType::Binary)
-          .await?;
+        match recv(&buf).await {
+          Ok(bin) => {
+            if let Some(bin) = bin {
+              sender.lock().await.write(&bin, PayloadType::Binary).await?;
+            }
+          }
+          Err(err) => {
+            tracing::error!("{} {}", uid, err)
+          }
+        }
         buf.clear();
       }
       Message::Ping(_) | Message::Pong(_) => {
