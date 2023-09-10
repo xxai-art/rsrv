@@ -10,7 +10,7 @@ use ratchet_rs::{
 };
 use tokio::{net::TcpStream, sync::Mutex};
 
-use crate::{header_user::header_user, recv::recv, user_ws::UserWs, C::RECV};
+use crate::{header_user::header_user, r#type::AllWs, recv::recv, C::RECV};
 
 // https://github.com/Luka967/websocket-close-codes 4000 - 4999   可用于应用
 const CODE_UNAUTH: u16 = 4401;
@@ -22,7 +22,7 @@ async fn close_unauth<T: Extension + Debug>(mut websocket: WebSocket<TcpStream, 
   Ok(())
 }
 
-pub async fn accept(user_ws: Arc<DashMap<u64, UserWs>>, socket: TcpStream) -> Result<()> {
+pub async fn accept(user_ws: AllWs, socket: TcpStream) -> Result<()> {
   let upgrader = ratchet_rs::accept_with(
     socket,
     WebSocketConfig::default(),
@@ -67,7 +67,7 @@ pub async fn accept(user_ws: Arc<DashMap<u64, UserWs>>, socket: TcpStream) -> Re
       Message::Binary => {
         if !buf.is_empty() {
           if let Ok(kind) = RECV::from_int(buf[0]) {
-            match recv(kind, &buf[1..]).await {
+            match recv(kind, &buf[1..], || user_ws.clone()).await {
               Ok(bin) => {
                 if let Some(bin) = bin {
                   sender.lock().await.write(&bin, PayloadType::Binary).await?;
