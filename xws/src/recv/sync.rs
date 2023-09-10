@@ -5,7 +5,6 @@ use crate::AllWs;
 mod 同步 {
   use anyhow::Result;
   use anypack::{Any, Pack, VecAny};
-  use msgpacker::prelude::*;
   use x0::{fred::interfaces::SortedSetsInterface, KV};
   use xg::Q;
 
