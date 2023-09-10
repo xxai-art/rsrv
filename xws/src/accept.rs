@@ -3,13 +3,14 @@ use std::{fmt::Debug, sync::Arc};
 use anyhow::Result;
 use bytes::BytesMut;
 use dashmap::DashMap;
+use int_enum::IntEnum;
 use ratchet_rs::{
   deflate::DeflateExtProvider, Extension, Message, PayloadType, ProtocolRegistry, WebSocket,
   WebSocketConfig,
 };
 use tokio::{net::TcpStream, sync::Mutex};
 
-use crate::{header_user::header_user, recv::recv, user_ws::UserWs};
+use crate::{header_user::header_user, recv::recv, user_ws::UserWs, C::RECV};
 
 // https://github.com/Luka967/websocket-close-codes 4000 - 4999   可用于应用
 const CODE_UNAUTH: u16 = 4401;
@@ -65,14 +66,16 @@ pub async fn accept(user_ws: Arc<DashMap<u64, UserWs>>, socket: TcpStream) -> Re
       }
       Message::Binary => {
         if !buf.is_empty() {
-          match recv(buf[0], &buf[1..]).await {
-            Ok(bin) => {
-              if let Some(bin) = bin {
-                sender.lock().await.write(&bin, PayloadType::Binary).await?;
+          if let Ok(kind) = RECV::from_int(buf[0]) {
+            match recv(kind, &buf[1..]).await {
+              Ok(bin) => {
+                if let Some(bin) = bin {
+                  sender.lock().await.write(&bin, PayloadType::Binary).await?;
+                }
               }
-            }
-            Err(err) => {
-              tracing::error!("{} {}", uid, err)
+              Err(err) => {
+                tracing::error!("{} {}", uid, err)
+              }
             }
           }
         }

@@ -1,6 +1,8 @@
 use anyhow::Result;
 
-pub async fn recv(action: u8, bin: &[u8]) -> Result<Option<Box<[u8]>>> {
+use crate::C::RECV;
+
+pub async fn recv(action: RECV, bin: &[u8]) -> Result<Option<Box<[u8]>>> {
   // match action {}
   Ok(None)
 }
