@@ -99,14 +99,15 @@ pub async fn sync(msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result
   浏览(sx, uid, client_id, to_sync[1], all_ws.clone());
 
   let mut n = 0;
-  while let _ = timeout(Duration::from_secs(3), rx.recv()).await {
+  loop {
+    let _ = timeout(Duration::from_secs(3), rx.recv()).await;
     n += 1;
     if n == to_sync.len() {
       break;
     }
   }
   all_ws
-    .to_client(uid, client_id, SEND::浏览器同步服务器完成, &[])
+    .to_client(uid, client_id, SEND::服务器传浏览器完成, &[])
     .await?;
   Ok(())
 }
