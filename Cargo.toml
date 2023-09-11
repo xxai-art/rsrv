@@ -2,6 +2,7 @@
 members = [
   "rsrv",
   "xuser",
+  "xerr",
   "envport",
   "init",
   "trt",
