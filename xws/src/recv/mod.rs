@@ -9,6 +9,9 @@ pub async fn recv(action: RECV, msg: &[u8], uid: u64, client_id: u64, all_ws: Al
     RECV::浏览器同步服务器 => {
       sync::sync(msg, uid, client_id, all_ws).await?;
     }
+    RECV::服务器同步浏览器 => {
+      dbg!("服务器同步浏览器", msg, uid, client_id);
+    }
   }
   Ok(())
 }

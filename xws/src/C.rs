@@ -12,4 +12,5 @@ pub enum SEND {
 #[derive(Clone, Copy, Debug, Eq, PartialEq, IntEnum)]
 pub enum RECV {
   浏览器同步服务器 = 0,
+  服务器同步浏览器 = 1,
 }
