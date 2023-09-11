@@ -2,7 +2,11 @@ mod sync;
 
 use anyhow::Result;
 
-use crate::{r#type::AllWs, C::RECV};
+use crate::{
+  db::{fav_insert, seen_insert},
+  r#type::AllWs,
+  C::RECV,
+};
 
 pub async fn recv(action: RECV, msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result<()> {
   dbg!(&action);
@@ -11,13 +15,18 @@ pub async fn recv(action: RECV, msg: &[u8], uid: u64, client_id: u64, all_ws: Al
       sync::sync(msg, uid, client_id, all_ws).await?;
     }
     RECV::浏览器传服务器 => {
-      let msg = vb::d(msg)?;
+      let mut msg = vb::d(msg)?;
       let len = msg.len();
-      if len > 0 {
-        let len = len - 1;
-        let table = msg[len] as usize;
-        let msg = &msg[0..len];
-        dbg!("浏览器传服务器", msg.len(), table, uid, client_id);
+      if len > 1 {
+        let table = msg.pop().unwrap();
+        let prev_id = msg.pop().unwrap();
+        if table == 0 {
+          // fav
+          fav_insert::insert(prev_id, li).await?;
+        } else if table == 1 {
+          //seen
+          seen_insert::insert(prev_id, li).await?;
+        }
       }
     }
   }

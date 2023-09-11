@@ -3881,6 +3881,7 @@ dependencies = [
  "lazy_static",
  "loginit",
  "ratchet_rs",
+ "sts",
  "tokio",
  "tokio-stream",
  "tracing",
