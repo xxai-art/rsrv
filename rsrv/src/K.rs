@@ -1,4 +1,3 @@
-use intbin::u64_bin;
 use paste::paste;
 
 macro_rules! key {
@@ -11,6 +10,8 @@ macro_rules! key {
     };
 }
 
-key!(favLast, seenLast, r, r0, r1, hr2);
+// seenLast,
+
+key!(favLast, r, r0, r1, hr2);
 
 pub const REC: &[&[u8]; 3] = &[R0, R1, R];
