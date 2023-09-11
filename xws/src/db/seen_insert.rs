@@ -16,7 +16,7 @@ pub async fn insert(uid: u64, prev_id: u64, li: &[u64]) -> Result<VecAny> {
     if len == 0 {
       break;
     }
-    let pid = sli[len - 1].0;
+    pid = sli[len - 1].0;
     for (ts, cid, rid) in sli {
       publish.push(ts);
       publish.push(cid);
