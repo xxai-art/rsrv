@@ -9,7 +9,8 @@
 use awp::anypack::FnAny;
 use axum::{
   middleware,
-  routing::{get, post},
+  routing::post,
+  // routing::{get, post},
   Router,
 };
 use client::client;

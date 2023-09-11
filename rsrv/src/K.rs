@@ -11,7 +11,7 @@ macro_rules! key {
 }
 
 // seenLast,
-
-key!(favLast, r, r0, r1, hr2);
+// favLast,
+key!(r, r0, r1, hr2);
 
 pub const REC: &[&[u8]; 3] = &[R0, R1, R];
