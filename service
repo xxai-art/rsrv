@@ -1,5 +1,5 @@
 [Unit]
-Description=xxai rsrv
+Description=xxai NAME
 After=network.target
 
 [Service]

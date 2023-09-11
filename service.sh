@@ -6,8 +6,7 @@ set -ex
 
 [ "$UID" -eq 0 ] || exec sudo "$0" "$@"
 
-cd rsrv
-name=$(grep "^name" Cargo.toml | sed 's/name = //g' | awk -F\" '{print $2}')
+name=$1
 
 EXE=/opt/bin/$name
 
@@ -29,6 +28,7 @@ system_service=/etc/systemd/system/$name.service
 cp $DIR/service $system_service
 
 sed -i "s#EXEC#${service_sh}#" $system_service
+sed -i "s#NAME#${name}#" $system_service
 
 systemctl daemon-reload
 
