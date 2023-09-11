@@ -23,12 +23,13 @@ pub async fn insert(uid: u64, prev_id: u64, li: &[u64]) -> Result<()> {
         .join(",");
 
       for i in gt::Q(
-        format!("SELECT rid FROM seen WHERE uid={uid} AND cid={cid} AND rid IN ({rid_in})"),
+        format!("SELECT rid,ts FROM seen WHERE uid={uid} AND cid={cid} AND rid IN ({rid_in})"),
         &[],
       )
       .await?
       {
         let rid: i64 = i.get(0);
+        let ts: i64 = i.get(1);
         rid_set.remove(&(rid as u64));
       }
       if !rid_set.is_empty() {
