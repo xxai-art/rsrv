@@ -107,7 +107,7 @@ pub async fn sync(msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result
     }
   }
   all_ws
-    .to_client(uid, client_id, SEND::同步完成, &[])
+    .to_client(uid, client_id, SEND::浏览器同步服务器完成, &[])
     .await?;
   Ok(())
 }

@@ -2,7 +2,7 @@ use anyhow::Result;
 
 use crate::C::WR;
 
-mod 同步 {
+mod 浏览器同步服务器 {
   use anyhow::Result;
   use anypack::{Any, Pack, VecAny};
   use msgpacker::prelude::*;
@@ -84,7 +84,7 @@ mod 同步 {
 
 pub async fn ws(action: WR, uid: u64, channel_id: String, body: &[u8]) -> Result<()> {
   match action {
-    WR::同步 => {
+    WR::浏览器同步服务器 => {
       let body = vb::d(body)?;
       let mut to_sync = [
         0, // 收藏
@@ -96,8 +96,8 @@ pub async fn ws(action: WR, uid: u64, channel_id: String, body: &[u8]) -> Result
           to_sync[p] = i[1];
         }
       }
-      同步::收藏(uid, channel_id.clone(), to_sync[0]);
-      同步::浏览(uid, channel_id, to_sync[1]);
+      浏览器同步服务器::收藏(uid, channel_id.clone(), to_sync[0]);
+      浏览器同步服务器::浏览(uid, channel_id, to_sync[1]);
     }
   }
   Ok(())
