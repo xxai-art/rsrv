@@ -24,16 +24,20 @@ pub async fn insert(uid: u64, prev_id: u64, li: &[u64]) -> Result<VecAny> {
         .collect::<Vec<String>>()
         .join(",");
 
-      for i in gt::Q(
-        format!("SELECT rid,ts FROM seen WHERE uid={uid} AND cid={cid} AND rid IN ({rid_in})"),
+      let exist_li = gt::Q(
+        format!(
+          "SELECT rid,CAST(ts as BIGINT) FROM seen WHERE uid={uid} AND cid={cid} AND rid IN ({rid_in})"
+        ),
         &[],
-      )
-      .await?
-      {
+      ).await?.into_iter().map(|i|{
         let rid: i64 = i.get(0);
         let rid = rid as u64;
         let ts: i64 = i.get(1);
         let ts = ts as u64;
+        (rid,ts)
+      }).collect::<Vec<_>>();
+
+      for (rid, ts) in exist_li {
         publish.push(ts);
         publish.push(cid);
         publish.push(rid);

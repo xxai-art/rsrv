@@ -29,7 +29,7 @@ pub async fn recv(action: RECV, msg: &[u8], uid: u64, client_id: u64, all_ws: Al
                 SEND::$send,
                 &$mod::insert(uid, prev_id, &msg).await?.pack(),
               )
-              .await?;
+              .await?
           };
         }
 
