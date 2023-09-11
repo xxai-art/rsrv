@@ -14,33 +14,31 @@ Q! {
     fav_li:SELECT id,cid,rid,ts,aid FROM fav.user WHERE uid=$1 AND id>$2 ORDER BY id LIMIT 4096;
 }
 
-pub fn 收藏(sender: Sender<()>, uid: u64, client_id: u64, mut pre_id: u64, all_ws: AllWs) {
-  trt::spawn!({
-    while let Ok(li) = fav_li(uid, pre_id).await {
-      let len = li.len();
-      if len == 0 {
-        break;
-      }
-      let mut r = VecAny::with_capacity(len * 4 + 1);
-      let id = li[len - 1].0;
-      for (_, cid, rid, ts, aid) in li {
-        r.push(cid);
-        r.push(rid);
-        r.push(ts);
-        r.push(aid);
-      }
-      r.push(pre_id);
-      r.push(id);
-      all_ws
-        .to_client(uid, client_id, SEND::收藏, &r.pack())
-        .await?;
-      pre_id = id;
-      if len < LIMIT {
-        break;
-      }
+pub async fn 收藏(uid: u64, client_id: u64, mut pre_id: u64, all_ws: AllWs) -> Result<()> {
+  while let Ok(li) = fav_li(uid, pre_id).await {
+    let len = li.len();
+    if len == 0 {
+      break;
     }
-    sender.send(()).await?;
-  });
+    let mut r = VecAny::with_capacity(len * 4 + 1);
+    let id = li[len - 1].0;
+    for (_, cid, rid, ts, aid) in li {
+      r.push(cid);
+      r.push(rid);
+      r.push(ts);
+      r.push(aid);
+    }
+    r.push(pre_id);
+    r.push(id);
+    all_ws
+      .to_client(uid, client_id, SEND::收藏, &r.pack())
+      .await?;
+    pre_id = id;
+    if len < LIMIT {
+      break;
+    }
+  }
+  Ok(())
 }
 
 async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
@@ -93,15 +91,19 @@ pub async fn sync(msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result
   }
   let (sx, mut rx) = channel::<()>(2);
 
-  收藏(sx.clone(), uid, client_id, to_sync[0], all_ws.clone());
   let all = all_ws.clone();
-  async move {
-    trt::spawn!({
-      xerr::log!(浏览(uid, client_id, to_sync[1], all).await);
-      sx.send(()).await?;
-    });
-  }
-  .await;
+  let sxc = sx.clone();
+
+  trt::spawn!({
+    xerr::log!(收藏(uid, client_id, to_sync[0], all).await);
+    sxc.send(()).await?;
+  });
+
+  let all = all_ws.clone();
+  trt::spawn!({
+    xerr::log!(浏览(uid, client_id, to_sync[1], all).await);
+    sx.send(()).await?;
+  });
 
   let mut n = 0;
   loop {
