@@ -20,31 +20,23 @@ pub async fn sync(msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result
     }
   }
 
-  let (send, mut recv) = channel(3);
+  let (send0, mut recv) = channel(3);
+
+  let send = send0.clone();
   trt::spawn!({
-    xerr::log!(crate::db::fav::sync(send, uid, to_sync[1]).await);
+    xerr::log!(crate::db::fav::sync(send, uid, to_sync[0]).await);
+  });
+
+  trt::spawn!({
+    xerr::log!(crate::db::seen::sync(send0, uid, to_sync[1]).await);
   });
 
   while let Some((action, bin)) = recv.recv().await {
     all_ws.to_client(uid, client_id, action, &bin).await?;
   }
 
-  // let all = all_ws.clone();
-  // trt::spawn!({
-  //   xerr::log!(crate::db::seen::sync(uid, client_id, to_sync[1], all).await);
-  //   sx.send(()).await?;
-  // });
-
-  // let mut n = 0;
-  // loop {
-  //   let _ = timeout(Duration::from_secs(3), rx.recv()).await;
-  //   n += 1;
-  //   if n == to_sync.len() {
-  //     break;
-  //   }
-  // }
-  // all_ws
-  //   .to_client(uid, client_id, SEND::服务器传浏览器完成, &[])
-  //   .await?;
+  all_ws
+    .to_client(uid, client_id, SEND::服务器传浏览器完成, &[])
+    .await?;
   Ok(())
 }
