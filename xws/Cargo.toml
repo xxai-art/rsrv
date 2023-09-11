@@ -32,6 +32,7 @@ vb = "0.0.7"
 gt = "0.0.6"
 xg = "0.0.4"
 anypack = { path = "../anypack" }
+xerr = { version = "0.1.0", path = "../xerr" }
 
 [dependencies.tokio]
 version = "1.32.0"

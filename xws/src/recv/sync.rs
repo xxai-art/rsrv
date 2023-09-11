@@ -97,7 +97,7 @@ pub async fn sync(msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result
   let all = all_ws.clone();
   async move {
     trt::spawn!({
-      log::err!(浏览(uid, client_id, to_sync[1], all).await);
+      xerr::log!(浏览(uid, client_id, to_sync[1], all).await);
       sx.send(()).await?;
     });
   }
