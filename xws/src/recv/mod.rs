@@ -1,11 +1,11 @@
 mod sync;
-
 use anyhow::Result;
+use anypack::Pack;
 
 use crate::{
   db::{fav_insert, seen_insert},
   r#type::AllWs,
-  C::RECV,
+  C::{RECV, SEND},
 };
 
 pub async fn recv(action: RECV, msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result<()> {
@@ -21,13 +21,23 @@ pub async fn recv(action: RECV, msg: &[u8], uid: u64, client_id: u64, all_ws: Al
         let table = msg.pop().unwrap();
         let prev_id = msg.pop().unwrap();
 
-        if table == 0 {
-          // fav
-          fav_insert::insert(uid, prev_id, &msg).await?;
-        } else if table == 1 {
-          //seen
-          seen_insert::insert(uid, prev_id, &msg).await?;
+        macro_rules! send {
+          ($send:ident, $mod:ident) => {
+            all_ws
+              .to_user(
+                uid,
+                SEND::$send,
+                &$mod::insert(uid, prev_id, &msg).await?.pack(),
+              )
+              .await?;
+          };
         }
+
+        match table {
+          0 => send!(收藏, fav_insert),
+          1 => send!(浏览, seen_insert),
+          _ => {}
+        };
       }
     }
   }

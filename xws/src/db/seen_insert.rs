@@ -1,12 +1,14 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
+use anypack::VecAny;
 
-pub async fn insert(uid: u64, prev_id: u64, li: &[u64]) -> Result<()> {
+pub async fn insert(uid: u64, prev_id: u64, li: &[u64]) -> Result<VecAny> {
   let len = li.len();
   let mut n: usize = 0;
+  let mut publish = VecAny::new();
   while (n + 2) < len {
-    let cid = li[n];
+    let cid = li[n] as u64;
     n += 1;
     let take = li[n] as usize;
     n += 1;
@@ -29,13 +31,21 @@ pub async fn insert(uid: u64, prev_id: u64, li: &[u64]) -> Result<()> {
       .await?
       {
         let rid: i64 = i.get(0);
+        let rid = rid as u64;
         let ts: i64 = i.get(1);
-        rid_set.remove(&(rid as u64));
+        let ts = ts as u64;
+        publish.push(ts);
+        publish.push(cid);
+        publish.push(rid);
+        rid_set.remove(&(rid));
       }
       if !rid_set.is_empty() {
         let mut to_insert = Vec::new();
         let mut ts = sts::ms();
         for rid in rid_set {
+          publish.push(ts);
+          publish.push(cid);
+          publish.push(*rid);
           to_insert.push(format!("({uid},{cid},{rid},{ts})"));
           ts += 1;
         }
@@ -51,5 +61,9 @@ pub async fn insert(uid: u64, prev_id: u64, li: &[u64]) -> Result<()> {
     n += take;
   }
 
-  Ok(())
+  if !publish.is_empty() {
+    publish.push(prev_id);
+  }
+
+  Ok(publish)
 }

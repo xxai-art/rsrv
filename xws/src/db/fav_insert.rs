@@ -1,7 +1,9 @@
 use anyhow::Result;
+use anypack::VecAny;
 
-pub async fn insert(uid: u64, prev_id: u64, li: &[u64]) -> Result<()> {
+pub async fn insert(uid: u64, prev_id: u64, li: &[u64]) -> Result<VecAny> {
   let len = li.len();
+  let publish = VecAny::new();
   let mut n: usize = 0;
   while (n + 2) < len {
     let cid = li[n];
@@ -15,5 +17,5 @@ pub async fn insert(uid: u64, prev_id: u64, li: &[u64]) -> Result<()> {
     }
     n += 2 * take;
   }
-  Ok(())
+  Ok(publish)
 }
