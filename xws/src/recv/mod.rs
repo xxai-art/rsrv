@@ -20,12 +20,13 @@ pub async fn recv(action: RECV, msg: &[u8], uid: u64, client_id: u64, all_ws: Al
       if len > 1 {
         let table = msg.pop().unwrap();
         let prev_id = msg.pop().unwrap();
+
         if table == 0 {
           // fav
-          fav_insert::insert(prev_id, li).await?;
+          fav_insert::insert(uid, prev_id, &msg).await?;
         } else if table == 1 {
           //seen
-          seen_insert::insert(prev_id, li).await?;
+          seen_insert::insert(uid, prev_id, &msg).await?;
         }
       }
     }
