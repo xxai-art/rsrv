@@ -3,7 +3,7 @@ use anypack::{Pack, VecAny};
 use tokio::sync::mpsc::Sender;
 use xg::Q;
 
-use crate::{AllWs, C::SEND};
+use crate::C::SEND;
 const LIMIT: usize = 4096;
 
 Q! {

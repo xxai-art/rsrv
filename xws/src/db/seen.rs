@@ -2,7 +2,7 @@ use anyhow::Result;
 use anypack::{Pack, VecAny};
 use tokio::sync::mpsc::Sender;
 
-use crate::{AllWs, C::SEND};
+use crate::C::SEND;
 
 const LIMIT: usize = 4096;
 
