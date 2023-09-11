@@ -11,7 +11,14 @@ pub async fn recv(action: RECV, msg: &[u8], uid: u64, client_id: u64, all_ws: Al
       sync::sync(msg, uid, client_id, all_ws).await?;
     }
     RECV::浏览器传服务器 => {
-      dbg!("浏览器传服务器", msg, uid, client_id);
+      let msg = vb::d(msg)?;
+      let len = msg.len();
+      if len > 0 {
+        let len = len - 1;
+        let table = msg[len] as usize;
+        let msg = &msg[0..len];
+        dbg!("浏览器传服务器", msg.len(), table, uid, client_id);
+      }
     }
   }
   Ok(())
