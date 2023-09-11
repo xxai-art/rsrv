@@ -6,7 +6,7 @@ use crate::C::SEND;
 
 const LIMIT: usize = 4096;
 
-async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
+pub async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
   let sql = format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>ARROW_CAST({ts},'Timestamp(Millisecond,None)') ORDER BY ts LIMIT 4096");
   Ok(
     gt::Q(sql, &[])
