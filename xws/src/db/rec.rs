@@ -7,8 +7,7 @@ use qdrant_client::qdrant::{
   RecommendPoints,
 };
 use xc::{cid::CID_IMG, 分级, CLIP};
-
-use crate::db::score;
+use xxai::score;
 
 pub static SFW: &str = "sfw";
 
