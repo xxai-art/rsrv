@@ -10,7 +10,6 @@ use crate::{
 };
 
 pub async fn recv(action: RECV, msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result<()> {
-  dbg!(&action);
   match action {
     RECV::服务器传浏览器 => {
       sync::sync(msg, uid, client_id, all_ws).await?;
@@ -43,7 +42,7 @@ pub async fn recv(action: RECV, msg: &[u8], uid: u64, client_id: u64, all_ws: Al
     }
     RECV::用户行为日志 => {
       if msg.len() > 1 {
-        log::log(msg[0], &msg[1..], all_ws).await?;
+        log::log(uid, msg[0], &msg[1..], all_ws).await?;
       }
     }
   }

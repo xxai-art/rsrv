@@ -23,35 +23,6 @@ static REC_ACTION: [u8; 2] = [CLICK, FAV];
 
 static QID: OnceCell<Script> = OnceCell::const_new();
 
-pub async fn qid(q: impl AsRef<str>) -> Result<(u64, bool)> {
-  let kv = x0::KV.0.get().unwrap();
-  Ok(
-    QID
-      .get_or_init(|| async {
-        let script = Script::from_lua(
-          r#"local idKey = KEYS[1]
-local qKey = KEYS[2]
-local q = ARGV[1]
-
-local id = redis.call("HGET", qKey, q)
-
-if id then
-  return {id,0}
-end
-
-id = redis.call("HINCRBY", idKey, "q", 1)
-redis.call("HSET", qKey, q, id)
-return {id,1}"#,
-        );
-        script.load(kv).await.unwrap();
-        script
-      })
-      .await
-      .evalsha(kv, vec!["id", "q"], q.as_ref())
-      .await?,
-  )
-}
-
 pub async fn post(mut client: Client, body: Bytes) -> awp::any!() {
   if let Some(uid) = client.uid().await? {
     let ts = sts::ms();

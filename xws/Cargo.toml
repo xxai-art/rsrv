@@ -32,9 +32,11 @@ vb = "0.0.7"
 gt = "0.0.6"
 xg = "0.0.4"
 anypack = { path = "../anypack" }
+xxai = { path = "../xxai" }
 xerr = { version = "0.1.0", path = "../xerr" }
 sts = "0.0.4"
 msgpacker = { version = "0.4.4", package = "xxai-msgpacker" }
+async-lazy = "0.1.0"
 
 [dependencies.tokio]
 version = "1.32.0"
