@@ -69,7 +69,7 @@ fn main() -> anyhow::Result<()> {
   // post!(test);
   // router = router.route("/ws/:li", get(crate::url::ws::get));
   // router = router.route("/ws/:li", post(crate::url::ws::post));
-  post!(hr, q, userFav, log);
+  post!(hr, q, userFav);
 
   let default_port = 8879;
   let port = match std::env::var("RSRV_PORT") {
