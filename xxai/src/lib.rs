@@ -1,5 +1,4 @@
 mod diffli;
-pub mod score;
 pub mod str;
 pub mod time;
 mod tld;
@@ -7,6 +6,8 @@ mod tld;
 
 #[cfg(feature = "ndarray")]
 pub mod nd;
+#[cfg(feature = "ndarray")]
+pub mod score;
 use anyhow::Result;
 #[cfg(feature = "ndarray")]
 pub use ndarray;
