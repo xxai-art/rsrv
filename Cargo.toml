@@ -1,6 +1,7 @@
 [workspace]
 members = [
   "rsrv",
+  "xc",
   "xuser",
   "xerr",
   "envport",

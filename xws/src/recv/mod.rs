@@ -41,7 +41,11 @@ pub async fn recv(action: RECV, msg: &[u8], uid: u64, client_id: u64, all_ws: Al
       }
     }
     RECV::用户行为日志 => {
-      dbg!(&msg);
+      if msg.len() > 1 {
+        let level = msg[0];
+        let msg = &msg[1..];
+        dbg!(level, &msg);
+      }
     }
   }
   Ok(())
