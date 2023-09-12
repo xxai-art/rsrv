@@ -3,3 +3,8 @@ pub mod 分级 {
   pub const 安全: u8 = 1;
   pub const 成人: u8 = 0;
 }
+
+pub mod action;
+pub mod cid;
+
+pub const CLIP: &str = "clip";
