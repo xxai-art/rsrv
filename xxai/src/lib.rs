@@ -1,4 +1,5 @@
 mod diffli;
+pub mod score;
 pub mod str;
 pub mod time;
 mod tld;
