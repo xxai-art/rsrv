@@ -33,6 +33,7 @@ gt = "0.0.6"
 xg = "0.0.4"
 anypack = { path = "../anypack" }
 xxai = { path = "../xxai" }
+xc = { path = "../xc" }
 xerr = { version = "0.1.0", path = "../xerr" }
 sts = "0.0.4"
 msgpacker = { version = "0.4.4", package = "xxai-msgpacker" }

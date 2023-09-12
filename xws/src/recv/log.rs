@@ -4,6 +4,10 @@ use anyhow::Result;
 use async_lazy::Lazy;
 use msgpacker::prelude::*;
 use x0::fred::types::Script;
+use xc::{
+  action::{CLICK, FAV, FAV_RM},
+  cid::CID_IMG,
+};
 
 use crate::r#type::AllWs;
 
@@ -88,8 +92,10 @@ pub async fn log(uid: u64, level: u8, buf: &[u8], all_ws: AllWs) -> Result<()> {
       .await?;
 
       for li in &li[1..] {
+        let li = vb::d(li)?;
         if li.len() > 0 {
-          let action = li[0];
+          let action = li[0] as u8;
+          let li = &li[1..];
 
           macro_rules! to_insert {
             ($cid:ident,$rid:ident) => {{
@@ -98,8 +104,9 @@ pub async fn log(uid: u64, level: u8, buf: &[u8], all_ws: AllWs) -> Result<()> {
               to_insert.push(format!("({uid},{action},{cid},{rid},{qid},{ts})"));
             }};
           }
+
           if action == FAV_RM {
-            cid_rid_li[1..].chunks(2).for_each(|i| {
+            li.chunks(2).for_each(|i| {
               let cid = i[0] as u8;
               if LOG_CID.contains(&cid) {
                 let rid = i[1];
@@ -109,11 +116,68 @@ pub async fn log(uid: u64, level: u8, buf: &[u8], all_ws: AllWs) -> Result<()> {
                 rec_action.retain(|li: &Vec<(u8, u64)>| li[0] != key);
               }
             });
+          } else if REC_ACTION.contains(&action) {
+            let len = li.len();
+            if len >= 2 {
+              let cid = li[0] as u8;
+              if LOG_CID.contains(&cid) {
+                let rid = li[1];
+                to_insert!(cid, rid);
+                let key = (cid, rid);
+                if !exist.contains(&key) {
+                  exist.insert(key);
+                  let mut action_li = vec![key];
+                  if len >= 5 {
+                    let mut n_level = li[2];
+
+                    for i in li[3..].chunks(2).map(|i| (i[0] as u8, i[1])) {
+                      action_li.push(i);
+                      if n_level > 0 {
+                        let (pcid, prid) = i;
+                        n_level -= 1;
+                        rec_chain.push(format!("({uid},{action},{cid},{rid},{pcid},{prid},{ts})"));
+                      }
+                    }
+                  }
+                  rec_action.push(action_li);
+                }
+              }
+            }
+          } else {
+            // 浏览
+            li.chunks(2).for_each(|i| {
+              let cid = i[0] as u8;
+              if LOG_CID.contains(&cid) {
+                let rid = i[1];
+                to_insert!(cid, rid);
+              }
+            });
           }
         }
       }
     }
   }
 
+  macro_rules! insert {
+    ($li:ident,$sql:expr) => {
+      if !$li.is_empty() {
+        trt::spawn!({
+          let li = $li.join(",");
+          gt::QE($sql + &li, &[]).await?;
+        });
+      }
+    };
+  }
+
+  insert!(
+    to_insert,
+    "INSERT INTO log (uid,aid,cid,rid,q,ts) VALUES ".to_owned()
+  );
+  insert!(
+    rec_chain,
+    "INSERT INTO rec_chain (uid,aid,cid,rid,pcid,prid,ts) VALUES ".to_owned()
+  );
+
+  rec_by_action(level, rec_action);
   Ok(())
 }
