@@ -38,6 +38,8 @@ xerr = { version = "0.1.0", path = "../xerr" }
 sts = "0.0.4"
 msgpacker = { version = "0.4.4", package = "xxai-msgpacker" }
 async-lazy = "0.1.0"
+clip_qdrant = "0.1.2"
+qdrant-client = "1.4.0"
 
 [dependencies.tokio]
 version = "1.32.0"

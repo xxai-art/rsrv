@@ -9,7 +9,7 @@ use xc::{
   cid::CID_IMG,
 };
 
-use crate::r#type::AllWs;
+use crate::{db::rec::rec_by_action, r#type::AllWs};
 
 #[derive(Debug, PartialEq, Eq, MsgPacker)]
 struct Log {

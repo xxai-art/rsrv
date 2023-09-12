@@ -1,3 +1,4 @@
+#![feature(let_chains)]
 #[allow(non_snake_case)]
 mod C;
 mod db;

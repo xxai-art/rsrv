@@ -6,9 +6,9 @@ use qdrant_client::qdrant::{
   point_id::PointIdOptions, BatchResult, Condition, Filter, PointId, RecommendBatchPoints,
   RecommendPoints,
 };
-use xc::分级;
+use xc::{分级, CLIP};
 
-use crate::{db::score, C, C::cid::CID_IMG};
+use crate::{db::score, C::cid::CID_IMG};
 
 pub static SFW: &str = "sfw";
 
@@ -78,7 +78,7 @@ pub async fn rec_by_action(
     }]))
   };
 
-  let collection_name = C::CLIP.to_string();
+  let collection_name = CLIP.to_string();
 
   let recommend_points: Vec<_> = action_li
     .into_iter()
