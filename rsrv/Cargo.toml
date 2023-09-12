@@ -17,7 +17,7 @@ ctor = "0.2.4"
 trt = { version = "0.1.5" }
 # trt = { version = "0.1.4", path = "../trt" }
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
-xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
+xxhash-rust = { version = "0.8.7", features = ["xxh3"] }
 client = { path = "../client" }
 x0 = { path = "../x0" }
 xc = { path = "../xc" }
@@ -25,7 +25,7 @@ xxai = { path = "../xxai", features = ["ndarray"] }
 awp = { path = "../awp" }
 lazy_static = "1.4.0"
 coarsetime = "0.1.23"
-serde_json = "1.0.105"
+serde_json = "1.0.106"
 serde = { version = "1.0.188", features = ["derive"] }
 vbyte = "0.1.0"
 paste = "1.0.14"
@@ -37,7 +37,7 @@ ub64 = { version = "0.0.10", features = ["u64", "u64li"] }
 xg = "0.0.4"
 gt = "0.0.6"
 vb = "0.0.7"
-bytes = "1.4.0"
+bytes = "1.5.0"
 int-enum = "0.5.0"
 
 # quinn = { version = "0.10", default-features = false, features = [
