@@ -34,6 +34,7 @@ xg = "0.0.4"
 anypack = { path = "../anypack" }
 xerr = { version = "0.1.0", path = "../xerr" }
 sts = "0.0.4"
+rmp-serde = "1.1.2"
 
 [dependencies.tokio]
 version = "1.32.0"
