@@ -13,4 +13,5 @@ pub enum SEND {
 pub enum RECV {
   服务器传浏览器 = 0,
   浏览器传服务器 = 1,
+  用户行为日志 = 2,
 }
