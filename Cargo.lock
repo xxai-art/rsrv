@@ -3909,6 +3909,7 @@ dependencies = [
  "loginit",
  "ratchet_rs",
  "rmp-serde",
+ "serde",
  "sts",
  "tokio",
  "tokio-stream",
