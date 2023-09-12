@@ -6,12 +6,9 @@ use qdrant_client::qdrant::{
   point_id::PointIdOptions, BatchResult, Condition, Filter, PointId, RecommendBatchPoints,
   RecommendPoints,
 };
+use xc::分级;
 
-use crate::{
-  db::score,
-  C,
-  C::{cid::CID_IMG, 分级},
-};
+use crate::{db::score, C, C::cid::CID_IMG};
 
 pub static SFW: &str = "sfw";
 

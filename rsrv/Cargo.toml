@@ -20,6 +20,7 @@ async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
 xxhash-rust = { version = "0.8.6", features = ["xxh3"] }
 client = { path = "../client" }
 x0 = { path = "../x0" }
+xc = { path = "../xc" }
 xxai = { path = "../xxai", features = ["ndarray"] }
 awp = { path = "../awp" }
 lazy_static = "1.4.0"
