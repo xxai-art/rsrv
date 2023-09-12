@@ -1,12 +1,11 @@
 use awp::{any, ok};
 use axum::{body::Bytes, http::header::HeaderMap};
 use clip_search_txt_client::{clip, DayRange, Level, QIn};
-use xc::分级;
+use xc::{cid::CID_IMG, 分级};
 use xxai::time::today;
 
 use crate::{
   db::{img::rec, score::sort},
-  C::cid::CID_IMG,
   K,
 };
 

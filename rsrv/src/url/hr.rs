@@ -4,11 +4,9 @@ use awp::anypack::Any;
 use axum::body::Bytes;
 use intbin::u64_bin;
 use x0::{fred::interfaces::HashesInterface, KV, R};
+use xc::cid::{CID_IMG, CID_USER};
 
-use crate::{
-  C::cid::{CID_IMG, CID_USER},
-  K::HR2,
-};
+use crate::K::HR2;
 
 // _client: Client,
 pub async fn post(body: Bytes) -> awp::any!() {
