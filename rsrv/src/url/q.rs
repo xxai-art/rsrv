@@ -2,12 +2,9 @@ use awp::{any, ok};
 use axum::{body::Bytes, http::header::HeaderMap};
 use clip_search_txt_client::{clip, DayRange, Level, QIn};
 use xc::{cid::CID_IMG, 分级};
-use xxai::time::today;
+use xxai::{score::sort, time::today};
 
-use crate::{
-  db::{img::rec, score::sort},
-  K,
-};
+use crate::{db::img::rec, K};
 
 pub async fn post(header: HeaderMap, body: Bytes) -> any!() {
   if body.is_empty() {
