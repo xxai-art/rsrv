@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
+use anypack::{Pack, VecAny};
 use async_lazy::Lazy;
 use msgpacker::prelude::*;
 use x0::fred::types::Script;
@@ -9,7 +10,7 @@ use xc::{
   cid::CID_IMG,
 };
 
-use crate::{db::rec::rec_by_action, r#type::AllWs};
+use crate::{db::rec::rec_by_action, r#type::AllWs, recv::SEND};
 
 #[derive(Debug, PartialEq, Eq, MsgPacker)]
 struct Log {
@@ -178,6 +179,9 @@ pub async fn log(uid: u64, level: u8, buf: &[u8], all_ws: AllWs) -> Result<()> {
     "INSERT INTO rec_chain (uid,aid,cid,rid,pcid,prid,ts) VALUES ".to_owned()
   );
 
-  let r = rec_by_action(level, rec_action).await?;
+  let mut r = VecAny::new();
+  r.push(level);
+  r.push(rec_by_action(level, rec_action).await?);
+  all_ws.to_user(uid, SEND::推荐, &r.pack()).await?;
   Ok(())
 }
