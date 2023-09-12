@@ -179,9 +179,9 @@ pub async fn log(uid: u64, level: u8, buf: &[u8], all_ws: AllWs) -> Result<()> {
     "INSERT INTO rec_chain (uid,aid,cid,rid,pcid,prid,ts) VALUES ".to_owned()
   );
 
-  let mut r = VecAny::new();
+  let r: VecAny = rec_by_action(level, rec_action).await?.into();
+  let mut r = r.pack();
   r.push(level);
-  r.push(rec_by_action(level, rec_action).await?);
-  all_ws.to_user(uid, SEND::推荐, &r.pack()).await?;
+  all_ws.to_user(uid, SEND::推荐, &r).await?;
   Ok(())
 }
