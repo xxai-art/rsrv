@@ -178,6 +178,6 @@ pub async fn log(uid: u64, level: u8, buf: &[u8], all_ws: AllWs) -> Result<()> {
     "INSERT INTO rec_chain (uid,aid,cid,rid,pcid,prid,ts) VALUES ".to_owned()
   );
 
-  rec_by_action(level, rec_action);
+  let r = rec_by_action(level, rec_action).await?;
   Ok(())
 }

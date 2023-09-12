@@ -62,7 +62,7 @@ async fn batch_sort(batch: &[BatchResult]) -> Result<Vec<Vec<u64>>> {
 pub async fn rec_by_action(
   level: u8,                      // 内容分级
   action_li: Vec<Vec<(u8, u64)>>, // cid, rid
-) -> Result<Vec<Vec<u64>>> {
+) -> Result<Vec<(u8, Vec<Vec<u64>>)>> {
   if action_li.is_empty() {
     return Ok(vec![]);
   }
@@ -79,16 +79,21 @@ pub async fn rec_by_action(
 
   let collection_name = CLIP.to_string();
 
+  let mut img_rid_li = Vec::with_capacity(std::cmp::min(
+    action_li.iter().map(|i| i.len()).count(),
+    MAX * action_li.len(),
+  ));
   let recommend_points: Vec<_> = action_li
     .into_iter()
     .take(MAX)
     .map(|li| {
       let li: Vec<_> = li
-        .into_iter()
-        .take(MAX)
-        .filter(|(cid, _)| *cid == CID_IMG)
-        .map(|(_, rid)| rid)
-        .collect();
+                .into_iter()
+                .take(MAX)
+                .filter(|(cid, _)| *cid == CID_IMG) // 目前只推荐图片
+                .map(|(_, rid)| rid)
+                .collect();
+      img_rid_li.append(&mut li.clone());
       RecommendPoints {
         collection_name: collection_name.clone(),
         positive: to_points(li.into_iter()),
@@ -101,18 +106,31 @@ pub async fn rec_by_action(
     })
     .collect();
 
-  match qdrant_client()
-    .recommend_batch(&RecommendBatchPoints {
-      collection_name,
-      recommend_points,
-      ..Default::default()
-    })
-    .await
-  {
-    Ok(r) => batch_sort(&r.result).await,
-    Err(err) => {
-      tracing::error!("{:?}", err);
-      Ok(vec![])
-    }
-  }
+  Ok(
+    match qdrant_client()
+      .recommend_batch(&RecommendBatchPoints {
+        collection_name,
+        recommend_points,
+        ..Default::default()
+      })
+      .await
+    {
+      Ok(r) => vec![(
+        CID_IMG,
+        batch_sort(&r.result)
+          .await?
+          .into_iter()
+          .zip(img_rid_li)
+          .map(|(mut li, rid)| {
+            li.push(rid);
+            li
+          })
+          .collect(),
+      )],
+      Err(err) => {
+        tracing::error!("{:?}", err);
+        vec![]
+      }
+    },
+  )
 }
