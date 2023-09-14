@@ -940,9 +940,9 @@ checksum = "6fb8d784f27acf97159b40fc4db5ecd8aa23b9ad5ef69cdd136d3bc80665f0c0"
 
 [[package]]
 name = "gt"
-version = "0.0.6"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fab0a165d10ff1ad4534830cede69b767dd67d9eb22a9b7fd663a001b4332773"
+checksum = "b0ff75e071ca149bc304abbb66ac2500a5ffb6ecd2ed61946a2f203cccec325a"
 dependencies = [
  "axum",
  "gt_proc",
@@ -954,9 +954,9 @@ dependencies = [
 
 [[package]]
 name = "gt_proc"
-version = "0.0.2"
+version = "0.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b75ad164f9c60e01559acb328a0a8abf8deaa1f7515e996c0214e290caaafc6"
+checksum = "9dd7066a8ce67ef868df84e27050af2001d4721952a134ce870731e85807096d"
 dependencies = [
  "lazy_static",
  "pgw",
@@ -1784,9 +1784,9 @@ dependencies = [
 
 [[package]]
 name = "pgm"
-version = "0.0.6"
+version = "0.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be8455aa92c1f6918cbb8098f35f4df2f4966672aa8ba0312880d8c50249b63b"
+checksum = "bc567e7bfff23f25d6bb173279267cdb0212acccdd603d842cf5466a108a0d72"
 dependencies = [
  "lazy_static",
  "paste",
@@ -3795,9 +3795,9 @@ dependencies = [
 
 [[package]]
 name = "xg"
-version = "0.0.4"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "66f6f82546c631553f3474de1e4e07212d046c641c64d8927525f22fe865c90c"
+checksum = "89522828849d21ed1e3085e8ba415a2d3908759a1dd409802381a3c1d49ef53b"
 dependencies = [
  "axum",
  "lazy_static",
@@ -3809,9 +3809,9 @@ dependencies = [
 
 [[package]]
 name = "xg_proc"
-version = "0.0.1"
+version = "0.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32cbd992ac2aa728514621e02657292e11687c75f341eaf039e4c448c6d136c7"
+checksum = "a7138d95ebbc880d0c63163cce5763090056aac8e23db3b020cec9f6de801ee2"
 dependencies = [
  "lazy_static",
  "pgw",
