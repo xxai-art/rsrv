@@ -25,7 +25,7 @@ xxai = { path = "../xxai", features = ["ndarray"] }
 awp = { path = "../awp" }
 lazy_static = "1.4.0"
 coarsetime = "0.1.23"
-serde_json = "1.0.106"
+serde_json = "1.0.107"
 serde = { version = "1.0.188", features = ["derive"] }
 vbyte = "0.1.0"
 paste = "1.0.14"
