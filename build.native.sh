@@ -43,6 +43,5 @@ build() {
   esac
 }
 
-build rsrv &
-build xws &
-wait
+build xws
+build rsrv
