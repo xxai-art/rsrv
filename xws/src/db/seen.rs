@@ -4,7 +4,7 @@ use tokio::sync::mpsc::Sender;
 
 use crate::C::SEND;
 
-const LIMIT: usize = 4096;
+const LIMIT: usize = 8192;
 
 pub async fn seen_li(uid: u64, ts: u64) -> Result<Vec<(u64, i8, i64)>> {
   let sql = format!("SELECT CAST(ts as BIGINT) t,cid,rid FROM seen WHERE uid={uid} AND ts>ARROW_CAST({ts},'Timestamp(Millisecond,None)') ORDER BY ts LIMIT 4096");
@@ -33,7 +33,7 @@ pub async fn sync(sender: Sender<(SEND, Vec<u8>)>, uid: u64, mut pre_id: u64) ->
     r.push(pre_id);
     sender.send((SEND::浏览, r.pack())).await?;
     pre_id = last_ts;
-    tracing::info!("seen pre_id {pre_id}");
+    tracing::info!("seen pre_id {pre_id} len {len}");
     if len < LIMIT {
       break;
     }
