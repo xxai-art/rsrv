@@ -344,9 +344,9 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "chrono"
-version = "0.4.30"
+version = "0.4.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "defd4e7873dbddba6c7c91e199c7fcb946abc4a6a4ac3195400bcfb01b5de877"
+checksum = "7f2c685bad3eb3d45a01354cedb7d5faa66194d1d58ba6e267a8de788f79db38"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
@@ -940,23 +940,23 @@ checksum = "6fb8d784f27acf97159b40fc4db5ecd8aa23b9ad5ef69cdd136d3bc80665f0c0"
 
 [[package]]
 name = "gt"
-version = "0.0.9"
+version = "0.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0ff75e071ca149bc304abbb66ac2500a5ffb6ecd2ed61946a2f203cccec325a"
+checksum = "7922af41032a1329be869401cc98aee330312c1993079b74cbe8f126751d915f"
 dependencies = [
  "axum",
  "gt_proc",
  "lazy_static",
  "paste",
- "pgm",
+ "pgm 0.0.8",
  "tracing",
 ]
 
 [[package]]
 name = "gt_proc"
-version = "0.0.8"
+version = "0.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9dd7066a8ce67ef868df84e27050af2001d4721952a134ce870731e85807096d"
+checksum = "37aeb417b1f88ffcb042b8eef8b6ce5247424b877bfd3a8b4825619c9942d2be"
 dependencies = [
  "lazy_static",
  "pgw",
@@ -1794,10 +1794,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "pgw"
-version = "0.2.4"
+name = "pgm"
+version = "0.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6578117be2a283e6b00b0dbae522cfe0442d337c26709276522c44fa3f3f2eb6"
+checksum = "1027d5c6a902c686cd43850f569ba26bce7bbedaee63870e130cece481aa5549"
+dependencies = [
+ "lazy_static",
+ "paste",
+ "pgw",
+]
+
+[[package]]
+name = "pgw"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af4f42460b509b2396d9177ea0df950ddd31d48175ec945de4742932ca95cc17"
 dependencies = [
  "futures",
  "tokio",
@@ -3306,9 +3317,9 @@ checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
 
 [[package]]
 name = "typenum"
-version = "1.16.0"
+version = "1.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "497961ef93d974e23eb6f433eb5fe1b7930b659f06d12dec6fc44a8f554c0bba"
+checksum = "42ff0bf0c66b8238c6f3b578df37d0b7848e55df8577b3f74f92a69acceeb825"
 
 [[package]]
 name = "ub64"
@@ -3802,7 +3813,7 @@ dependencies = [
  "axum",
  "lazy_static",
  "paste",
- "pgm",
+ "pgm 0.0.7",
  "tracing",
  "xg_proc",
 ]

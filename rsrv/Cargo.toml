@@ -35,7 +35,7 @@ sts = "0.0.4"
 intbin = "0.0.5"
 ub64 = { version = "0.0.10", features = ["u64", "u64li"] }
 xg = "0.0.9"
-gt = "0.0.9"
+gt = "0.0.10"
 vb = "0.0.7"
 bytes = "1.5.0"
 int-enum = "0.5.0"
