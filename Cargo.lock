@@ -3806,9 +3806,9 @@ dependencies = [
 
 [[package]]
 name = "xg"
-version = "0.0.9"
+version = "0.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "89522828849d21ed1e3085e8ba415a2d3908759a1dd409802381a3c1d49ef53b"
+checksum = "23adb73d41dc94e86e2acdd5c33f3c097625862343aef17174b92691ef1acaa0"
 dependencies = [
  "axum",
  "lazy_static",
@@ -3820,9 +3820,9 @@ dependencies = [
 
 [[package]]
 name = "xg_proc"
-version = "0.0.8"
+version = "0.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a7138d95ebbc880d0c63163cce5763090056aac8e23db3b020cec9f6de801ee2"
+checksum = "1441adbbc63a161ff68e868bf2b33c57d963cb45ae0b4202a639fe6eb7e6c74a"
 dependencies = [
  "lazy_static",
  "pgw",

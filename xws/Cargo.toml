@@ -30,7 +30,7 @@ dashmap = "5.5.3"
 int-enum = "0.5.0"
 vb = "0.0.7"
 gt = "0.0.10"
-xg = "0.0.9"
+xg = "0.0.10"
 anypack = { path = "../anypack" }
 xc = { path = "../xc" }
 xerr = { version = "0.1.0", path = "../xerr" }
