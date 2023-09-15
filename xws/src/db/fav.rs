@@ -32,5 +32,6 @@ pub async fn sync(sender: Sender<(SEND, Vec<u8>)>, uid: u64, mut pre_id: u64) ->
       break;
     }
   }
+  tracing::info!("fav sync done");
   Ok(())
 }
