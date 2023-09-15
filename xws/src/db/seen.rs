@@ -33,6 +33,7 @@ pub async fn sync(sender: Sender<(SEND, Vec<u8>)>, uid: u64, mut pre_id: u64) ->
     r.push(pre_id);
     sender.send((SEND::浏览, r.pack())).await?;
     pre_id = last_ts;
+    tracing::info!("seen pre_id {pre_id}");
     if len < LIMIT {
       break;
     }
