@@ -21,7 +21,7 @@ impl Server {
       c: ServerConfig::Clustered {
         hosts: host_port_li
           .into_iter()
-          .map(|(host, port)| fred::types::Server::new(host.into(), port))
+          .map(|(host, port)| fred::types::Server::new(host, port))
           .collect(),
       },
     }
@@ -30,7 +30,7 @@ impl Server {
   pub fn host_port(host: String, port: u16) -> Self {
     Self {
       c: ServerConfig::Centralized {
-        server: fred::types::Server::new(host.into(), port),
+        server: fred::types::Server::new(host, port),
       },
     }
   }
