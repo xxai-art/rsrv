@@ -13,7 +13,7 @@ tower = { version = "0.4.13", features = ["timeout"] }
 const-str = "0.5.6"
 futures-util = "0.3.28"
 tower-http = { version = "0.4.4", features = ["cors", "tokio"] }
-ctor = "0.2.4"
+ctor = "0.2.5"
 trt = { version = "0.1.5" }
 # trt = { version = "0.1.4", path = "../trt" }
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
@@ -24,7 +24,7 @@ xc = { path = "../xc" }
 xxai = { path = "../xxai", features = ["ndarray"] }
 awp = { path = "../awp" }
 lazy_static = "1.4.0"
-coarsetime = "0.1.23"
+coarsetime = "0.1.29"
 serde_json = "1.0.107"
 serde = { version = "1.0.188", features = ["derive"] }
 vbyte = "0.1.0"
@@ -50,7 +50,7 @@ version = "1.32.0"
 features = ["macros", "rt-multi-thread", "rt", "time", "sync"]
 
 [dependencies.reqwest]
-version = "0.11.20"
+version = "0.11.22"
 features = ["tokio-rustls"]
 
 [dev-dependencies]
