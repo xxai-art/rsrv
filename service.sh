@@ -32,7 +32,7 @@ sed -i "s#NAME#${name}#" $system_service
 
 systemctl daemon-reload
 
-systemctl enable --now $name
+systemctl enable --now $name || true
 systemctl restart $name
 
 systemctl status $name --no-pager || true
