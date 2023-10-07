@@ -1,6 +1,6 @@
 [package]
 name = "xkv"
-version = "0.1.11"
+version = "0.1.12"
 edition = "2021"
 license = "SSPL-1.0"
 homepage = "https://github.com/xxai-art/rsrv"
@@ -12,7 +12,7 @@ description = "use fred connection redis via env"
 anyhow = "1.0.75"
 async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
 ctor = "0.2.5"
-fred = { version = "6.3.2", features = ["replicas", "rustls"] }
+fred = { version = "7.0.0-rc.1", features = ["replicas", "rustls"] }
 #fred = { path = "./fred.rs", features = ["replicas", "rustls"] }
 lazy_static = "1.4.0"
 paste = "1.0.14"
