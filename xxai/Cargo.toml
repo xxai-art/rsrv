@@ -18,12 +18,12 @@ base64 = "0.21.4"
 chrono = "0.4.31"
 coarsetime = "0.1.29"
 ndarray = { version = "0.15.6", optional = true }
-num-traits = { version = "0.2.16", optional = true }
+num-traits = { version = "0.2.17", optional = true }
 ordered-varint = "2.0.0"
 psl = "2.1.4"
 rand = "0.8.5"
 thiserror = "1.0.49"
-tokio = { version = "1.32.0", features = [
+tokio = { version = "1.33.0", features = [
   "macros",
   "rt",
   "rt-multi-thread",
