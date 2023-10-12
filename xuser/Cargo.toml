@@ -11,7 +11,7 @@ trt = { version = "0.1.5", path = "../trt" }
 xxhash-rust = { version = "0.8.7", features = ["xxh3"] }
 x0 = { path = "../x0" }
 ub64 = { version = "0.0.10", features = ["u64li"] }
-cookie = "0.17.0"
+cookie = "0.18.0"
 anyhow = "1.0.75"
 gid = { path = "../gid" }
 vbyte = "0.1.0"
