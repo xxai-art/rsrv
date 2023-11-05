@@ -383,7 +383,7 @@ dependencies = [
  "tokio",
  "tonic",
  "tracing",
- "trt 0.1.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "trt 0.1.12",
 ]
 
 [[package]]
@@ -915,7 +915,7 @@ dependencies = [
  "paste",
  "tokio",
  "tokio-test",
- "trt 0.1.12",
+ "trt 0.1.13",
  "x0",
 ]
 
@@ -950,7 +950,7 @@ dependencies = [
  "proc-macro2",
  "regex",
  "tokio",
- "trt 0.1.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "trt 0.1.12",
 ]
 
 [[package]]
@@ -2461,7 +2461,7 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
- "trt 0.1.12",
+ "trt 0.1.13",
  "ub64",
  "vb",
  "vbyte",
@@ -3358,22 +3358,22 @@ dependencies = [
 [[package]]
 name = "trt"
 version = "0.1.12"
-dependencies = [
- "anyhow",
- "lazy_static",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "trt"
-version = "0.1.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "309653e6853300cbb3a337ed4c1da460594236710f592591bfd2a02ee34118f6"
 dependencies = [
  "anyhow",
  "lazy_static",
  "tokio",
+]
+
+[[package]]
+name = "trt"
+version = "0.1.13"
+dependencies = [
+ "anyhow",
+ "lazy_static",
+ "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -3896,7 +3896,7 @@ dependencies = [
  "proc-macro2",
  "regex",
  "tokio",
- "trt 0.1.12 (registry+https://github.com/rust-lang/crates.io-index)",
+ "trt 0.1.12",
 ]
 
 [[package]]
@@ -3910,7 +3910,7 @@ dependencies = [
  "lazy_static",
  "paste",
  "tokio-test",
- "trt 0.1.12",
+ "trt 0.1.13",
 ]
 
 [[package]]
@@ -3921,7 +3921,7 @@ dependencies = [
  "cookie",
  "ctor",
  "gid",
- "trt 0.1.12",
+ "trt 0.1.13",
  "ub64",
  "vbyte",
  "x0",
@@ -3952,7 +3952,7 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "tracing",
- "trt 0.1.12",
+ "trt 0.1.13",
  "ub64",
  "vb",
  "x0",
@@ -3980,7 +3980,7 @@ dependencies = [
  "rand",
  "thiserror",
  "tokio",
- "trt 0.1.12",
+ "trt 0.1.13",
  "vb",
  "z85",
 ]
