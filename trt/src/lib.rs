@@ -14,11 +14,10 @@ lazy_static! {
 macro_rules! spawn {
   ($body:expr) => {{
     tokio::spawn(async move {
-      let r: $crate::anyhow::Result<_> = $body.await;
-      if let Err(err) = r {
+      if let Err(err) = $body.await {
         $crate::tracing::error!("{}", err);
       }
-      Ok::<_, trt::anyhow::Error>(())
+      Ok::<_, $crate::anyhow::Error>(())
     })
   }};
 }

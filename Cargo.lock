@@ -915,7 +915,7 @@ dependencies = [
  "paste",
  "tokio",
  "tokio-test",
- "trt 0.1.13",
+ "trt 0.1.14",
  "x0",
 ]
 
@@ -2461,7 +2461,7 @@ dependencies = [
  "tower",
  "tower-http",
  "tracing",
- "trt 0.1.13",
+ "trt 0.1.14",
  "ub64",
  "vb",
  "vbyte",
@@ -3368,7 +3368,7 @@ dependencies = [
 
 [[package]]
 name = "trt"
-version = "0.1.13"
+version = "0.1.14"
 dependencies = [
  "anyhow",
  "lazy_static",
@@ -3910,7 +3910,7 @@ dependencies = [
  "lazy_static",
  "paste",
  "tokio-test",
- "trt 0.1.13",
+ "trt 0.1.14",
 ]
 
 [[package]]
@@ -3921,7 +3921,7 @@ dependencies = [
  "cookie",
  "ctor",
  "gid",
- "trt 0.1.13",
+ "trt 0.1.14",
  "ub64",
  "vbyte",
  "x0",
@@ -3952,7 +3952,7 @@ dependencies = [
  "tokio",
  "tokio-stream",
  "tracing",
- "trt 0.1.13",
+ "trt 0.1.14",
  "ub64",
  "vb",
  "x0",
@@ -3980,7 +3980,7 @@ dependencies = [
  "rand",
  "thiserror",
  "tokio",
- "trt 0.1.13",
+ "trt 0.1.14",
  "vb",
  "z85",
 ]
