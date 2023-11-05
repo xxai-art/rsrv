@@ -65,10 +65,11 @@ pub async fn accept(all_ws: AllWs, socket: TcpStream) -> Result<()> {
           if let Ok(kind) = RECV::from_int(buf[0]) {
             let all_ws = all_ws.clone();
             let msg = Box::from(&buf[1..]);
-            trt::spawn!({
+            trt::spawn!(async move {
               if let Err(err) = recv(kind, &msg, uid, client_id, all_ws).await {
                 tracing::error!("{} {}", uid, err)
               }
+              Ok::<_, anyhow::Error>(())
             });
           }
         }

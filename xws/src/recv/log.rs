@@ -63,9 +63,10 @@ async fn qid(q: impl AsRef<str>) -> Result<u64> {
   let q = xxai::str::low_short(q);
   let (id, new) = _qid(&q).await?;
   if new {
-    trt::spawn!({
-      gt::QE(format!("INSERT INTO q (id,q) VALUES ({id},$1)"), &[&q]).await?;
-    });
+    trt::spawn!(gt::QE(
+      format!("INSERT INTO q (id,q) VALUES ({id},$1)"),
+      &[&q]
+    ));
   }
   Ok(id)
 }
@@ -164,7 +165,7 @@ pub async fn log(uid: u64, level: u8, buf: &[u8], all_ws: AllWs) -> Result<()> {
       if !$li.is_empty() {
         trt::spawn!({
           let li = $li.join(",");
-          gt::QE($sql + &li, &[]).await?;
+          gt::QE($sql + &li, &[])
         });
       }
     };

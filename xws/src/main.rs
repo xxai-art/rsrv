@@ -27,9 +27,7 @@ async fn main() -> Result<()> {
   let all_ws = AllWs::default();
   while let Some(Ok(socket)) = incoming.next().await {
     let all_ws = all_ws.clone();
-    trt::spawn!({
-      accept(all_ws, socket).await?;
-    });
+    trt::spawn!(accept(all_ws, socket));
   }
 
   Ok(())

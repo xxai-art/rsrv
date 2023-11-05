@@ -77,7 +77,7 @@ fn main() -> anyhow::Result<()> {
   };
 
   TRT.block_on(async move {
-    trt::spawn! { update_today().await };
+    trt::spawn! { update_today() };
     awp::srv(router.layer(middleware::from_fn(client)), port).await;
   });
   Ok(())

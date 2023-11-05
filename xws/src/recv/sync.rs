@@ -21,12 +21,12 @@ pub async fn sync(msg: &[u8], uid: u64, client_id: u64, all_ws: AllWs) -> Result
   let send = send0.clone();
   trt::spawn!({
     tracing::info!("fav::sync");
-    xerr::log!(crate::db::fav::sync(send, uid, to_sync[0]).await);
+    crate::db::fav::sync(send, uid, to_sync[0])
   });
 
   trt::spawn!({
     tracing::info!("seen::sync");
-    xerr::log!(crate::db::seen::sync(send0, uid, to_sync[1]).await);
+    crate::db::seen::sync(send0, uid, to_sync[1])
   });
 
   while let Some((action, bin)) = recv.recv().await {
