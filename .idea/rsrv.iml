@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="EMPTY_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/anypack/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/awp/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/client/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/envport/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/gid/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/init/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/rsrv/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/trt/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/x0/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/xc/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/xerr/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/xkv/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/xuser/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/xws/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/xxai/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/awp/target" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/trt/target" />
+      <excludeFolder url="file://$MODULE_DIR$/xkv/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

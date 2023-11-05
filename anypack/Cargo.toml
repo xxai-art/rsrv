@@ -1,0 +1,15 @@
+[package]
+name = "anypack"
+version = "0.1.19"
+edition = "2021"
+license = "BUSL-1.1"
+homepage = "https://github.com/xxai-art/rsrv"
+repository = "https://github.com/xxai-art/rsrv.git"
+description = "any into msgpack"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+async-trait = "0.1.74"
+axum = "0.6.20"
+msgpacker = { version = "0.4.4", package = "xxai-msgpacker" }
+paste = "1.0.14"

@@ -1,0 +1,28 @@
+[workspace]
+members = [
+  "rsrv",
+  "xc",
+  "xuser",
+  "xerr",
+  "envport",
+  "init",
+  "trt",
+  "client",
+  "x0",
+  "xxai",
+  "gid",
+  "xkv",
+  "awp",
+  "xws"
+]
+resolver = "2"
+
+[profile.release]
+lto = true
+opt-level = 3
+incremental = true
+codegen-units = 1
+overflow-checks = false
+panic = 'abort'
+debug-assertions = false
+strip = true

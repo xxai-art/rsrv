@@ -1,0 +1,26 @@
+[package]
+name = "awp"
+version = "0.1.13"
+edition = "2021"
+license = "SSPL-1.0"
+homepage = "https://github.com/xxai-art/rsrv"
+repository = "https://github.com/xxai-art/rsrv.git"
+description = "wrap axum for easy use"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+anyhow = { version = "1.0.75", features = ["backtrace"] }
+axum = "0.6.20"
+coarsetime = "0.1.33"
+futures = "0.3.29"
+once_cell = "1.18.0"
+tower = { version = "0.4.13", features = ["timeout"] }
+tracing = "0.1.40"
+tracing-stackdriver = { version = "0.8.0", optional = true }
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+anypack = { version = "0.1.17", path = "../anypack" }
+loginit = "0.1.3"
+envport = { version = "0.1.0", path = "../envport" }
+
+[features]
+stackdriver = ["tracing-stackdriver"]

@@ -1,0 +1,47 @@
+[package]
+name = "xws"
+version = "0.1.0"
+edition = "2021"
+license = "SSPL-1.0"
+homepage = "https://github.com/xxai-art/rsrv"
+repository = "https://github.com/xxai-art/rsrv.git"
+description = "xws : websocket gateway for xxai.art"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+xuser = { path = "../xuser" }
+anyhow = "1.0.75"
+bytes = "1.5.0"
+envport = { version = "0.1.0", path = "../envport" }
+http = "0.2.9"
+loginit = "0.1.3"
+ratchet_rs = { version = "0.4.1", features = [
+  "ratchet_deflate",
+  "split",
+  "deflate"
+] }
+tokio-stream = { version = "0.1.14", features = ["net"] }
+x0 = { path = "../x0" }
+tracing = "0.1.40"
+trt = { path = "../trt" }
+ub64 = { version = "0.0.10", features = ["u64"] }
+lazy_static = "1.4.0"
+dashmap = "5.5.3"
+int-enum = "0.5.0"
+vb = "0.0.7"
+gt = "0.0.10"
+xg = "0.0.10"
+anypack = { path = "../anypack" }
+xc = { path = "../xc" }
+xerr = { version = "0.1.0", path = "../xerr" }
+sts = "0.0.4"
+msgpacker = { version = "0.4.4", package = "xxai-msgpacker" }
+async-lazy = "0.1.0"
+clip_qdrant = "0.1.2"
+qdrant-client = "1.6.0"
+xxai = { path = "../xxai", features = ["ndarray"] }
+sonic-rs = "0.2.3"
+
+[dependencies.tokio]
+version = "1.33.0"
+features = ["macros", "rt-multi-thread", "rt", "time", "sync"]

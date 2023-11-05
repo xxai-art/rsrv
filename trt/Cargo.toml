@@ -1,0 +1,21 @@
+[package]
+name = "trt"
+version = "0.1.12"
+edition = "2021"
+license = "Apache-2.0"
+homepage = "https://github.com/xxai-art/rsrv"
+repository = "https://github.com/xxai-art/rsrv.git"
+description = "tokio global runtime"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+anyhow = "1.0.75"
+lazy_static = "1.4.0"
+tokio = { version = "1.33.0", features = [
+  "rt-multi-thread",
+  "macros",
+  "rt",
+  "time",
+  "sync"
+] }
+tracing = "0.1.40"

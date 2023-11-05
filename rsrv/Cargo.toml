@@ -1,0 +1,56 @@
+[package]
+name = "rsrv"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+anyhow = { version = "1.0.75", features = ["backtrace"] }
+anypack = { path = "../anypack" }
+tracing = "0.1.40"
+axum = "0.6.20"
+tower = { version = "0.4.13", features = ["timeout"] }
+const-str = "0.5.6"
+futures-util = "0.3.29"
+tower-http = { version = "0.4.4", features = ["cors", "tokio"] }
+ctor = "0.2.5"
+trt = { path = "../trt" }
+async-lazy = { version = "0.1.0", features = ["parking_lot", "nightly"] }
+xxhash-rust = { version = "0.8.7", features = ["xxh3"] }
+client = { path = "../client" }
+x0 = { path = "../x0" }
+xc = { path = "../xc" }
+xxai = { path = "../xxai", features = ["ndarray"] }
+awp = { path = "../awp" }
+lazy_static = "1.4.0"
+coarsetime = "0.1.33"
+serde = { version = "1.0.190", features = ["derive"] }
+vbyte = "0.1.0"
+paste = "1.0.14"
+z85 = "3.0.5"
+clip_search_txt_client = "0.1.13"
+sts = "0.0.4"
+intbin = "0.0.5"
+ub64 = { version = "0.0.10", features = ["u64", "u64li"] }
+xg = "0.0.10"
+gt = "0.0.10"
+vb = "0.0.7"
+bytes = "1.5.0"
+int-enum = "0.5.0"
+sonic-rs = "0.2.3"
+
+# quinn = { version = "0.10", default-features = false, features = [
+#   "runtime-tokio",
+#   "tls-rustls",
+#   "ring"
+# ] }
+[dependencies.tokio]
+version = "1.33.0"
+features = ["macros", "rt-multi-thread", "rt", "time", "sync"]
+
+[dependencies.reqwest]
+version = "0.11.22"
+features = ["tokio-rustls"]
+
+[dev-dependencies]
+# features = ["tokio-rustls", "http3"]

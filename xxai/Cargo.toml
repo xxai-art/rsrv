@@ -1,0 +1,34 @@
+[package]
+name = "xxai"
+version = "0.1.2"
+edition = "2021"
+license = "SSPL-1.0"
+homepage = "https://github.com/xxai-art/rsrv"
+repository = "https://github.com/xxai-art/rsrv.git"
+description = "utils for xxai.art"
+
+[features]
+ndarray = ["dep:num-traits", "dep:ndarray"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+anyhow = "1.0.75"
+base-x = "0.2.11"
+base64 = "0.21.5"
+chrono = "0.4.31"
+coarsetime = "0.1.33"
+ndarray = { version = "0.15.6", optional = true }
+num-traits = { version = "0.2.17", optional = true }
+ordered-varint = "2.0.0"
+psl = "2.1.4"
+rand = "0.8.5"
+thiserror = "1.0.50"
+tokio = { version = "1.33.0", features = [
+  "macros",
+  "rt",
+  "rt-multi-thread",
+  "time"
+] }
+trt = { path = "../trt" }
+vb = "0.0.7"
+z85 = "3.0.5"
