@@ -11,3 +11,4 @@ xuser = { path = "../xuser" }
 awp = { path = "../awp" }
 tracing = "0.1.40"
 thiserror = "1.0.50"
+intbin = "0.0.5"

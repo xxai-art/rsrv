@@ -363,6 +363,7 @@ dependencies = [
  "awp",
  "axum",
  "http",
+ "intbin",
  "thiserror",
  "tracing",
  "xuser",
