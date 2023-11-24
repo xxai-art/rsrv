@@ -1,6 +1,7 @@
 pub use anyhow;
 use lazy_static::lazy_static;
 use tokio::runtime::Runtime;
+pub use tokio::spawn;
 pub use tracing;
 
 lazy_static! {
@@ -13,7 +14,7 @@ lazy_static! {
 #[macro_export]
 macro_rules! spawn {
   ($body:expr) => {{
-    tokio::spawn(async move {
+    $crate::spawn(async move {
       if let Err(err) = $body.await {
         $crate::tracing::error!("{}", err);
       }
